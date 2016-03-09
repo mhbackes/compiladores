@@ -1,0 +1,11 @@
+"string"					// LIT_STRING
+"string						// TK_ERROR TK_IDENTIFIER
+string"						// TK_IDENTIFIER TK_ERROR
+\"string"					// TK_ERROR TK_IDENTIFIER TK_ERROR
+"string\"					// TK_ERROR TK_IDENTIFIER TK_ERROR
+"string" "string"			// LIT_STRING LIT_STRING
+"string" "string" "string"	// LIT_STRING LIT_STRING LIT_STRING
+"string\"string\"string"	// LIT_STRING
+"string\nstring"			// LIT_STRING
+"\"\""						// LIT_STRING
+"Hello, world!\n"			// LIT_STRING

@@ -5,7 +5,7 @@
 %{
 #include "tokens.h"
 
-int _lineNumber;
+int _lineNumber = 1;
 int _running;
 
 void initMe();
@@ -36,7 +36,7 @@ TRUE					{ _running = 1; return LIT_TRUE; }
 [a-zA-Z][a-zA-Z0-9_]*	{ _running = 1; return TK_IDENTIFIER; }
 [0-9]+					{ _running = 1; return LIT_INTEGER; } /* incluir números negativos? -?[0-9]+ */
 \'.\'					{ _running = 1; return LIT_CHAR; }
-\"([^\"\\]|\\.)*\"		{ _running = 1; return LIT_STRING; } /* ainda em fase de testes */
+\"([^\"\\\n]|\\.)*\"	{ _running = 1; return LIT_STRING; } /* ainda em fase de testes */
 \n						{ _running = 1; _lineNumber++; }
 \/\/.*					{ _running = 1; } /* LINE COMMENT */
 [\t ]					{ _running = 1; } /* WHITE SPACE */
@@ -51,7 +51,7 @@ int yywrap() {
 }
 
 void initMe() {
-
+	_lineNumber = 1;
 }
 
 int getLineNumber() {
