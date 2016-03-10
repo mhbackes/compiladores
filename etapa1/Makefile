@@ -17,3 +17,5 @@ $(SRC)/lex.yy.c: $(SRC)/scanner.l
 
 clean:
 	rm -f $(BIN)/*.o *~ $(TARGET) $(SRC)/lex.yy.h $(SRC)/lex.yy.c
+
+rebuild: clean $(TARGET)

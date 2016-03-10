@@ -1,3 +1,85 @@
 /*
  * hashtable.c
  */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "hashtable.h"
+
+/* PROTOTYPES */
+HASH_NODE *hashFind(char *str);
+
+/* GLOBAL VARIABLES */
+HASH_NODE *_s_table[HASH_SIZE];
+
+void hashInit(void) {
+	int i;
+
+	for(i = 0; i < HASH_SIZE; i++)
+		_s_table[i] = NULL;
+
+	return;
+}
+
+int hashAddress(char *str) {
+	int i;
+	int address = 1;
+
+	for(i = 0; i < strlen(str); i++)
+		address = address * str[i] % HASH_SIZE + 1;
+
+	return address - 1;
+}
+
+HASH_NODE *hashInsert(char *str, int type) {
+	int address;
+	HASH_NODE *newNode;
+
+	// "str" is already on hashtable
+	if((newNode = hashFind(str)))
+		return newNode;
+	// new node allocation
+	if(!(newNode = (HASH_NODE *) malloc(sizeof(HASH_NODE))) ||
+	    !(newNode->text = (char *) malloc(sizeof(char) *  strlen(str)))) {
+	    fprintf(stderr, "Error: out of memory\n");
+	    exit(1); // abort?
+	}
+
+	newNode->type = type;
+	strncpy(newNode->text, str, strlen(str));
+
+	address = hashAddress(str);
+	newNode->next = _s_table[address];
+	_s_table[address] = newNode;
+
+	return newNode;
+}
+
+HASH_NODE *hashFind(char *str) {
+	int address = hashAddress(str);
+	HASH_NODE *node = _s_table[address];
+
+	while(node) {
+	    if(!strncmp(node->text, str, strlen(str)))
+		    return node;
+	    node = node->next;
+	}
+
+	return NULL;
+}
+
+/* testing purposes, should be removed */
+void hashPrint(void) {
+    int i;
+    HASH_NODE *node;
+    for(i = 0; i < HASH_SIZE; i++) {
+	node = _s_table[i];
+	while(node) {
+		printf("Table[%d] -> TYPE: %d STR: %s\n", i, _s_table[i]->type, _s_table[i]->text);
+		node = node->next;
+	}
+    }
+    return;
+}
+

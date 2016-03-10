@@ -4,6 +4,7 @@
 
 %{
 #include "tokens.h"
+#include "hashtable.h"
 
 int _lineNumber = 1;
 int _running;
@@ -45,8 +46,8 @@ return					{ _running = 1; return KW_RETURN; }
  /* LITERALS */
 FALSE					{ _running = 1; return LIT_FALSE; }
 TRUE					{ _running = 1; return LIT_TRUE; }
-[a-zA-Z][a-zA-Z0-9_]*	{ _running = 1; return TK_IDENTIFIER; }
-[0-9]+					{ _running = 1; return LIT_INTEGER; }
+[a-zA-Z][a-zA-Z0-9_]*	{ _running = 1; hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
+[0-9]+					{ _running = 1; hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
 \'.\'					{ _running = 1; return LIT_CHAR; }
 \"([^\"\\\n]|\\.)*\"	{ _running = 1; return LIT_STRING; }
  /* LITERALS */
@@ -82,6 +83,7 @@ int yywrap() {
 
 void initMe() {
 	_lineNumber = 1;
+    hashInit();
 }
 
 int getLineNumber() {

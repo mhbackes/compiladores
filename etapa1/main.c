@@ -5,9 +5,11 @@
 #include <stdio.h>
 #include "tokens.h"
 #include "lex.yy.h"
+#include "hashtable.h"
 
 int main(int argc, char *argv[])
 {
+	hashInit();
 	int token = yylex();
 	while (isRunning()) {
 		switch (token) {
@@ -85,6 +87,8 @@ int main(int argc, char *argv[])
 				break;
 		}
 		token = yylex();
+
 	}
+	hashPrint();
 	return 0;
 }
