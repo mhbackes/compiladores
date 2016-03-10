@@ -13,8 +13,11 @@ int getLineNumber();
 int isRunning();
 %}
 
+%x COMMENT
+
 %%
-int						{ _running = 1; return KW_INT; }	
+ /* KEYWORDS */
+int						{ _running = 1; return KW_INT; }
 real					{ _running = 1; return KW_REAL; }
 bool					{ _running = 1; return KW_BOOL ; }
 char					{ _running = 1; return KW_CHAR; }
@@ -24,23 +27,50 @@ while					{ _running = 1; return KW_WHILE; }
 input					{ _running = 1; return KW_INPUT; }
 output					{ _running = 1; return KW_OUTPUT; }
 return					{ _running = 1; return KW_RETURN; }
-FALSE					{ _running = 1; return LIT_FALSE; }
-TRUE					{ _running = 1; return LIT_TRUE; }
+ /* KEYWORDS */
+
+ /* SPECIAL CHARACTERS */
 [-,;:()\[\]{}+*/<>=!&$]	{ _running = 1; return yytext[0]; }
-\<=						{ _running = 1; return OPERATOR_LE; }
+ /* SPECIAL CHARACTERS */
+
+ /* OPERATORS */
+\<=						{ _running = 2; return OPERATOR_LE; }
 >=						{ _running = 1; return OPERATOR_GE; }
 ==						{ _running = 1; return OPERATOR_EQ; }
 !=						{ _running = 1; return OPERATOR_NE; }
 &&						{ _running = 1; return OPERATOR_AND; }
 \|\|					{ _running = 1; return OPERATOR_OR; }
+ /* OPERATORS */
+
+ /* LITERALS */
+FALSE					{ _running = 1; return LIT_FALSE; }
+TRUE					{ _running = 1; return LIT_TRUE; }
 [a-zA-Z][a-zA-Z0-9_]*	{ _running = 1; return TK_IDENTIFIER; }
-[0-9]+					{ _running = 1; return LIT_INTEGER; } /* incluir números negativos? -?[0-9]+ */
+[0-9]+					{ _running = 1; return LIT_INTEGER; }
 \'.\'					{ _running = 1; return LIT_CHAR; }
-\"([^\"\\\n]|\\.)*\"	{ _running = 1; return LIT_STRING; } /* ainda em fase de testes */
+\"([^\"\\\n]|\\.)*\"	{ _running = 1; return LIT_STRING; }
+ /* LITERALS */
+
+ /* LINE COMMENT */
+\/\/.*					{ _running = 1; }
+ /* LINE COMMENT */
+
+ /* COMMENT */
+\/\*					{ _running = 1; BEGIN(COMMENT); }
+<COMMENT>\n				{ _running = 1; _lineNumber++; }
+<COMMENT>\*\/			{ _running = 1; BEGIN(INITIAL); } 
+<COMMENT>.				{ _running = 1; }
+ /* COMMENT */
+
+ /* WHITE SPACE */
 \n						{ _running = 1; _lineNumber++; }
-\/\/.*					{ _running = 1; } /* LINE COMMENT */
-[\t ]					{ _running = 1; } /* WHITE SPACE */
+[\t ]					{ _running = 1; }
+ /* WHITE SPACE */
+
+ /* ERROR */
 .						{ _running = 1; return TOKEN_ERROR; }
+ /* ERROR */
+
 %%
 
 #include "main.c"

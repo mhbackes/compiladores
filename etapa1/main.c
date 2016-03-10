@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 				printf("Line: %d - TOKEN_ERROR\n", getLineNumber());
 				break;
 			default:
-				printf("Line: %d - %c", getLineNumber(), token);
+				printf("Line: %d - %c\n", getLineNumber(), token);
 				break;
 		}
 		token = yylex();
