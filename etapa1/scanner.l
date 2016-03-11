@@ -48,8 +48,8 @@ FALSE					{ return LIT_FALSE; }
 TRUE					{ return LIT_TRUE; }
 [a-zA-Z][a-zA-Z0-9_]*	{ hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
 [0-9]+					{ hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
-\'.\'					{ return LIT_CHAR; }
-\"([^\"\\\n]|\\.)*\"	{ return LIT_STRING; }
+\'.\'					{ hashInsert(yytext, LIT_CHAR); return LIT_CHAR; }
+\"([^\"\\\n]|\\.)*\"	{ hashInsert(yytext, LIT_STRING); return LIT_STRING; }
  /* LITERALS */
 
  /* LINE COMMENT */

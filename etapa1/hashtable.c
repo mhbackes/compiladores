@@ -6,9 +6,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hashtable.h"
+#include "tokens.h"
 
 /* PROTOTYPES */
 HASH_NODE *hashFind(char *str);
+int hashAddress(char *str);
+HASH_NODE *hashNewNode(char *str, int type);
+
 
 /* GLOBAL VARIABLES */
 HASH_NODE *_symbolTable[HASH_SIZE];
@@ -35,6 +39,12 @@ int hashAddress(char *str) {
 HASH_NODE *hashInsert(char *str, int type) {
 	int address;
 	HASH_NODE *newNode;
+
+	// if it is a string, we should strip it before anything else
+	if(type == LIT_STRING) {
+	    str++; 
+	    str[strlen(str) - 1] = '\0';
+	}
 
 	// "str" is already on hashtable
 	if((newNode = hashFind(str)))
