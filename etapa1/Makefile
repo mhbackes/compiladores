@@ -2,8 +2,8 @@ CC=gcc
 CXXFLAGS=-g -Wall #-O3
 BIN=bin
 SRC=.
-LEX=flex
-OBJ=$(BIN)/hashtable.o $(BIN)/lex.yy.o
+LEX=lex
+OBJ=$(BIN)/hashtable.o $(BIN)/lex.yy.o $(BIN)/main.o
 TARGET=etapa1
 
 $(TARGET): $(OBJ)

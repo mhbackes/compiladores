@@ -9,7 +9,7 @@
 
 int main(int argc, char *argv[])
 {
-	hashInit();
+	initMe();
 	int token = yylex();
 	while (isRunning()) {
 		switch (token) {
@@ -87,7 +87,6 @@ int main(int argc, char *argv[])
 				break;
 		}
 		token = yylex();
-
 	}
 	hashPrint();
 	return 0;

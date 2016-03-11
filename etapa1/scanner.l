@@ -6,7 +6,7 @@
 #include "tokens.h"
 #include "hashtable.h"
 
-int _lineNumber = 1;
+int _lineNumber;
 int _running;
 
 void initMe();
@@ -18,63 +18,61 @@ int isRunning();
 
 %%
  /* KEYWORDS */
-int						{ _running = 1; return KW_INT; }
-real					{ _running = 1; return KW_REAL; }
-bool					{ _running = 1; return KW_BOOL ; }
-char					{ _running = 1; return KW_CHAR; }
-if						{ _running = 1; return KW_IF; }
-else					{ _running = 1; return KW_ELSE; }
-while					{ _running = 1; return KW_WHILE; }
-input					{ _running = 1; return KW_INPUT; }
-output					{ _running = 1; return KW_OUTPUT; }
-return					{ _running = 1; return KW_RETURN; }
+int						{ return KW_INT; }
+real					{ return KW_REAL; }
+bool					{ return KW_BOOL ; }
+char					{ return KW_CHAR; }
+if						{ return KW_IF; }
+else					{ return KW_ELSE; }
+while					{ return KW_WHILE; }
+input					{ return KW_INPUT; }
+output					{ return KW_OUTPUT; }
+return					{ return KW_RETURN; }
  /* KEYWORDS */
 
  /* SPECIAL CHARACTERS */
-[-,;:()\[\]{}+*/<>=!&$]	{ _running = 1; return yytext[0]; }
+[-,;:()\[\]{}+*/<>=!&$]	{ return yytext[0]; }
  /* SPECIAL CHARACTERS */
 
  /* OPERATORS */
-\<=						{ _running = 2; return OPERATOR_LE; }
->=						{ _running = 1; return OPERATOR_GE; }
-==						{ _running = 1; return OPERATOR_EQ; }
-!=						{ _running = 1; return OPERATOR_NE; }
-&&						{ _running = 1; return OPERATOR_AND; }
-\|\|					{ _running = 1; return OPERATOR_OR; }
+\<=						{ return OPERATOR_LE; }
+>=						{ return OPERATOR_GE; }
+==						{ return OPERATOR_EQ; }
+!=						{ return OPERATOR_NE; }
+&&						{ return OPERATOR_AND; }
+\|\|					{ return OPERATOR_OR; }
  /* OPERATORS */
 
  /* LITERALS */
-FALSE					{ _running = 1; return LIT_FALSE; }
-TRUE					{ _running = 1; return LIT_TRUE; }
-[a-zA-Z][a-zA-Z0-9_]*	{ _running = 1; hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
-[0-9]+					{ _running = 1; hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
-\'.\'					{ _running = 1; return LIT_CHAR; }
-\"([^\"\\\n]|\\.)*\"	{ _running = 1; return LIT_STRING; }
+FALSE					{ return LIT_FALSE; }
+TRUE					{ return LIT_TRUE; }
+[a-zA-Z][a-zA-Z0-9_]*	{ hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER; }
+[0-9]+					{ hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER; }
+\'.\'					{ return LIT_CHAR; }
+\"([^\"\\\n]|\\.)*\"	{ return LIT_STRING; }
  /* LITERALS */
 
  /* LINE COMMENT */
-\/\/.*					{ _running = 1; }
+\/\/.*					{ }
  /* LINE COMMENT */
 
  /* COMMENT */
-\/\*					{ _running = 1; BEGIN(COMMENT); }
-<COMMENT>\n				{ _running = 1; _lineNumber++; }
-<COMMENT>\*\/			{ _running = 1; BEGIN(INITIAL); } 
-<COMMENT>.				{ _running = 1; }
+\/\*					{ BEGIN(COMMENT); }
+<COMMENT>\n				{ _lineNumber++; }
+<COMMENT>\*\/			{ BEGIN(INITIAL); } 
+<COMMENT>.				{ }
  /* COMMENT */
 
  /* WHITE SPACE */
-\n						{ _running = 1; _lineNumber++; }
-[\t ]					{ _running = 1; }
+\n						{ _lineNumber++; }
+[\t ]					{ }
  /* WHITE SPACE */
 
  /* ERROR */
-.						{ _running = 1; return TOKEN_ERROR; }
+.						{ return TOKEN_ERROR; }
  /* ERROR */
 
 %%
-
-#include "main.c"
 
 int yywrap() {
 	_running = 0;
@@ -83,6 +81,7 @@ int yywrap() {
 
 void initMe() {
 	_lineNumber = 1;
+	_running = 1;
     hashInit();
 }
 

@@ -11,13 +11,13 @@
 HASH_NODE *hashFind(char *str);
 
 /* GLOBAL VARIABLES */
-HASH_NODE *_s_table[HASH_SIZE];
+HASH_NODE *_symbolTable[HASH_SIZE];
 
 void hashInit(void) {
 	int i;
 
 	for(i = 0; i < HASH_SIZE; i++)
-		_s_table[i] = NULL;
+		_symbolTable[i] = NULL;
 
 	return;
 }
@@ -50,15 +50,15 @@ HASH_NODE *hashInsert(char *str, int type) {
 	strncpy(newNode->text, str, strlen(str));
 
 	address = hashAddress(str);
-	newNode->next = _s_table[address];
-	_s_table[address] = newNode;
+	newNode->next = _symbolTable[address];
+	_symbolTable[address] = newNode;
 
 	return newNode;
 }
 
 HASH_NODE *hashFind(char *str) {
 	int address = hashAddress(str);
-	HASH_NODE *node = _s_table[address];
+	HASH_NODE *node = _symbolTable[address];
 
 	while(node) {
 	    if(!strncmp(node->text, str, strlen(str)))
@@ -74,9 +74,9 @@ void hashPrint(void) {
     int i;
     HASH_NODE *node;
     for(i = 0; i < HASH_SIZE; i++) {
-	node = _s_table[i];
+	node = _symbolTable[i];
 	while(node) {
-		printf("Table[%d] -> TYPE: %d STR: %s\n", i, _s_table[i]->type, _s_table[i]->text);
+		printf("Table[%d] -> TYPE: %d STR: %s\n", i, node->type, node->text);
 		node = node->next;
 	}
     }
