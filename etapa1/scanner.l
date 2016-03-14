@@ -1,5 +1,8 @@
 /*
  * scanner.l
+ * ALUNOS:
+ * MARCOS HENRIQUE BACKES
+ * PAULO RENATO LANZARIN
  */
 
 %{
@@ -73,7 +76,7 @@ TRUE					{ return LIT_TRUE; }
 
  /* WHITE SPACE */
 \n						{ _lineNumber++; }
-[\g ]					{ }
+[\t ]					{ }
  /* WHITE SPACE */
 
  /* ERROR */

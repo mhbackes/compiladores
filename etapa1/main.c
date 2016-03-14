@@ -1,5 +1,8 @@
 /*
  * main.c
+ * ALUNOS:
+ * MARCOS HENRIQUE BACKES
+ * PAULO RENATO LANZARIN
  */
 
 #include <stdio.h>

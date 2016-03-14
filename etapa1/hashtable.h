@@ -1,5 +1,8 @@
 /*
  * hashtable.h
+ * ALUNOS:
+ * MARCOS HENRIQUE BACKES
+ * PAULO RENATO LANZARIN
  */
 
 #ifndef HASHTABLE_
