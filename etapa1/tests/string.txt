@@ -9,3 +9,4 @@ string"						// TK_IDENTIFIER TK_ERROR
 "string\nstring"			// LIT_STRING
 "\"\""						// LIT_STRING
 "Hello, world!\n"			// LIT_STRING
+"string"string"string"      // LIT_STRING TK_IDENTIFIER? LIT_STRING

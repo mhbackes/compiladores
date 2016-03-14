@@ -9,7 +9,6 @@
 
 int main(int argc, char *argv[])
 {
-	initMe();
 	int token = yylex();
 	while (isRunning()) {
 		switch (token) {

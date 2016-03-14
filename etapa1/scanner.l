@@ -17,6 +17,14 @@ int isRunning();
 %x COMMENT
 
 %%
+         /* Initialization procedure (identation is needed) */
+         static int initialized = 0;
+     
+         if (!initialized){
+            initMe();
+            initialized = 1;
+         }
+
  /* KEYWORDS */
 int						{ return KW_INT; }
 real					{ return KW_REAL; }
@@ -65,7 +73,7 @@ TRUE					{ return LIT_TRUE; }
 
  /* WHITE SPACE */
 \n						{ _lineNumber++; }
-[\t ]					{ }
+[\g ]					{ }
  /* WHITE SPACE */
 
  /* ERROR */
