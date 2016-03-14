@@ -9,10 +9,9 @@
 #include "tokens.h"
 
 /* PROTOTYPES */
-HASH_NODE *hashFind(char *str);
+HASH_NODE *hashFind(char *str, int type);
 int hashAddress(char *str);
-HASH_NODE *hashNewNode(char *str, int type);
-
+HASH_NODE *hashNewNode(char *str, int type); 
 
 /* GLOBAL VARIABLES */
 HASH_NODE *_symbolTable[HASH_SIZE];
@@ -21,8 +20,7 @@ void hashInit(void) {
 	int i;
 
 	for(i = 0; i < HASH_SIZE; i++)
-		_symbolTable[i] = NULL;
-
+		_symbolTable[i] = NULL; 
 	return;
 }
 
@@ -47,7 +45,7 @@ HASH_NODE *hashInsert(char *str, int type) {
 	}
 
 	// "str" is already on hashtable
-	if((newNode = hashFind(str)))
+	if((newNode = hashFind(str, type)))
 		return newNode;
 	// new node allocation
 	if(!(newNode = (HASH_NODE *) malloc(sizeof(HASH_NODE))) ||
@@ -66,12 +64,12 @@ HASH_NODE *hashInsert(char *str, int type) {
 	return newNode;
 }
 
-HASH_NODE *hashFind(char *str) {
+HASH_NODE *hashFind(char *str, int type) {
 	int address = hashAddress(str);
 	HASH_NODE *node = _symbolTable[address];
 
 	while(node) {
-	    if(!strncmp(node->text, str, strlen(str)))
+	    if(!strncmp(node->text, str, strlen(str)) && node->type == type)
 		    return node;
 	    node = node->next;
 	}
