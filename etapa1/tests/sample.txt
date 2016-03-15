@@ -1,6 +1,7 @@
 int main()
 int i:0;
 int j:1;
+char derp:'o';
   {
   output "Digite um numero: ";
   if (i<10)

@@ -41,8 +41,8 @@ HASH_NODE *hashInsert(char *str, int type) {
 	int address;
 	HASH_NODE *newNode;
 
-	// if it is a string, we should strip it before anything else
-	if(type == LIT_STRING) {
+	// if it is a string or char, we should strip it before anything else
+	if(type == LIT_STRING || type == LIT_CHAR) {
 	    str++; 
 	    str[strlen(str) - 1] = '\0';
 	}
