@@ -1,7 +1,15 @@
+/*
+ * parser.y
+ * ALUNOS:
+ * MARCOS HENRIQUE BACKES
+ * PAULO RENATO LANZARIN
+ */
+
 %{
 #include <stdio.h>
 #include <stdlib.h>
 #include "lex.yy.h"
+#include "hashtable.h"
 
 int yylex();
 void yyerror(const char *s);
@@ -34,7 +42,33 @@ void yyerror(const char *s);
 %token TOKEN_ERROR  
 
 %%
-program: TK_IDENTIFIER
+program: declaration program
+	   | declaration
+	   ;
+
+declaration: global ';'
+		   | function ';'
+		   ;
+
+global: variable
+	  | array
+	  ;
+
+variable: KW_INT TK_IDENTIFIER ':' LIT_INTEGER
+		| KW_REAL TK_IDENTIFIER ':' LIT_INTEGER
+		| KW_CHAR TK_IDENTIFIER ':' LIT_CHAR
+	    | KW_BOOL TK_IDENTIFIER ':' litBool
+	    ;
+
+array:
+	 ;
+
+litBool: LIT_TRUE
+	   | LIT_FALSE
+	   ;
+
+function:
+		;
 
 %%
 void yyerror (char const *msg) {

@@ -28,7 +28,7 @@ void hashInit(void) {
 }
 
 int hashAddress(char *str) {
-	int i;
+	unsigned i;
 	int address = 1;
 
 	for(i = 0; i < strlen(str); i++)
@@ -87,7 +87,20 @@ void hashPrint(void) {
     for(i = 0; i < HASH_SIZE; i++) {
 	node = _symbolTable[i];
 	while(node) {
-		printf("Table[%d] -> TYPE: %d STR: %s\n", i, node->type, node->text);
+		switch(node->type) {
+			case SYMBOL_IDENTIFIER:
+				printf("Table[%d] -> TYPE: SYMBOL_IDENTIFIER\tTEXT: %s\n", i, node->text);
+				break;
+			case SYMBOL_LIT_INT:
+				printf("Table[%d] -> TYPE: SYMBOL_LIT_INT\tTEXT: %s\n", i, node->text);
+				break;
+			case SYMBOL_LIT_CHAR:
+				printf("Table[%d] -> TYPE: SYMBOL_LIT_CHAR\tTEXT: %s\n", i, node->text);
+				break;
+			case SYMBOL_LIT_STRING:
+				printf("Table[%d] -> TYPE: SYMBOL_LIT_STRING\tTEXT: %s\n", i, node->text);
+				break;
+		}
 		node = node->next;
 	}
     }
