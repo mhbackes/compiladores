@@ -43,9 +43,13 @@ void yyerror(const char *s);
 
 /* ASSOCIATIVIDADE DOS OPERADORES BOOLEANOS LEFT TAMBEM??!!!! */
 /* AND E OR tem menos prioridade que todos?? Acho, talvez botar por ultimo */
-%left OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE OPERATOR_AND OPERATOR_OR
+%left OPERATOR_OR
+%left OPERATOR_AND
+%left OPERATOR_EQ OPERATOR_NE
+%left '<' '>' OPERATOR_LE OPERATOR_GE 
 %left '=' '-'
 %left '*' '/'
+%left '!'
 
 %%
 program: declaration
@@ -90,24 +94,32 @@ function:
 		;
 
 exp: literal
-   | '(' exp ')'
-   | exp operator exp
    | TK_IDENTIFIER
    | TK_IDENTIFIER '[' exp ']'
+   | TK_IDENTIFIER '(' listOfExp ')'
+   | '(' exp ')'
+   | exp operatorBinary exp
+   | operatorUnary exp
 
-operator: OPERATOR_LE  
-        | OPERATOR_GE  
-        | OPERATOR_EQ  
-        | OPERATOR_NE  
-        | OPERATOR_AND 
-        | OPERATOR_OR 
-        | '+'
-        | '-'
-        | '*'
-        | '/'
-        | '<'
-        | '>'
-        ;
+listOfExp: exp
+		 | listOfExp ',' exp
+
+operatorBinary: OPERATOR_LE  
+			  | OPERATOR_GE  
+			  | OPERATOR_EQ  
+			  | OPERATOR_NE  
+			  | OPERATOR_AND 
+			  | OPERATOR_OR 
+			  | '+'
+			  | '-'
+			  | '*'
+			  | '/'
+			  | '<'
+			  | '>'
+			  ;
+
+operatorUnary: '!'
+			 ;
 
 cmd: attr
        | input
