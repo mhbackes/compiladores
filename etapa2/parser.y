@@ -105,6 +105,7 @@ exp: literal
    | TK_IDENTIFIER
    | TK_IDENTIFIER '[' exp ']'
    | TK_IDENTIFIER '(' listOfExp ')'
+   | TK_IDENTIFIER '(' ')'
    | '(' exp ')'
    | exp operatorBinary exp
    | operatorUnary exp
@@ -139,15 +140,27 @@ cmd:   attr
        ;
 
 attr: TK_IDENTIFIER '=' exp
-    | '[' exp ']' '=' exp
+    | TK_IDENTIFIER '[' exp ']' '=' exp
     ;
 
 
-input:
+input: KW_INPUT listOfInput
      ;
 
-output:
+listOfInput: TK_IDENTIFIER
+		   | listOfInput ',' TK_IDENTIFIER
+		   ;
+
+output: KW_OUTPUT listofOutput
       ;
+
+listofOutput: stringOrExp
+			| listofOutput ',' stringOrExp
+
+stringOrExp: exp
+		   | LIT_STRING
+		   ;
+			
 
 if: KW_IF '(' exp ')' cmd
   | KW_IF '(' exp ')' cmd KW_ELSE cmd
