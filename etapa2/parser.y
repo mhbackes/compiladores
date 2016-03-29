@@ -41,6 +41,12 @@ void yyerror(const char *s);
 %token LIT_STRING   
 %token TOKEN_ERROR  
 
+/* ASSOCIATIVIDADE DOS OPERADORES BOOLEANOS LEFT TAMBEM??!!!! */
+/* AND E OR tem menos prioridade que todos?? Acho, talvez botar por ultimo */
+%left OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE OPERATOR_AND OPERATOR_OR
+%left '=' '-'
+%left '*' '/'
+
 %%
 program: declaration program
 	   | declaration
@@ -60,15 +66,77 @@ variable: KW_INT TK_IDENTIFIER ':' LIT_INTEGER
 	    | KW_BOOL TK_IDENTIFIER ':' litBool
 	    ;
 
-array:
+litBool: LIT_TRUE
+       | LIT_FALSE
+       ;
+
+lit: litBool
+   | LIT_INTEGER
+   | LIT_CHAR
+   ;
+
+
+array: ':' lit_array
 	 ;
 
-litBool: LIT_TRUE
-	   | LIT_FALSE
-	   ;
+lit_array: lit lit_array
+         |
+         ;
 
 function:
 		;
+
+exp: lit
+   | '(' exp ')'
+   | exp operator exp
+   | TK_IDENTIFIER '[' exp ']'
+
+operator: OPERATOR_LE  
+        | OPERATOR_GE  
+        | OPERATOR_EQ  
+        | OPERATOR_NE  
+        | OPERATOR_AND 
+        | OPERATOR_OR 
+        | '+'
+        | '-'
+        | '*'
+        | '/'
+        | '<'
+        | '>'
+        ;
+
+cmd: attr
+       | input
+       | output
+       | if
+       | while
+       | block
+       ;
+
+attr: TK_IDENTIFIER '=' exp
+    | '[' exp ']' '=' exp
+    ;
+
+
+input:
+     ;
+
+output:
+      ;
+
+if: KW_IF '(' exp ')' cmd
+  | KW_IF '(' exp ')' cmd KW_ELSE cmd
+  ;
+
+while: KW_WHILE '(' exp ')' cmd
+     ;
+
+block: '{' lcmd '}'
+     ;
+
+lcmd: cmd ';' lcmd
+    |
+    ;
 
 %%
 void yyerror (char const *msg) {

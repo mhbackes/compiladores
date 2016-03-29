@@ -12,7 +12,7 @@
 int main(int argc, char *argv[])
 {
 	yyparse();
-	printf("Parse succsessful.\n");
+	printf("Parse successful.\n");
 	hashPrint();
 	return 0;
 }
