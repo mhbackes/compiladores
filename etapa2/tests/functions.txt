@@ -1,0 +1,16 @@
+int a:0;
+int i:0;
+real v[10]: 0 0 0 0 0 0 0 0 0 0; 
+bool mat[1000];
+char c:0;
+
+int main()
+  {
+    a = incn(a,1)
+  };
+
+int incn (int x, int n)
+  {
+  };
+
+int voidfunc() ; ;
