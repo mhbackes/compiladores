@@ -48,8 +48,8 @@ void yyerror(const char *s);
 %left '*' '/'
 
 %%
-program: declaration program
-	   | declaration
+program: declaration
+	   | program declaration
 	   ;
 
 declaration: global ';'
@@ -60,35 +60,39 @@ global: variable
 	  | array
 	  ;
 
-variable: KW_INT TK_IDENTIFIER ':' LIT_INTEGER
-		| KW_REAL TK_IDENTIFIER ':' LIT_INTEGER
-		| KW_CHAR TK_IDENTIFIER ':' LIT_CHAR
-	    | KW_BOOL TK_IDENTIFIER ':' litBool
+variable: type TK_IDENTIFIER ':' literal
 	    ;
 
-litBool: LIT_TRUE
-       | LIT_FALSE
-       ;
+type: KW_INT
+	| KW_REAL
+	| KW_CHAR
+	| KW_BOOL
+	;
 
-lit: litBool
-   | LIT_INTEGER
-   | LIT_CHAR
-   ;
+literalBool: LIT_TRUE
+		   | LIT_FALSE
+		   ;
+
+literal: literalBool
+	   | LIT_INTEGER
+	   | LIT_CHAR
+	   ;
 
 
-array: ':' lit_array
-	 ;
+array: type TK_IDENTIFIER '[' LIT_INTEGER ']'
+	 | type TK_IDENTIFIER '[' LIT_INTEGER ']' ':' listOfLiteral
 
-lit_array: lit lit_array
-         |
-         ;
+listOfLiteral: literal
+			 | listOfLiteral literal
+			 ;
 
-function:
+function: 
 		;
 
-exp: lit
+exp: literal
    | '(' exp ')'
    | exp operator exp
+   | TK_IDENTIFIER
    | TK_IDENTIFIER '[' exp ']'
 
 operator: OPERATOR_LE  
@@ -131,12 +135,12 @@ if: KW_IF '(' exp ')' cmd
 while: KW_WHILE '(' exp ')' cmd
      ;
 
-block: '{' lcmd '}'
+block: '{' listOfCmd '}'
      ;
 
-lcmd: cmd ';' lcmd
-    |
-    ;
+listOfCmd: cmd
+		 | listOfCmd cmd
+	     ;
 
 %%
 void yyerror (char const *msg) {
