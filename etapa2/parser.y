@@ -90,19 +90,16 @@ listOfLiteral: literal
 			 | listOfLiteral literal
 			 ;
 
-function: functionHeader block 
+function: functionHeader cmd
 		;
 
 functionHeader: type TK_IDENTIFIER '(' listOfParameters ')'
               ;
 
-listOfParameters: parameter
-                | listOfParameters ',' parameter
-                :
-
-parameter: type TK_IDENTIFIER
-         |
-         ;
+listOfParameters: type TK_IDENTIFIER 
+                | listOfParameters ',' type TK_IDENTIFIER
+                |
+                ;
 
 exp: literal
    | TK_IDENTIFIER
@@ -132,12 +129,13 @@ operatorBinary: OPERATOR_LE
 operatorUnary: '!'
 			 ;
 
-cmd: attr
+cmd:   attr
        | input
        | output
        | if
        | while
        | block
+       | 
        ;
 
 attr: TK_IDENTIFIER '=' exp
@@ -159,6 +157,7 @@ while: KW_WHILE '(' exp ')' cmd
      ;
 
 block: '{' listOfCmd '}'
+     |
      ;
 
 listOfCmd: cmd
