@@ -85,6 +85,7 @@ literal: literalBool
 
 array: type TK_IDENTIFIER '[' LIT_INTEGER ']'
 	 | type TK_IDENTIFIER '[' LIT_INTEGER ']' ':' listOfLiteral
+	 ;
 
 listOfLiteral: literal
 			 | listOfLiteral literal
@@ -94,11 +95,11 @@ function: functionHeader cmd
 		;
 
 functionHeader: type TK_IDENTIFIER '(' listOfParameters ')'
+			  | type TK_IDENTIFIER '(' ')'
               ;
 
 listOfParameters: type TK_IDENTIFIER 
                 | listOfParameters ',' type TK_IDENTIFIER
-                |
                 ;
 
 exp: literal
@@ -109,6 +110,7 @@ exp: literal
    | '(' exp ')'
    | exp operatorBinary exp
    | operatorUnary exp
+   ;
 
 listOfExp: exp
 		 | listOfExp ',' exp
@@ -130,14 +132,14 @@ operatorBinary: OPERATOR_LE
 operatorUnary: '!'
 			 ;
 
-cmd:   attr
-       | input
-       | output
-       | if
-       | while
-       | block
-       | 
-       ;
+cmd: attr
+   | input
+   | output
+   | if
+   | while
+   | block
+   | return
+   ;
 
 attr: TK_IDENTIFIER '=' exp
     | TK_IDENTIFIER '[' exp ']' '=' exp
@@ -156,6 +158,7 @@ output: KW_OUTPUT listofOutput
 
 listofOutput: stringOrExp
 			| listofOutput ',' stringOrExp
+			;
 
 stringOrExp: exp
 		   | LIT_STRING
@@ -170,12 +173,14 @@ while: KW_WHILE '(' exp ')' cmd
      ;
 
 block: '{' listOfCmd '}'
-     |
+     | ';'
      ;
 
 listOfCmd: cmd
 		 | listOfCmd cmd
 	     ;
+
+return: KW_RETURN exp
 
 %%
 void yyerror (char const *msg) {
