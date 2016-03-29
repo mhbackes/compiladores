@@ -86,8 +86,19 @@ listOfLiteral: literal
 			 | listOfLiteral literal
 			 ;
 
-function: 
+function: functionHeader block 
 		;
+
+functionHeader: type TK_IDENTIFIER '(' listOfParameters ')'
+              ;
+
+listOfParameters: parameter
+                | listOfParameters ',' parameter
+                :
+
+parameter: type TK_IDENTIFIER
+         |
+         ;
 
 exp: literal
    | '(' exp ')'
