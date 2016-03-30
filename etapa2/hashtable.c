@@ -42,7 +42,7 @@ HASH_NODE *hashInsert(char *str, int type) {
 	HASH_NODE *newNode;
 
 	// if it is a string or char, we should strip it before anything else
-	if(type == LIT_STRING || type == LIT_CHAR) {
+	if(type == SYMBOL_LIT_STRING || type == SYMBOL_LIT_CHAR) {
 	    str++; 
 	    str[strlen(str) - 1] = '\0';
 	}
