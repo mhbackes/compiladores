@@ -13,6 +13,7 @@
 
 int yylex();
 void yyerror(const char *s);
+int getLineNumber();
 %}
 
 %token KW_INT       

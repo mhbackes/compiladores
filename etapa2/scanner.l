@@ -17,6 +17,9 @@ int getLineNumber();
 int isRunning();
 %}
 
+%option nounput
+%option noinput
+
 %x COMMENT
 
 %%
