@@ -41,11 +41,10 @@ void yyerror(const char *s);
 %token LIT_STRING   
 %token TOKEN_ERROR  
 
-%nonassoc IFX
-%nonassoc KW_ELSE 
 %nonassoc OPBIN
 %nonassoc OPUN
-
+%nonassoc KW_IFX
+%nonassoc KW_ELSE
 %left OPERATOR_OR
 %left OPERATOR_AND
 %left OPERATOR_EQ OPERATOR_NE
@@ -110,7 +109,6 @@ exp: literal
    | TK_IDENTIFIER '[' exp ']'
    | TK_IDENTIFIER '(' listOfExp ')'
    | TK_IDENTIFIER '(' ')'
-   | '(' exp ')'
    | exp operatorBinary exp %prec OPBIN
    | operatorUnary exp %prec OPUN
    ;
@@ -119,21 +117,21 @@ listOfExp: exp
 		 | listOfExp ',' exp
 
 operatorBinary: OPERATOR_LE  
-			  | OPERATOR_GE  
-			  | OPERATOR_EQ  
-			  | OPERATOR_NE  
-			  | OPERATOR_AND 
-			  | OPERATOR_OR 
-			  | '+'
-			  | '-'
-			  | '*'
-			  | '/'
-			  | '<'
-			  | '>'
-			  ;
+              | OPERATOR_GE  
+              | OPERATOR_EQ  
+              | OPERATOR_NE  
+              | OPERATOR_AND 
+              | OPERATOR_OR 
+              | '+'
+              | '-'
+              | '*'
+              | '/'
+              | '<'
+              | '>'
+              ;
 
 operatorUnary: '!'
-			 ;
+             ;
 
 cmd: attr
    | input
@@ -168,7 +166,7 @@ stringOrExp: exp
 		   ;
 			
 
-if: KW_IF '(' exp ')' cmd %prec IFX
+if: KW_IF '(' exp ')' cmd %prec KW_IFX 
   | KW_IF '(' exp ')' cmd KW_ELSE cmd
   ;
 
