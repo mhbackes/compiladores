@@ -109,6 +109,7 @@ exp: literal
    | TK_IDENTIFIER '[' exp ']'
    | TK_IDENTIFIER '(' listOfExp ')'
    | TK_IDENTIFIER '(' ')'
+   | '(' exp ')'
    | exp operatorBinary exp %prec OPBIN
    | operatorUnary exp %prec OPUN
    ;
