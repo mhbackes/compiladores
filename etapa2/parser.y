@@ -41,13 +41,16 @@ void yyerror(const char *s);
 %token LIT_STRING   
 %token TOKEN_ERROR  
 
-/* ASSOCIATIVIDADE DOS OPERADORES BOOLEANOS LEFT TAMBEM??!!!! */
-/* AND E OR tem menos prioridade que todos?? Acho, talvez botar por ultimo */
+%nonassoc IFX
+%nonassoc KW_ELSE 
+%nonassoc OPBIN
+%nonassoc OPUN
+
 %left OPERATOR_OR
 %left OPERATOR_AND
 %left OPERATOR_EQ OPERATOR_NE
 %left '<' '>' OPERATOR_LE OPERATOR_GE 
-%left '=' '-'
+%left '+' '-'
 %left '*' '/'
 %left '!'
 
@@ -91,7 +94,7 @@ listOfLiteral: literal
 			 | listOfLiteral literal
 			 ;
 
-function: functionHeader cmd
+function: functionHeader block
 		;
 
 functionHeader: type TK_IDENTIFIER '(' listOfParameters ')'
@@ -108,8 +111,8 @@ exp: literal
    | TK_IDENTIFIER '(' listOfExp ')'
    | TK_IDENTIFIER '(' ')'
    | '(' exp ')'
-   | exp operatorBinary exp
-   | operatorUnary exp
+   | exp operatorBinary exp %prec OPBIN
+   | operatorUnary exp %prec OPUN
    ;
 
 listOfExp: exp
@@ -165,7 +168,7 @@ stringOrExp: exp
 		   ;
 			
 
-if: KW_IF '(' exp ')' cmd
+if: KW_IF '(' exp ')' cmd %prec IFX
   | KW_IF '(' exp ')' cmd KW_ELSE cmd
   ;
 

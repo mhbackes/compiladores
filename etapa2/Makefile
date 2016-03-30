@@ -17,7 +17,7 @@ $(SRC)/lex.yy.c: $(SRC)/scanner.l
 	$(LEX) --header-file=$(SRC)/lex.yy.h -o $@ $<
 
 $(SRC)/y.tab.c: $(SRC)/parser.y $(SRC)/lex.yy.c
-	$(YACC) -d -o $@ $<
+	$(YACC) -v -d -o $@ $<
 
 clean:
 	rm -f $(BIN)/*.o *~ $(TARGET) $(SRC)/lex.yy.h $(SRC)/lex.yy.c $(SRC)/y.tab.h $(SRC)/y.tab.c
