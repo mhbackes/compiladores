@@ -43,11 +43,13 @@ void yyerror(const char *s);
 
 /* ASSOCIATIVIDADE DOS OPERADORES BOOLEANOS LEFT TAMBEM??!!!! */
 /* AND E OR tem menos prioridade que todos?? Acho, talvez botar por ultimo */
+%nonassoc KW_IFX
+%nonassoc KW_ELSE
 %left OPERATOR_OR
 %left OPERATOR_AND
 %left OPERATOR_EQ OPERATOR_NE
 %left '<' '>' OPERATOR_LE OPERATOR_GE 
-%left '=' '-'
+%left '+' '-'
 %left '*' '/'
 %left '!'
 
@@ -107,30 +109,24 @@ exp: literal
    | TK_IDENTIFIER '[' exp ']'
    | TK_IDENTIFIER '(' listOfExp ')'
    | TK_IDENTIFIER '(' ')'
+   | exp OPERATOR_LE exp
+   | exp OPERATOR_GE exp
+   | exp OPERATOR_EQ exp
+   | exp OPERATOR_NE exp
+   | exp OPERATOR_AND exp
+   | exp OPERATOR_OR exp
+   | exp '+' exp
+   | exp '-' exp
+   | exp '*' exp
+   | exp '/' exp
+   | exp '<' exp
+   | exp '>' exp
+   | '!' exp
    | '(' exp ')'
-   | exp operatorBinary exp
-   | operatorUnary exp
    ;
 
 listOfExp: exp
 		 | listOfExp ',' exp
-
-operatorBinary: OPERATOR_LE  
-			  | OPERATOR_GE  
-			  | OPERATOR_EQ  
-			  | OPERATOR_NE  
-			  | OPERATOR_AND 
-			  | OPERATOR_OR 
-			  | '+'
-			  | '-'
-			  | '*'
-			  | '/'
-			  | '<'
-			  | '>'
-			  ;
-
-operatorUnary: '!'
-			 ;
 
 cmd: attr
    | input
@@ -165,7 +161,7 @@ stringOrExp: exp
 		   ;
 			
 
-if: KW_IF '(' exp ')' cmd
+if: KW_IF '(' exp ')' cmd %prec KW_IFX 
   | KW_IF '(' exp ')' cmd KW_ELSE cmd
   ;
 
