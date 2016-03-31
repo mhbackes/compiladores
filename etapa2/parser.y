@@ -42,8 +42,7 @@ int getLineNumber();
 %token LIT_STRING   
 %token TOKEN_ERROR  
 
-%nonassoc OPBIN
-%nonassoc OPUN
+%nonassoc OP_NOT
 %nonassoc KW_IFX
 %nonassoc KW_ELSE
 %left OPERATOR_OR
@@ -94,7 +93,7 @@ listOfLiteral: literal
 			 | listOfLiteral literal
 			 ;
 
-function: functionHeader block
+function: functionHeader cmd
 		;
 
 functionHeader: type TK_IDENTIFIER '(' listOfParameters ')'
@@ -111,29 +110,23 @@ exp: literal
    | TK_IDENTIFIER '(' listOfExp ')'
    | TK_IDENTIFIER '(' ')'
    | '(' exp ')'
-   | exp operatorBinary exp %prec OPBIN
-   | operatorUnary exp %prec OPUN
+   | '!' exp %prec OP_NOT
+   | exp OPERATOR_LE exp
+   | exp OPERATOR_GE exp
+   | exp OPERATOR_EQ exp
+   | exp OPERATOR_NE exp
+   | exp OPERATOR_AND exp
+   | exp OPERATOR_OR exp
+   | exp '+'exp
+   | exp '-'exp
+   | exp '*'exp
+   | exp '/'exp
+   | exp '<'exp
+   | exp '>'exp
    ;
 
 listOfExp: exp
 		 | listOfExp ',' exp
-
-operatorBinary: OPERATOR_LE  
-              | OPERATOR_GE  
-              | OPERATOR_EQ  
-              | OPERATOR_NE  
-              | OPERATOR_AND 
-              | OPERATOR_OR 
-              | '+'
-              | '-'
-              | '*'
-              | '/'
-              | '<'
-              | '>'
-              ;
-
-operatorUnary: '!'
-             ;
 
 cmd: attr
    | input
@@ -142,6 +135,7 @@ cmd: attr
    | while
    | block
    | return
+   | ';'
    ;
 
 attr: TK_IDENTIFIER '=' exp
@@ -176,7 +170,6 @@ while: KW_WHILE '(' exp ')' cmd
      ;
 
 block: '{' listOfCmd '}'
-     | ';'
      ;
 
 listOfCmd: cmd
