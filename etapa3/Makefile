@@ -4,8 +4,10 @@ YACC=yacc
 CXXFLAGS=-g -Wall#-O3
 BIN=bin
 SRC=.
-OBJ=$(BIN)/y.tab.o $(BIN)/lex.yy.o $(BIN)/hashtable.o $(BIN)/main.o
-TARGET=etapa2
+OBJ=$(BIN)/y.tab.o $(BIN)/lex.yy.o $(BIN)/hashtable.o $(BIN)/ast.o $(BIN)/main.o
+RM=$(SRC)/lex.yy.h $(SRC)/lex.yy.c $(SRC)/y.tab.h $(SRC)/y.tab.c
+
+TARGET=etapa3
 
 $(TARGET): $(OBJ)
 	$(CC) $(CXXFLAGS) -o $@ $^
@@ -20,6 +22,6 @@ $(SRC)/y.tab.c: $(SRC)/parser.y $(SRC)/lex.yy.c
 	$(YACC) -d -o $@ $<
 
 clean:
-	rm -f $(BIN)/*.o *~ $(TARGET) $(SRC)/lex.yy.h $(SRC)/lex.yy.c $(SRC)/y.tab.h $(SRC)/y.tab.c
+	rm -f $(BIN)/*.o *~ $(TARGET) $(RM)
 
 rebuild: clean $(TARGET)

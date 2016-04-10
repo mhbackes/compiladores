@@ -23,6 +23,7 @@ typedef struct hash_node_struct {
 
 void hashInit(void);
 HASH_NODE *hashInsert(char *str, int type);
+HASH_NODE *hashFind(char *str, int type);
 void hashPrint(void);
 
 #endif
