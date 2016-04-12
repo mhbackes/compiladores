@@ -5,7 +5,6 @@
  * PAULO RENATO LANZARIN
  */
 
-
 #ifndef AST_ 
 #define AST_ 
 
@@ -24,6 +23,6 @@ typedef struct ast_node_list {
 
 AST_NODE *astCreate(int type, HASH_NODE *symbol, ...);
 
-void astPrint(AST_NODE *node);
+void astPrint(AST_NODE *node, int level);
 
 #endif
