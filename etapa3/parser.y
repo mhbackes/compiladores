@@ -8,13 +8,19 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include "lex.yy.h"
+#include "ast.h"
 #include "hashtable.h"
+#include "lex.yy.h"
 
 int yylex();
 void yyerror(const char *s);
 int getLineNumber();
 %}
+
+%union {
+    HASH_NODE *symbol;
+    AST_NODE *ast;
+}
 
 %token KW_INT       
 %token KW_REAL      
@@ -34,12 +40,12 @@ int getLineNumber();
 %token OPERATOR_AND 
 %token OPERATOR_OR  
 
-%token TK_IDENTIFIER
-%token LIT_INTEGER  
-%token LIT_FALSE    
-%token LIT_TRUE	 
-%token LIT_CHAR     
-%token LIT_STRING   
+%token <symbol> TK_IDENTIFIER
+%token <symbol> LIT_INTEGER  
+%token <symbol> LIT_FALSE    
+%token <symbol> LIT_TRUE	 
+%token <symbol> LIT_CHAR     
+%token <symbol> LIT_STRING   
 %token TOKEN_ERROR  
 
 %nonassoc OP_NOT

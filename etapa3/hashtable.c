@@ -12,6 +12,7 @@
 #include "y.tab.h"
 
 /* PROTOTYPES */
+HASH_NODE *hashFind(char *str, int type);
 int hashAddress(char *str);
 HASH_NODE *hashNewNode(char *str, int type); 
 

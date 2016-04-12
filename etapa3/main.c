@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hashtable.h"
+#include "ast.h"
 #include "y.tab.h"
 #include "lex.yy.h"
 
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
 	}
 
 	yyparse();
+
 	printf("Parse successful.\n");
 	hashPrint();
 

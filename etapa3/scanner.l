@@ -60,10 +60,10 @@ return					{ return KW_RETURN; }
  /* LITERALS */
 FALSE					{ return LIT_FALSE; }
 TRUE					{ return LIT_TRUE; }
-[a-zA-Z][a-zA-Z0-9_]*	{ hashInsert(yytext, SYMBOL_IDENTIFIER); return TK_IDENTIFIER; }
-[0-9]+					{ hashInsert(yytext, SYMBOL_LIT_INT); return LIT_INTEGER; }
-\'.\'					{ hashInsert(yytext, SYMBOL_LIT_CHAR); return LIT_CHAR; }
-\"([^\"\\\n]|\\.)*\"	{ hashInsert(yytext, SYMBOL_LIT_STRING); return LIT_STRING; }
+[a-zA-Z][a-zA-Z0-9_]*	{ yylval.symbol = hashInsert(yytext, SYMBOL_IDENTIFIER); return TK_IDENTIFIER; }
+[0-9]+					{ yylval.symbol = hashInsert(yytext, SYMBOL_LIT_INT); return LIT_INTEGER; }
+\'.\'					{ yylval.symbol = hashInsert(yytext, SYMBOL_LIT_CHAR); return LIT_CHAR; }
+\"([^\"\\\n]|\\.)*\"	{ yylval.symbol = hashInsert(yytext, SYMBOL_LIT_STRING); return LIT_STRING; }
  /* LITERALS */
 
  /* LINE COMMENT */
