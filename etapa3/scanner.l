@@ -6,6 +6,7 @@
  */
 
 %{
+#include "ast.h"
 #include "hashtable.h"
 #include "y.tab.h"
 

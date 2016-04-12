@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hashtable.h"
+#include "ast.h"
 #include "y.tab.h"
 
 /* PROTOTYPES */
