@@ -14,39 +14,39 @@
 /* preliminary types; doing it on the fly, add missing
  * ones or remove unecessary ones while we're doing it
  */
+#define FOREACH_AST(AST)\
+    AST(AST_SYMBOL)		\
+    AST(AST_LCMD)		\
+    AST(AST_LPAR)		\
+    AST(AST_LLIT)		\
+    AST(AST_LEXP)		\
+    AST(AST_LIN)		\
+    AST(AST_LOUT)		\
+    AST(AST_ATTR)		\
+    AST(AST_INPUT)		\
+    AST(AST_OUTPUT)		\
+    AST(AST_IF)			\
+    AST(AST_IFTE)		\
+    AST(AST_WHILE)		\
+    AST(AST_RETURN)		\
+    AST(AST_LE)			\
+    AST(AST_GE)			\
+    AST(AST_EQ)			\
+    AST(AST_NE)			\
+    AST(AST_AND)		\
+    AST(AST_OR)			\
+    AST(AST_ADD)		\
+    AST(AST_SUB)		\
+    AST(AST_MUL)		\
+    AST(AST_DIV)		\
+    AST(AST_LESS)		\
+    AST(AST_GREATER)	\
+
+#define GENERATE_ENUM(ENUM) ENUM,
+#define GENERATE_STRING(STRING) #STRING,
+
 enum ast_types {
-    AST_SYMBOL,
-
-    // lists
-    AST_LCMD,   // cmd
-    AST_LPAR,   // parameters
-    AST_LLIT,   // literals
-    AST_LEXP,   // expressions
-    AST_LIN,    // input (??)
-    AST_LOUT,   // output (??)
-
-    // commands
-    AST_ATTR,
-    AST_INPUT,
-    AST_OUTPUT,
-    AST_IF,
-    AST_IFTE,
-    AST_WHILE,
-    AST_RETURN,
-
-    // operators
-    AST_LE,
-    AST_GE,
-    AST_EQ,
-    AST_NE,
-    AST_AND,
-    AST_OR,
-    AST_ADD,
-    AST_SUB,
-    AST_MUL,
-    AST_DIV,
-    AST_LESS,
-    AST_GREATER
+	FOREACH_AST(GENERATE_ENUM)
 };
 
 typedef struct ast_node {
@@ -56,14 +56,9 @@ typedef struct ast_node {
     struct ast_node **children;
 } AST_NODE;
 
-typedef struct ast_node_list {
-    AST_NODE *node;
-    struct ast_node_list *next;
-} AST_NODE_LIST;
-
 AST_NODE *astCreate(int type, HASH_NODE *symbol, int size, ...);
 
 void astPrint(AST_NODE *node, int level);
-void astPrintDot(AST_NODE *node, FILE* file);
+void astPrintDot(FILE *file, AST_NODE *node);
 
 #endif

@@ -2,9 +2,12 @@
 #include <stdarg.h>
 #include "ast.h"
 
-AST_NODE_LIST *nodeListInsert(AST_NODE_LIST **list, AST_NODE *node);
-void astPrintDotNodes(AST_NODE *node, FILE* file);
-void astPrintDotEdges(AST_NODE *node, FILE* file);
+const char* _astString[] = {
+	FOREACH_AST(GENERATE_STRING)
+};
+
+void astPrintDotNodes(FILE *file, AST_NODE *node);
+void astPrintDotEdges(FILE* file, AST_NODE* node);
 
 /* Sentinel value must be passed as last argument (using NULL) */
 AST_NODE *astCreate(int type, HASH_NODE *symbol, int size, ...) {
@@ -44,43 +47,26 @@ void astPrint(AST_NODE *node, int level) {
     return;
 }
 
-void astPrintDot(AST_NODE *node, FILE* file) {
+void astPrintDot(FILE *file, AST_NODE *node) {
 	fprintf(file, "digraph program {\n");
-	astPrintDotNodes(node, file);
-	astPrintDotEdges(node, file);
+	astPrintDotNodes(file, node);
+	astPrintDotEdges(file, node);
 	fprintf(file, "}\n");
 }
 
-void astPrintDotNodes(AST_NODE *node, FILE* file) {
-
+void astPrintDotNodes(FILE *file, AST_NODE *node) {
+	fprintf(file, "\"%p\" [label=\"%s\"]\n", node, _astString[node->type]);
+	int i;
+	for(i = 0; i < node->size; i++){
+		astPrintDotNodes(file, node->children[i]);
+	}
 }
 
-void astPrintDotEdges(AST_NODE *node, FILE* file) {
-	
-}
-
-AST_NODE_LIST *nodeListInsert(AST_NODE_LIST **list, AST_NODE *node) {
-	AST_NODE_LIST *new;
-	AST_NODE_LIST *tmp = *list;
-
-	if(!(new = (AST_NODE_LIST *) malloc(sizeof(AST_NODE_LIST)))) {
-		fprintf(stderr, "ERROR [AST]: out of memory!\n");
-		exit(1); // abort
+void astPrintDotEdges(FILE* file, AST_NODE* node) {
+	int i;
+	for(i = 0; i < node->size; i++){
+		fprintf(file, "\"%p\" -> \"%p\" ", node, node->children[i]);
+		fprintf(file, "[label=\"%d\"]\n", i);
+		astPrintDotEdges(file, node->children[i]);
 	}
-	new->node = node;
-	new->next = NULL;
-
-	// list is uninitialized
-	if(!tmp) { 
-		*list = new;
-		return *list;
-	}
-
-	// list was initialized, insert new son at 1st pos
-	while(tmp->next)
-		tmp = tmp->next;
-	
-	tmp->next = new;
-
-	return *list;
 }
