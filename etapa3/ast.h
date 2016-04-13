@@ -9,6 +9,7 @@
 #define AST_ 
 
 #include "hashtable.h"
+#include <stdio.h>
 
 /* preliminary types; doing it on the fly, add missing
  * ones or remove unecessary ones while we're doing it
@@ -51,7 +52,8 @@ enum ast_types {
 typedef struct ast_node {
     int type;
     HASH_NODE *symbol;
-    struct ast_node_list *sons;
+	int size;
+    struct ast_node **children;
 } AST_NODE;
 
 typedef struct ast_node_list {
@@ -59,8 +61,9 @@ typedef struct ast_node_list {
     struct ast_node_list *next;
 } AST_NODE_LIST;
 
-AST_NODE *astCreate(int type, HASH_NODE *symbol, ...);
+AST_NODE *astCreate(int type, HASH_NODE *symbol, int size, ...);
 
 void astPrint(AST_NODE *node, int level);
+void astPrintDot(AST_NODE *node, FILE* file);
 
 #endif

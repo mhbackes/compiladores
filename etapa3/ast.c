@@ -1,14 +1,15 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include "ast.h"
 
 AST_NODE_LIST *nodeListInsert(AST_NODE_LIST **list, AST_NODE *node);
+void astPrintDotNodes(AST_NODE *node, FILE* file);
+void astPrintDotEdges(AST_NODE *node, FILE* file);
 
 /* Sentinel value must be passed as last argument (using NULL) */
-AST_NODE *astCreate(int type, HASH_NODE *symbol, ...) {
+AST_NODE *astCreate(int type, HASH_NODE *symbol, int size, ...) {
 	va_list args;
-	AST_NODE *newNode, *tmp; 
+	AST_NODE *newNode; 
 
 	if(!(newNode = (AST_NODE *) malloc(sizeof(AST_NODE)))) {
 		fprintf(stderr, "ERROR [AST]: out of memory!\n");
@@ -17,12 +18,14 @@ AST_NODE *astCreate(int type, HASH_NODE *symbol, ...) {
 
 	newNode->type = type;
 	newNode->symbol = symbol;
-	newNode->sons = NULL;
+	newNode->size = size;
+	newNode->children = malloc(sizeof(AST_NODE *) * size);
 
-	va_start(args, symbol);
+	va_start(args, size);
 
-	while((tmp = va_arg(args, AST_NODE *)) != NULL) 
-		nodeListInsert(&newNode->sons, tmp);
+	int i;
+	for(i = 0; i < size; i++)
+		newNode->children[i] = va_arg(args, AST_NODE *);
 
 	va_end(args);
 
@@ -31,14 +34,29 @@ AST_NODE *astCreate(int type, HASH_NODE *symbol, ...) {
 
 /* test stub */
 void astPrint(AST_NODE *node, int level) {
-    AST_NODE *tmp = node;
-    AST_NODE_LIST *tl = node->sons;
-    fprintf(stderr, "TYPE %d\n", tmp->type);
-    while(tl) {
-	fprintf(stderr, "TYPE %d\n", tl->node->type);
-	tl = tl->next;
-    }
+    //AST_NODE *tmp = node;
+    //AST_NODE_LIST *tl = node->children;
+    //fprintf(stderr, "TYPE %d\n", tmp->type);
+    //while(tl) {
+	//fprintf(stderr, "TYPE %d\n", tl->node->type);
+	//tl = tl->next;
+    //}
     return;
+}
+
+void astPrintDot(AST_NODE *node, FILE* file) {
+	fprintf(file, "digraph program {\n");
+	astPrintDotNodes(node, file);
+	astPrintDotEdges(node, file);
+	fprintf(file, "}\n");
+}
+
+void astPrintDotNodes(AST_NODE *node, FILE* file) {
+
+}
+
+void astPrintDotEdges(AST_NODE *node, FILE* file) {
+	
 }
 
 AST_NODE_LIST *nodeListInsert(AST_NODE_LIST **list, AST_NODE *node) {
