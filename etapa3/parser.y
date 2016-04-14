@@ -48,6 +48,7 @@ AST_NODE* root;
 %token <symbol> LIT_TRUE	 
 %token <symbol> LIT_CHAR     
 %token <symbol> LIT_STRING   
+%token <symbol> LIT_REAL /* gotta see about this */
 %token TOKEN_ERROR  
 
 %nonassoc OP_NOT
@@ -96,6 +97,7 @@ literalBool: LIT_TRUE
 
 literal: literalBool					{ $$ = NULL; } /* TODO */
 	   | LIT_INTEGER					{ $$ = astCreate(AST_SYMBOL, $1, 0); }
+       | LIT_REAL                       { $$ = astCreate(AST_SYMBOL, $1, 0); } /* PAULO */
 	   | LIT_CHAR						{ $$ = astCreate(AST_SYMBOL, $1, 0); }
 	   ;
 
@@ -106,8 +108,8 @@ array: type identifier '[' LIT_INTEGER ']'					{ $$ = NULL; } /* TODO */
 	 | type identifier '[' LIT_INTEGER ']' ':' listOfLiteral	{ $$ = NULL; } /* TODO */
 	 ;
 
-listOfLiteral: literal					{ $$ = NULL; } /* TODO */
-			 | listOfLiteral literal	{ $$ = NULL; } /* TODO */
+listOfLiteral: literal					{ $$ = astCreate(AST_LLIT, NULL, 2, $1, NULL); } /* PAULO */
+			 | listOfLiteral literal	{ $$ = astCreate(AST_LLIT, NULL, 2, $2, $1); } /* PAULO */
 			 ;
 
 function: functionHeader cmd			{ $$ = NULL; } /* TODO */
@@ -179,8 +181,8 @@ stringOrExp: exp						{ $$ = NULL; } /* TODO */
 		   ;
 			
 
-if: KW_IF '(' exp ')' cmd %prec KW_IFX	{ $$ = NULL; } /* TODO */
-  | KW_IF '(' exp ')' cmd KW_ELSE cmd	{ $$ = NULL; } /* TODO */
+if: KW_IF '(' exp ')' cmd %prec KW_IFX	{ $$ = astCreate(AST_IF, NULL, 2, $3, $5);} /* PAULO */
+  | KW_IF '(' exp ')' cmd KW_ELSE cmd	{ $$ = astCreate(AST_IFTE, NULL, 3, $3, $5, $7); } /* PAULO */
   ;
 
 while: KW_WHILE '(' exp ')' cmd			{ $$ = NULL; } /* TODO */

@@ -16,6 +16,10 @@
  */
 #define FOREACH_AST(AST)\
     AST(AST_SYMBOL)		\
+    AST(AST_VARDEC)     \
+    AST(AST_VECDEC)     \
+    AST(AST_FUNDEC)     \
+    AST(AST_FUNCALL)    \
     AST(AST_LCMD)		\
     AST(AST_LPAR)		\
     AST(AST_LLIT)		\
@@ -23,6 +27,7 @@
     AST(AST_LIN)		\
     AST(AST_LOUT)		\
     AST(AST_ATTR)		\
+    AST(AST_ATTRVEC)    \
     AST(AST_INPUT)		\
     AST(AST_OUTPUT)		\
     AST(AST_IF)			\
