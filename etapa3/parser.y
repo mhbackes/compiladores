@@ -15,6 +15,8 @@
 int yylex();
 void yyerror(const char *s);
 int getLineNumber();
+
+AST_NODE* root;
 %}
 
 %union {
@@ -59,20 +61,27 @@ int getLineNumber();
 %left '*' '/'
 %left '!'
 
+%type<ast> program declaration global variable array listOfLiteral
+%type<ast> function functionHeader listOfParameters listOfExp exp
+%type<ast> cmd attr input listOfInput output listOfOutput stringOrExp
+%type<ast> if while block listOfCmd return literal identifier
+
 %%
-program: declaration
-	   | program declaration
+root: program							{ root = $1; }
+
+program: declaration					{ $$ = NULL; } /* TODO */
+	   | program declaration			{ $$ = NULL; } /* TODO */
 	   ;
 
-declaration: global ';'
-		   | function ';'
+declaration: global ';'					{ $$ = NULL; } /* TODO */
+		   | function ';'				{ $$ = NULL; } /* TODO */
 		   ;
 
-global: variable
-	  | array
+global: variable						{ $$ = NULL; } /* TODO */
+	  | array							{ $$ = NULL; } /* TODO */
 	  ;
 
-variable: type TK_IDENTIFIER ':' literal
+variable: type identifier ':' literal	{ $$ = NULL; } /* TODO */
 	    ;
 
 type: KW_INT
@@ -85,104 +94,106 @@ literalBool: LIT_TRUE
 		   | LIT_FALSE
 		   ;
 
-literal: literalBool
-	   | LIT_INTEGER
-	   | LIT_CHAR
+literal: literalBool					{ $$ = NULL; } /* TODO */
+	   | LIT_INTEGER					{ $$ = astCreate(AST_SYMBOL, $1, 0); }
+	   | LIT_CHAR						{ $$ = astCreate(AST_SYMBOL, $1, 0); }
 	   ;
 
+identifier: TK_IDENTIFIER				{ $$ = astCreate(AST_SYMBOL, $1, 0); }
+		  ;
 
-array: type TK_IDENTIFIER '[' LIT_INTEGER ']'
-	 | type TK_IDENTIFIER '[' LIT_INTEGER ']' ':' listOfLiteral
+array: type identifier '[' LIT_INTEGER ']'					{ $$ = NULL; } /* TODO */
+	 | type identifier '[' LIT_INTEGER ']' ':' listOfLiteral	{ $$ = NULL; } /* TODO */
 	 ;
 
-listOfLiteral: literal
-			 | listOfLiteral literal
+listOfLiteral: literal					{ $$ = NULL; } /* TODO */
+			 | listOfLiteral literal	{ $$ = NULL; } /* TODO */
 			 ;
 
-function: functionHeader cmd
+function: functionHeader cmd			{ $$ = NULL; } /* TODO */
 		;
 
-functionHeader: type TK_IDENTIFIER '(' listOfParameters ')'
-			  | type TK_IDENTIFIER '(' ')'
+functionHeader: type identifier '(' listOfParameters ')'	{ $$ = NULL; } /* TODO */
+			  | type identifier '(' ')'					{ $$ = NULL; } /* TODO */
               ;
 
-listOfParameters: type TK_IDENTIFIER 
-                | listOfParameters ',' type TK_IDENTIFIER
+listOfParameters: type identifier						{ $$ = NULL; } /* TODO */
+                | listOfParameters ',' type identifier	{ $$ = NULL; } /* TODO */
                 ;
 
-exp: literal
-   | TK_IDENTIFIER
-   | TK_IDENTIFIER '[' exp ']'
-   | TK_IDENTIFIER '(' listOfExp ')'
-   | TK_IDENTIFIER '(' ')'
-   | '(' exp ')'
-   | '!' exp %prec OP_NOT
-   | exp OPERATOR_LE exp
-   | exp OPERATOR_GE exp
-   | exp OPERATOR_EQ exp
-   | exp OPERATOR_NE exp
-   | exp OPERATOR_AND exp
-   | exp OPERATOR_OR exp
-   | exp '+'exp
-   | exp '-'exp
-   | exp '*'exp
-   | exp '/'exp
-   | exp '<'exp
-   | exp '>'exp
+exp: literal							{ $$ = $1; }
+   | identifier							{ $$ = $1; }
+   | identifier '[' exp ']'				{ $$ = NULL; } /* TODO */
+   | identifier '(' listOfExp ')'		{ $$ = NULL; } /* TODO */
+   | identifier '(' ')'					{ $$ = NULL; } /* TODO */
+   | '(' exp ')'						{ $$ = astCreate(AST_PAR, NULL, 1, $2); }
+   | '!' exp %prec OP_NOT				{ $$ = astCreate(AST_NOT, NULL, 1, $2); }
+   | exp OPERATOR_LE exp				{ $$ = astCreate(AST_LE, NULL, 2, $1, $3); }
+   | exp OPERATOR_GE exp				{ $$ = astCreate(AST_GE, NULL, 2, $1, $3); }
+   | exp OPERATOR_EQ exp				{ $$ = astCreate(AST_EQ, NULL, 2, $1, $3); }
+   | exp OPERATOR_NE exp				{ $$ = astCreate(AST_NE, NULL, 2, $1, $3); }
+   | exp OPERATOR_AND exp				{ $$ = astCreate(AST_AND, NULL, 2, $1, $3); }
+   | exp OPERATOR_OR exp				{ $$ = astCreate(AST_OR, NULL, 2, $1, $3); }
+   | exp '+'exp							{ $$ = astCreate(AST_ADD, NULL, 2, $1, $3); }
+   | exp '-'exp							{ $$ = astCreate(AST_SUB, NULL, 2, $1, $3); }
+   | exp '*'exp							{ $$ = astCreate(AST_MUL, NULL, 2, $1, $3); }
+   | exp '/'exp							{ $$ = astCreate(AST_DIV, NULL, 2, $1, $3); }
+   | exp '<'exp							{ $$ = astCreate(AST_LESS, NULL, 2, $1, $3); }
+   | exp '>'exp							{ $$ = astCreate(AST_GREATER, NULL, 2, $1, $3); }
    ;
 
-listOfExp: exp
-		 | listOfExp ',' exp
+listOfExp: exp							{ $$ = NULL; } /* TODO */
+		 | listOfExp ',' exp			{ $$ = NULL; } /* TODO */
 
-cmd: attr
-   | input
-   | output
-   | if
-   | while
-   | block
-   | return
-   | ';'
+cmd: attr								{ $$ = $1; }
+   | input								{ $$ = $1; }
+   | output								{ $$ = $1; }
+   | if									{ $$ = $1; }
+   | while								{ $$ = $1; }
+   | block								{ $$ = $1; }
+   | return								{ $$ = $1; }
+   | ';'								{ $$ = NULL; } /* TODO */
    ;
 
-attr: TK_IDENTIFIER '=' exp
-    | TK_IDENTIFIER '[' exp ']' '=' exp
+attr: identifier '=' exp				{ $$ = astCreate(AST_ATTR, NULL, 2, $1, $3); }
+    | identifier '[' exp ']' '=' exp	{ $$ = NULL; } /* TODO */
     ;
 
 
-input: KW_INPUT listOfInput
+input: KW_INPUT listOfInput				{ $$ = NULL; } /* TODO */
      ;
 
-listOfInput: TK_IDENTIFIER
-		   | listOfInput ',' TK_IDENTIFIER
+listOfInput: identifier					{ $$ = NULL; } /* TODO */
+		   | listOfInput ',' identifier	{ $$ = NULL; } /* TODO */
 		   ;
 
-output: KW_OUTPUT listofOutput
+output: KW_OUTPUT listOfOutput			{ $$ = NULL; } /* TODO */
       ;
 
-listofOutput: stringOrExp
-			| listofOutput ',' stringOrExp
+listOfOutput: stringOrExp					{ $$ = NULL; } /* TODO */
+			| listOfOutput ',' stringOrExp	{ $$ = NULL; } /* TODO */
 			;
 
-stringOrExp: exp
-		   | LIT_STRING
+stringOrExp: exp						{ $$ = NULL; } /* TODO */
+		   | LIT_STRING					{ $$ = NULL; } /* TODO */
 		   ;
 			
 
-if: KW_IF '(' exp ')' cmd %prec KW_IFX 
-  | KW_IF '(' exp ')' cmd KW_ELSE cmd
+if: KW_IF '(' exp ')' cmd %prec KW_IFX	{ $$ = NULL; } /* TODO */
+  | KW_IF '(' exp ')' cmd KW_ELSE cmd	{ $$ = NULL; } /* TODO */
   ;
 
-while: KW_WHILE '(' exp ')' cmd
+while: KW_WHILE '(' exp ')' cmd			{ $$ = NULL; } /* TODO */
      ;
 
-block: '{' listOfCmd '}'
+block: '{' listOfCmd '}'				{ $$ = NULL; astPrintDot(stdout, $2); } /* TODO */
      ;
 
-listOfCmd: cmd
-		 | listOfCmd cmd
+listOfCmd: cmd							{ $$ = astCreate(AST_LCMD, NULL, 2, $1, NULL); }
+		 | listOfCmd cmd				{ $$ = astCreate(AST_LCMD, NULL, 2, $2, $1); }
 	     ;
 
-return: KW_RETURN exp
+return: KW_RETURN exp					{ $$ = NULL; } /* TODO */
 
 %%
 void yyerror (char const *msg) {

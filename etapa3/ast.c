@@ -35,18 +35,6 @@ AST_NODE *astCreate(int type, HASH_NODE *symbol, int size, ...) {
 	return newNode;
 }
 
-/* test stub */
-void astPrint(AST_NODE *node, int level) {
-    //AST_NODE *tmp = node;
-    //AST_NODE_LIST *tl = node->children;
-    //fprintf(stderr, "TYPE %d\n", tmp->type);
-    //while(tl) {
-	//fprintf(stderr, "TYPE %d\n", tl->node->type);
-	//tl = tl->next;
-    //}
-    return;
-}
-
 void astPrintDot(FILE *file, AST_NODE *node) {
 	fprintf(file, "digraph program {\n");
 	astPrintDotNodes(file, node);
@@ -55,7 +43,10 @@ void astPrintDot(FILE *file, AST_NODE *node) {
 }
 
 void astPrintDotNodes(FILE *file, AST_NODE *node) {
-	fprintf(file, "\"%p\" [label=\"%s\"]\n", node, _astString[node->type]);
+	if(!node) return;
+	fprintf(file, "\t\"%p\" [label=\"%s\"]\n", node, _astString[node->type]);
+	if(node->type == AST_SYMBOL)
+		fprintf(file, "\t\"%p\" [label=\"%s\"]\n", node->symbol, node->symbol->text);
 	int i;
 	for(i = 0; i < node->size; i++){
 		astPrintDotNodes(file, node->children[i]);
@@ -63,9 +54,12 @@ void astPrintDotNodes(FILE *file, AST_NODE *node) {
 }
 
 void astPrintDotEdges(FILE* file, AST_NODE* node) {
+	if(!node) return;
+	if(node->type == AST_SYMBOL)
+		fprintf(file, "\t\"%p\" -> \"%p\"\n", node, node->symbol);
 	int i;
 	for(i = 0; i < node->size; i++){
-		fprintf(file, "\"%p\" -> \"%p\" ", node, node->children[i]);
+		fprintf(file, "\t\"%p\" -> \"%p\" ", node, node->children[i]);
 		fprintf(file, "[label=\"%d\"]\n", i);
 		astPrintDotEdges(file, node->children[i]);
 	}

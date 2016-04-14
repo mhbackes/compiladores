@@ -29,6 +29,8 @@
     AST(AST_IFTE)		\
     AST(AST_WHILE)		\
     AST(AST_RETURN)		\
+	AST(AST_EMPTY)		\
+	AST(AST_NOT)		\
     AST(AST_LE)			\
     AST(AST_GE)			\
     AST(AST_EQ)			\
@@ -41,6 +43,7 @@
     AST(AST_DIV)		\
     AST(AST_LESS)		\
     AST(AST_GREATER)	\
+	AST(AST_PAR)
 
 #define GENERATE_ENUM(ENUM) ENUM,
 #define GENERATE_STRING(STRING) #STRING,
@@ -58,7 +61,6 @@ typedef struct ast_node {
 
 AST_NODE *astCreate(int type, HASH_NODE *symbol, int size, ...);
 
-void astPrint(AST_NODE *node, int level);
 void astPrintDot(FILE *file, AST_NODE *node);
 
 #endif
