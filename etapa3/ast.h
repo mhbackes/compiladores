@@ -17,9 +17,10 @@
 #define FOREACH_AST(AST)\
     AST(AST_SYMBOL)		\
     AST(AST_VARDEC)     \
-    AST(AST_VECDEC)     \
+    AST(AST_ARRDEC)     \
     AST(AST_FUNDEC)     \
     AST(AST_FUNCALL)    \
+    AST(AST_ARRACESS)   \
     AST(AST_LCMD)		\
     AST(AST_LPAR)		\
     AST(AST_LLIT)		\
@@ -27,7 +28,7 @@
     AST(AST_LIN)		\
     AST(AST_LOUT)		\
     AST(AST_ATTR)		\
-    AST(AST_ATTRVEC)    \
+    AST(AST_ATTRARR)    \
     AST(AST_INPUT)		\
     AST(AST_OUTPUT)		\
     AST(AST_IF)			\
@@ -48,7 +49,7 @@
     AST(AST_DIV)		\
     AST(AST_LESS)		\
     AST(AST_GREATER)	\
-	AST(AST_PAR)
+	AST(AST_PAR)        
 
 #define GENERATE_ENUM(ENUM) ENUM,
 #define GENERATE_STRING(STRING) #STRING,

@@ -125,7 +125,7 @@ listOfParameters: type identifier						{ $$ = NULL; } /* TODO */
 
 exp: literal							{ $$ = $1; }
    | identifier							{ $$ = $1; }
-   | identifier '[' exp ']'				{ $$ = NULL; } /* TODO */
+   | identifier '[' exp ']'				{ $$ = astCreate(AST_ARRACESS, NULL, 2, $1, $3); } /* PAULO */
    | identifier '(' listOfExp ')'		{ $$ = NULL; } /* TODO */
    | identifier '(' ')'					{ $$ = NULL; } /* TODO */
    | '(' exp ')'						{ $$ = astCreate(AST_PAR, NULL, 1, $2); }
