@@ -75,7 +75,7 @@ program: declaration					{ $$ = NULL; } /* TODO */
 	   ;
 
 declaration: global ';'					{ $$ = $1; } /* MARCOS */
-		   | function ';'				{ $$ = NULL; } /* TODO */
+		   | function ';'				{ $$ = $1; } /* PAULO */
 		   ;
 
 global: variable						{ $$ = $1; } /* MARCOS */
