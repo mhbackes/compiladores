@@ -65,7 +65,7 @@ AST_NODE* root;
 %type<ast> program declaration global variable array listOfLiteral
 %type<ast> function functionHeader listOfParameters listOfExp exp
 %type<ast> cmd attr input listOfInput output listOfOutput stringOrExp
-%type<ast> if while block listOfCmd return literal type
+%type<ast> if while block listOfCmd return literal type literalInteger
 
 %%
 root: program							{ root = $1; } /* MARCOS */
@@ -95,14 +95,17 @@ literalBool: LIT_TRUE
 		   | LIT_FALSE
 		   ;
 
+literalInteger: LIT_INTEGER				{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */
+			  ;
+
 literal: literalBool					{ $$ = NULL; } /* TODO */
-	   | LIT_INTEGER					{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */
+	   | literalInteger					{ $$ = $1; } /* MARCOS */
        | LIT_REAL                       { $$ = astCreate(AST_SYMBOL, $1, 0); } /* PAULO */
 	   | LIT_CHAR						{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */
 	   ;
 
-array: type TK_IDENTIFIER '[' LIT_INTEGER ']'					{ $$ = astCreate(AST_ARRDEC, $2, 2, $1, NULL); } /* MARCOS */
-	 | type TK_IDENTIFIER '[' LIT_INTEGER ']' ':' listOfLiteral	{ $$ = astCreate(AST_ARRDEC, $2, 2, $1, $7); } /* TODO */
+array: type TK_IDENTIFIER '[' literalInteger ']'					{ $$ = astCreate(AST_ARRDEC, $2, 2, $1, $4, NULL); } /* MARCOS */
+	 | type TK_IDENTIFIER '[' literalInteger ']' ':' listOfLiteral	{ $$ = astCreate(AST_ARRDEC, $2, 3, $1, $4, $7); } /* TODO */
 	 ;
 
 listOfLiteral: literal					{ $$ = astCreate(AST_LLIT, NULL, 2, $1, NULL); } /* PAULO */
@@ -160,7 +163,7 @@ attr: TK_IDENTIFIER '=' exp				{ $$ = astCreate(AST_ATTR, $1, 1, $3); } /* MARCO
     ;
 
 
-input: KW_INPUT listOfInput				{ $$ = astCreate(AST_INPUT, NULL, 1, $2); } /* TODO */
+input: KW_INPUT listOfInput				{ $$ = astCreate(AST_INPUT, NULL, 1, $2); } /* MARCOS */
      ;
 
 listOfInput: TK_IDENTIFIER					{ $$ = astCreate(AST_LIN, $1, 1, NULL); } /* MARCOS */
