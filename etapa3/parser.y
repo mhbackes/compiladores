@@ -65,10 +65,10 @@ AST_NODE* root;
 %type<ast> program declaration global variable array listOfLiteral
 %type<ast> function functionHeader listOfParameters listOfExp exp
 %type<ast> cmd attr input listOfInput output listOfOutput stringOrExp
-%type<ast> if while block listOfCmd return literal identifier
+%type<ast> if while block listOfCmd return literal
 
 %%
-root: program							{ root = $1; }
+root: program							{ root = $1; } /* MARCOS */
 
 program: declaration					{ $$ = NULL; } /* TODO */
 	   | program declaration			{ $$ = NULL; } /* TODO */
@@ -82,7 +82,7 @@ global: variable						{ $$ = NULL; } /* TODO */
 	  | array							{ $$ = NULL; } /* TODO */
 	  ;
 
-variable: type identifier ':' literal	{ $$ = NULL; } /* TODO */
+variable: type TK_IDENTIFIER ':' literal	{ $$ = NULL; } /* TODO */
 	    ;
 
 type: KW_INT
@@ -96,16 +96,13 @@ literalBool: LIT_TRUE
 		   ;
 
 literal: literalBool					{ $$ = NULL; } /* TODO */
-	   | LIT_INTEGER					{ $$ = astCreate(AST_SYMBOL, $1, 0); }
+	   | LIT_INTEGER					{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */
        | LIT_REAL                       { $$ = astCreate(AST_SYMBOL, $1, 0); } /* PAULO */
-	   | LIT_CHAR						{ $$ = astCreate(AST_SYMBOL, $1, 0); }
+	   | LIT_CHAR						{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */
 	   ;
 
-identifier: TK_IDENTIFIER				{ $$ = astCreate(AST_SYMBOL, $1, 0); }
-		  ;
-
-array: type identifier '[' LIT_INTEGER ']'					{ $$ = NULL; } /* TODO */
-	 | type identifier '[' LIT_INTEGER ']' ':' listOfLiteral	{ $$ = NULL; } /* TODO */
+array: type TK_IDENTIFIER '[' LIT_INTEGER ']'					{ $$ = NULL; } /* TODO */
+	 | type TK_IDENTIFIER '[' LIT_INTEGER ']' ':' listOfLiteral	{ $$ = NULL; } /* TODO */
 	 ;
 
 listOfLiteral: literal					{ $$ = astCreate(AST_LLIT, NULL, 2, $1, NULL); } /* PAULO */
@@ -115,58 +112,58 @@ listOfLiteral: literal					{ $$ = astCreate(AST_LLIT, NULL, 2, $1, NULL); } /* P
 function: functionHeader cmd			{ $$ = NULL; } /* TODO */
 		;
 
-functionHeader: type identifier '(' listOfParameters ')'	{ $$ = NULL; } /* TODO */
-			  | type identifier '(' ')'					{ $$ = NULL; } /* TODO */
+functionHeader: type TK_IDENTIFIER '(' listOfParameters ')'	{ $$ = NULL; } /* TODO */
+			  | type TK_IDENTIFIER '(' ')'					{ $$ = NULL; } /* TODO */
               ;
 
-listOfParameters: type identifier						{ $$ = NULL; } /* TODO */
-                | listOfParameters ',' type identifier	{ $$ = NULL; } /* TODO */
+listOfParameters: type TK_IDENTIFIER						{ $$ = NULL; } /* TODO */
+                | listOfParameters ',' type TK_IDENTIFIER	{ $$ = NULL; } /* TODO */
                 ;
 
-exp: literal							{ $$ = $1; }
-   | identifier							{ $$ = $1; }
-   | identifier '[' exp ']'				{ $$ = NULL; } /* TODO */
-   | identifier '(' listOfExp ')'		{ $$ = NULL; } /* TODO */
-   | identifier '(' ')'					{ $$ = NULL; } /* TODO */
-   | '(' exp ')'						{ $$ = astCreate(AST_PAR, NULL, 1, $2); }
-   | '!' exp %prec OP_NOT				{ $$ = astCreate(AST_NOT, NULL, 1, $2); }
-   | exp OPERATOR_LE exp				{ $$ = astCreate(AST_LE, NULL, 2, $1, $3); }
-   | exp OPERATOR_GE exp				{ $$ = astCreate(AST_GE, NULL, 2, $1, $3); }
-   | exp OPERATOR_EQ exp				{ $$ = astCreate(AST_EQ, NULL, 2, $1, $3); }
-   | exp OPERATOR_NE exp				{ $$ = astCreate(AST_NE, NULL, 2, $1, $3); }
-   | exp OPERATOR_AND exp				{ $$ = astCreate(AST_AND, NULL, 2, $1, $3); }
-   | exp OPERATOR_OR exp				{ $$ = astCreate(AST_OR, NULL, 2, $1, $3); }
-   | exp '+'exp							{ $$ = astCreate(AST_ADD, NULL, 2, $1, $3); }
-   | exp '-'exp							{ $$ = astCreate(AST_SUB, NULL, 2, $1, $3); }
-   | exp '*'exp							{ $$ = astCreate(AST_MUL, NULL, 2, $1, $3); }
-   | exp '/'exp							{ $$ = astCreate(AST_DIV, NULL, 2, $1, $3); }
-   | exp '<'exp							{ $$ = astCreate(AST_LESS, NULL, 2, $1, $3); }
-   | exp '>'exp							{ $$ = astCreate(AST_GREATER, NULL, 2, $1, $3); }
+exp: literal							{ $$ = $1; } /* MARCOS */
+   | TK_IDENTIFIER						{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */
+   | TK_IDENTIFIER '[' exp ']'			{ $$ = NULL; } /* TODO */
+   | TK_IDENTIFIER '(' listOfExp ')'	{ $$ = NULL; } /* TODO */
+   | TK_IDENTIFIER '(' ')'				{ $$ = NULL; } /* TODO */
+   | '(' exp ')'						{ $$ = astCreate(AST_PAR, NULL, 1, $2); } /* MARCOS */
+   | '!' exp %prec OP_NOT				{ $$ = astCreate(AST_NOT, NULL, 1, $2); } /* MARCOS */
+   | exp OPERATOR_LE exp				{ $$ = astCreate(AST_LE, NULL, 2, $1, $3); } /* MARCOS */
+   | exp OPERATOR_GE exp				{ $$ = astCreate(AST_GE, NULL, 2, $1, $3); } /* MARCOS */
+   | exp OPERATOR_EQ exp				{ $$ = astCreate(AST_EQ, NULL, 2, $1, $3); } /* MARCOS */
+   | exp OPERATOR_NE exp				{ $$ = astCreate(AST_NE, NULL, 2, $1, $3); } /* MARCOS */
+   | exp OPERATOR_AND exp				{ $$ = astCreate(AST_AND, NULL, 2, $1, $3); } /* MARCOS */
+   | exp OPERATOR_OR exp				{ $$ = astCreate(AST_OR, NULL, 2, $1, $3); } /* MARCOS */
+   | exp '+'exp							{ $$ = astCreate(AST_ADD, NULL, 2, $1, $3); } /* MARCOS */
+   | exp '-'exp							{ $$ = astCreate(AST_SUB, NULL, 2, $1, $3); } /* MARCOS */
+   | exp '*'exp							{ $$ = astCreate(AST_MUL, NULL, 2, $1, $3); } /* MARCOS */
+   | exp '/'exp							{ $$ = astCreate(AST_DIV, NULL, 2, $1, $3); } /* MARCOS */
+   | exp '<'exp							{ $$ = astCreate(AST_LESS, NULL, 2, $1, $3); } /* MARCOS */
+   | exp '>'exp							{ $$ = astCreate(AST_GREATER, NULL, 2, $1, $3); } /* MARCOS */
    ;
 
 listOfExp: exp							{ $$ = NULL; } /* TODO */
 		 | listOfExp ',' exp			{ $$ = NULL; } /* TODO */
 
-cmd: attr								{ $$ = $1; }
-   | input								{ $$ = $1; }
-   | output								{ $$ = $1; }
-   | if									{ $$ = $1; }
-   | while								{ $$ = $1; }
-   | block								{ $$ = $1; }
-   | return								{ $$ = $1; }
+cmd: attr								{ $$ = $1; } /* MARCOS */
+   | input								{ $$ = $1; } /* MARCOS */
+   | output								{ $$ = $1; } /* MARCOS */
+   | if									{ $$ = $1; } /* MARCOS */
+   | while								{ $$ = $1; } /* MARCOS */
+   | block								{ $$ = $1; } /* MARCOS */
+   | return								{ $$ = $1; } /* MARCOS */
    | ';'								{ $$ = NULL; } /* TODO */
    ;
 
-attr: identifier '=' exp				{ $$ = astCreate(AST_ATTR, NULL, 2, $1, $3); }
-    | identifier '[' exp ']' '=' exp	{ $$ = NULL; } /* TODO */
+attr: TK_IDENTIFIER '=' exp				{ $$ = astCreate(AST_ATTR, $1, 1, $3); } /* MARCOS */
+    | TK_IDENTIFIER '[' exp ']' '=' exp	{ $$ = NULL; } /* TODO */
     ;
 
 
 input: KW_INPUT listOfInput				{ $$ = NULL; } /* TODO */
      ;
 
-listOfInput: identifier					{ $$ = NULL; } /* TODO */
-		   | listOfInput ',' identifier	{ $$ = NULL; } /* TODO */
+listOfInput: TK_IDENTIFIER					{ $$ = NULL; } /* TODO */
+		   | listOfInput ',' TK_IDENTIFIER	{ $$ = NULL; } /* TODO */
 		   ;
 
 output: KW_OUTPUT listOfOutput			{ $$ = NULL; } /* TODO */
@@ -191,8 +188,8 @@ while: KW_WHILE '(' exp ')' cmd			{ $$ = NULL; } /* TODO */
 block: '{' listOfCmd '}'				{ $$ = NULL; astPrintDot(stdout, $2); } /* TODO */
      ;
 
-listOfCmd: cmd							{ $$ = astCreate(AST_LCMD, NULL, 2, $1, NULL); }
-		 | listOfCmd cmd				{ $$ = astCreate(AST_LCMD, NULL, 2, $2, $1); }
+listOfCmd: cmd							{ $$ = astCreate(AST_LCMD, NULL, 2, $1, NULL); } /* MARCOS */
+		 | listOfCmd cmd				{ $$ = astCreate(AST_LCMD, NULL, 2, $2, $1); } /* MARCOS */
 	     ;
 
 return: KW_RETURN exp					{ $$ = NULL; } /* TODO */

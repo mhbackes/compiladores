@@ -45,7 +45,7 @@ void astPrintDot(FILE *file, AST_NODE *node) {
 void astPrintDotNodes(FILE *file, AST_NODE *node) {
 	if(!node) return;
 	fprintf(file, "\t\"%p\" [label=\"%s\"]\n", node, _astString[node->type]);
-	if(node->type == AST_SYMBOL)
+	if(node->symbol)
 		fprintf(file, "\t\"%p\" [label=\"%s\"]\n", node->symbol, node->symbol->text);
 	int i;
 	for(i = 0; i < node->size; i++){
@@ -55,8 +55,8 @@ void astPrintDotNodes(FILE *file, AST_NODE *node) {
 
 void astPrintDotEdges(FILE* file, AST_NODE* node) {
 	if(!node) return;
-	if(node->type == AST_SYMBOL)
-		fprintf(file, "\t\"%p\" -> \"%p\"\n", node, node->symbol);
+	if(node->symbol)
+		fprintf(file, "\t\"%p\" -> \"%p\" [label=\"s\"]\n", node, node->symbol);
 	int i;
 	for(i = 0; i < node->size; i++){
 		fprintf(file, "\t\"%p\" -> \"%p\" ", node, node->children[i]);
