@@ -65,7 +65,7 @@ AST_NODE* root;
 %type<ast> program declaration global variable array listOfLiteral
 %type<ast> function functionHeader listOfParameters listOfExp exp
 %type<ast> cmd attr input listOfInput output listOfOutput stringOrExp
-%type<ast> if while block listOfCmd return literal type
+%type<ast> if while block listOfCmd return literal type literalInteger
 
 %%
 root: program							{ root = $1; } /* MARCOS */
@@ -74,35 +74,38 @@ program: declaration					{ $$ = NULL; } /* TODO */
 	   | program declaration			{ $$ = NULL; } /* TODO */
 	   ;
 
-declaration: global ';'					{ $$ = NULL; } /* TODO */
+declaration: global ';'					{ $$ = $1; } /* MARCOS */
 		   | function ';'				{ $$ = NULL; } /* TODO */
 		   ;
 
-global: variable						{ $$ = NULL; } /* TODO */
-	  | array							{ $$ = NULL; } /* TODO */
+global: variable						{ $$ = $1; } /* MARCOS */
+	  | array							{ $$ = $1; } /* MARCOS */
 	  ;
 
-variable: type TK_IDENTIFIER ':' literal	{ $$ = NULL; } /* TODO */
+variable: type TK_IDENTIFIER ':' literal	{ $$ = astCreate(AST_VARDEC, $2, 2, $1, $4); } /* MARCOS */
 	    ;
 
-type: KW_INT
-	| KW_REAL
-	| KW_CHAR
-	| KW_BOOL
+type: KW_INT							{ $$ = astCreate(AST_INT, NULL, 0); } /* MARCOS */
+	| KW_REAL							{ $$ = astCreate(AST_REAL, NULL, 0); } /* MARCOS */
+	| KW_CHAR							{ $$ = astCreate(AST_CHAR, NULL, 0); } /* MARCOS */
+	| KW_BOOL							{ $$ = astCreate(AST_BOOL, NULL, 0); } /* MARCOS */
 	;
 
 literalBool: LIT_TRUE
 		   | LIT_FALSE
 		   ;
 
+literalInteger: LIT_INTEGER				{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */
+			  ;
+
 literal: literalBool					{ $$ = NULL; } /* TODO */
-	   | LIT_INTEGER					{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */
+	   | literalInteger					{ $$ = $1; } /* MARCOS */
        | LIT_REAL                       { $$ = astCreate(AST_SYMBOL, $1, 0); } /* PAULO */
 	   | LIT_CHAR						{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */
 	   ;
 
-array: type TK_IDENTIFIER '[' LIT_INTEGER ']'					{ $$ = NULL; } /* TODO */
-	 | type TK_IDENTIFIER '[' LIT_INTEGER ']' ':' listOfLiteral	{ $$ = NULL; } /* TODO */
+array: type TK_IDENTIFIER '[' literalInteger ']'					{ $$ = astCreate(AST_ARRDEC, $2, 2, $1, $4, NULL); } /* MARCOS */
+	 | type TK_IDENTIFIER '[' literalInteger ']' ':' listOfLiteral	{ $$ = astCreate(AST_ARRDEC, $2, 3, $1, $4, $7); } /* TODO */
 	 ;
 
 listOfLiteral: literal					{ $$ = astCreate(AST_LLIT, NULL, 2, $1, NULL); } /* PAULO */
@@ -117,7 +120,7 @@ functionHeader: type TK_IDENTIFIER '(' listOfParameters ')'	{ $$ = astCreate(AST
               ;
 
 
-listOfParameters: type TK_IDENTIFIER    { $$ = $$ = astCreate(AST_LPAR, $2, 2, $1, NULL); } /* PAULO */
+listOfParameters: type TK_IDENTIFIER    { $$ = astCreate(AST_LPAR, $2, 2, $1, NULL); } /* PAULO */
                 | listOfParameters ',' type TK_IDENTIFIER	{ $$ = astCreate(AST_LPAR, $4, 2, $3, $1); } /* PAULO */
                 ;
 
@@ -143,8 +146,8 @@ exp: literal							{ $$ = $1; } /* MARCOS */
    | exp '>'exp							{ $$ = astCreate(AST_GREATER, NULL, 2, $1, $3); } /* MARCOS */
    ;
 
-listOfExp: exp							{ $$ = NULL; } /* TODO */
-		 | listOfExp ',' exp			{ $$ = NULL; } /* TODO */
+listOfExp: exp							{ $$ = astCreate(AST_LEXP, NULL, 2, $1, NULL); } /* MARCOS */
+		 | listOfExp ',' exp			{ $$ = astCreate(AST_LEXP, NULL, 2, $3, $1); } /* MARCOS */
 
 cmd: attr								{ $$ = $1; } /* MARCOS */
    | input								{ $$ = $1; } /* MARCOS */
@@ -161,11 +164,11 @@ attr: TK_IDENTIFIER '=' exp				{ $$ = astCreate(AST_ATTR, $1, 1, $3); } /* MARCO
     ;
 
 
-input: KW_INPUT listOfInput				{ $$ = NULL; } /* TODO */
+input: KW_INPUT listOfInput				{ $$ = astCreate(AST_INPUT, NULL, 1, $2); } /* MARCOS */
      ;
 
-listOfInput: TK_IDENTIFIER					{ $$ = NULL; } /* TODO */
-		   | listOfInput ',' TK_IDENTIFIER	{ $$ = NULL; } /* TODO */
+listOfInput: TK_IDENTIFIER					{ $$ = astCreate(AST_LIN, $1, 1, NULL); } /* MARCOS */
+		   | listOfInput ',' TK_IDENTIFIER	{ $$ = astCreate(AST_LIN, $3, 1, $1); } /* MARCOS */
 		   ;
 
 output: KW_OUTPUT listOfOutput			{ $$ = astCreate(AST_OUTPUT, NULL, 1, $2); } /* PAULO */
@@ -188,7 +191,7 @@ if: KW_IF '(' exp ')' cmd %prec KW_IFX	{ $$ = astCreate(AST_IF, NULL, 2, $3, $5)
 while: KW_WHILE '(' exp ')' cmd			{ $$ = astCreate(AST_WHILE, NULL, 2, $3, $5); } /* PAULO */
      ;
 
-block: '{' listOfCmd '}'				{ $$ = NULL; astPrintDot(stdout, $2); } /* TODO */
+block: '{' listOfCmd '}'				{ $$ = astCreate(AST_BLOCK, NULL, 1, $2); } /* MARCOS */
      ;
 
 listOfCmd: cmd							{ $$ = astCreate(AST_LCMD, NULL, 2, $1, NULL); } /* MARCOS */

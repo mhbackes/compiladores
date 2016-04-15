@@ -1,0 +1,75 @@
+-------------------------------------SYMBOL------------------------------------
+NODE_TYPE		SYMBOL	SIZE	0		1		2		3		AUTHOR
+AST_SYMBOL		id		0		-		-		-		-		-
+-------------------------------------SYMBOL------------------------------------
+
+-----------------------------------DECLARATION---------------------------------
+NODE_TYPE		SYMBOL	SIZE	0		1		2		3		AUTHOR
+AST_VARDEC		varId	2		type	literal	-		-		MARCOS
+AST_ARRDEC		varId	3		type	litSize	lOfLit*	-		MARCOS		*NULL if not declared
+AST_FUNDEC		x		x		x		x		x		x
+-----------------------------------DECLARATION---------------------------------
+
+---------------------------------------LIST------------------------------------
+NODE_TYPE		SYMBOL	SIZE	0		1		2		3		AUTHOR
+AST_LCMD		NULL	2		cmd		next	-		-		MARCOS
+AST_LPAR		x		x		x		x		x		x
+AST_LLIT		x		x		x		x		x		x
+AST_LEXP		NULL	2		exp		next	-		-		MARCOS
+AST_LIN			input	1		next	-		-		-		MARCOS
+AST_LOUT		x		x		x		x		x		x
+---------------------------------------LIST------------------------------------
+
+-------------------------------------COMMAND-----------------------------------
+NODE_TYPE		SYMBOL	SIZE	0		1		2		3		AUTHOR
+AST_ATTR		lhsId	1		exp		-		-		-		MARCOS
+AST_ATTRARR		x		x		x		x		x		x
+AST_INPUT		NULL	1		lOfIn	-		-		-		MARCOS
+AST_OUTPUT		x		x		x		x		x		x
+AST_IF			x		x		x		x		x		x
+AST_IFTE		x		x		x		x		x		x
+AST_WHILE		x		x		x		x		x		x
+AST_RETURN		x		x		x		x		x		x
+AST_EMPTY		x		x		x		x		x		x
+AST_BLOCK		NULL	1		lOfCmd	-		-		-		MARCOS
+-------------------------------------COMMAND-----------------------------------
+
+--------------------------------------CALL-------------------------------------
+NODE_TYPE		SYMBOL	SIZE	0		1		2		3		AUTHOR
+AST_FUNCALL		x		x		x		x		x		x
+AST_ARRACESS	x		x		x		x		x		x
+--------------------------------------CALL-------------------------------------
+
+--------------------------------UNARY OPERATORS--------------------------------
+NODE_TYPE		SYMBOL	SIZE	0		1		2		3		AUTHOR
+AST_NOT			NULL	1		exp		-		-		-		MARCOS
+--------------------------------UNARY OPERATORS--------------------------------
+
+-------------------------------BINARY OPERATORS--------------------------------
+NODE_TYPE		SYMBOL	SIZE	0		1		2		3		AUTHOR
+AST_LE			NULL	2		exp1	exp2	-		-		MARCOS
+AST_GE			NULL	2		exp1	exp2	-		-		MARCOS
+AST_EQ			NULL	2		exp1	exp2	-		-		MARCOS
+AST_NE			NULL	2		exp1	exp2	-		-		MARCOS
+AST_AND			NULL	2		exp1	exp2	-		-		MARCOS
+AST_OR			NULL	2		exp1	exp2	-		-		MARCOS
+AST_ADD			NULL	2		exp1	exp2	-		-		MARCOS
+AST_SUB			NULL	2		exp1	exp2	-		-		MARCOS
+AST_MUL			NULL	2		exp1	exp2	-		-		MARCOS
+AST_DIV			NULL	2		exp1	exp2	-		-		MARCOS
+AST_LESS		NULL	2		exp1	exp2	-		-		MARCOS
+AST_GREATER		NULL	2		exp1	exp2	-		-		MARCOS
+-------------------------------BINARY OPERATORS--------------------------------
+
+---------------------------------------TYPE------------------------------------
+NODE_TYPE		SYMBOL	SIZE	0		1		2		3		AUTHOR
+AST_BOOL		NULL	0		-		-		-		-		MARCOS
+AST_CHAR		NULL	0		-		-		-		-		MARCOS
+AST_INT			NULL	0		-		-		-		-		MARCOS
+AST_REAL		NULL	0		-		-		-		-		MARCOS
+---------------------------------------TYPE------------------------------------
+
+---------------------------------------MISC------------------------------------
+NODE_TYPE		SYMBOL	SIZE	0		1		2		3		AUTHOR
+AST_PAR			NULL	1		exp		-		-		-		MARCOS
+---------------------------------------MISC------------------------------------
