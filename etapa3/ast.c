@@ -70,18 +70,22 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 		case AST_PROGRAM:
 			astPrintCode(file, node->children[0]);
 			if(node->children[1])
-			    astPrintCode(file, node->children[1]);
+				astPrintCode(file, node->children[1]);
 		case AST_SYMBOL:
 			if(node->symbol) {
-				if(node->symbol->type == SYMBOL_LIT_STRING || 
-						node->symbol->type == SYMBOL_LIT_CHAR) {
+				if(node->symbol->type == SYMBOL_LIT_STRING) {
 					fprintf(file, "\"");
 					fprintf(file, "%s", node->symbol->text);
 					fprintf(file, "\"");
 					break;
 				}
-				else
+				if(node->symbol->type == SYMBOL_LIT_CHAR) {
+					fprintf(file, "\'");
 					fprintf(file, "%s", node->symbol->text);
+					fprintf(file, "\'");
+					break;
+				}
+				fprintf(file, "%s", node->symbol->text);
 			}
 			break;
 		case AST_VARDEC:
@@ -113,10 +117,9 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 			fprintf(file, ")");
 			break;
 		case AST_FUNCALL:
-			//TODO REVIEW
 			fprintf(file, " %s(", node->symbol->text);
-			if(node->children[1])
-				astPrintCode(file, node->children[1]);
+			if(node->children[0])
+				astPrintCode(file, node->children[0]);
 			fprintf(file, ")");
 			break;
 		case AST_ARRACESS:
@@ -131,11 +134,12 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 				astPrintCode(file, node->children[1]);
 			}
 			break;
-		case AST_LPAR://TODO
+		case AST_LPAR:
+			astPrintCode(file, node->children[0]);
 			fprintf(file, " %s", node->symbol->text);
-			if(node->children[0]) {
+			if(node->children[1]) {
 				fprintf(file, ", ");
-				astPrintCode(file, node->children[0]);
+				astPrintCode(file, node->children[1]);
 			}
 			break;
 		case AST_LLIT:

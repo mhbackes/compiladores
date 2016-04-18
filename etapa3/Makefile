@@ -5,7 +5,7 @@ CXXFLAGS=-g -Wall#-O3
 BIN=bin
 SRC=.
 OBJ=$(BIN)/y.tab.o $(BIN)/lex.yy.o $(BIN)/hashtable.o $(BIN)/ast.o $(BIN)/main.o
-RM=$(SRC)/lex.yy.h $(SRC)/lex.yy.c $(SRC)/y.tab.h $(SRC)/y.tab.c
+RM=$(SRC)/lex.yy.h $(SRC)/lex.yy.c $(SRC)/y.tab.h $(SRC)/y.tab.c $(SRC)/*.dot 
 
 TARGET=etapa3
 

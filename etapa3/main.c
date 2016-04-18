@@ -27,16 +27,14 @@ int main(int argc, char *argv[])
 	yyparse();
 
 	printf("Parse successful.\n");
-	if(root) {
-		FILE* dot = fopen("out.dot", "w");
-		astPrintDot(dot, root);
-		fclose(dot);
-		printf("Dot file written.\n");
-		FILE* prog = fopen("decompiled.txt", "w");
-		astPrintCode(prog, root);
-		printf("Decompiled program file written.\n");
-		fclose(prog);
-	}
+
+	FILE* prog = stdout;
+	if(argc >= 3)
+		prog = fopen(argv[2], "w");
+
+	astPrintCode(prog, root);
+	printf("Decompiled program written in \"%s\".\n", argv[2]);
+	fclose(prog);
 
 	return 0;
 }

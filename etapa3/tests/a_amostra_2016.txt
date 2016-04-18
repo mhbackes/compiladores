@@ -6,6 +6,8 @@ bool d [1000];
 char e:0;
 char f:'B';
 bool g:0;
+bool z: TRUE;
+bool yz: FALSE;
 
 // VAR ERRORS
 //bool e1[];
@@ -20,8 +22,7 @@ bool g:0;
 // real farray(real arr[]) //wtf
 
 int main()
-  {
-  output "Digite um zilhao de numeros: "
+  { output "Digite um zilhao de numeros: "
   output "str", "str2", 1 + 1, 1 * 2, 1 / 3, 1 - 1, "str4"
   //output "str", "str2", 1 + 1, 1 * 2, 1 / 3, 1 - 1, "str4", 
 
@@ -29,6 +30,8 @@ int main()
   input c, e, f,g
   // input c, 
   // input 
+    while(TRUE) ;
+    if(FALSE) ;
   while (i<10)
     {
     a = incn(a,1)
