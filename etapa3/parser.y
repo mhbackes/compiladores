@@ -101,7 +101,7 @@ literalInteger: LIT_INTEGER				{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS 
 literal: literalBool					{ $$ = NULL; } /* TODO */
 	   | literalInteger					{ $$ = $1; } /* MARCOS */
        | LIT_REAL                       { $$ = astCreate(AST_SYMBOL, $1, 0); } /* PAULO */
-	   | LIT_CHAR						{ $$ = astCreate(AST_TEXT, $1, 0); } /* MARCOS */
+	   | LIT_CHAR						{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */
 	   ;
 
 array: type TK_IDENTIFIER '[' literalInteger ']'					{ $$ = astCreate(AST_ARRDEC, $2, 2, $1, $4, NULL); } /* MARCOS */
@@ -180,7 +180,7 @@ listOfOutput: stringOrExp					{ $$ = astCreate(AST_LOUT, NULL, 2, $1, NULL); } /
 			;
 
 stringOrExp: exp						{ $$ = $1; } 
-		   | LIT_STRING					{ $$ = astCreate(AST_TEXT, $1, 0); } /* PAULO */
+		   | LIT_STRING					{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* PAULO */
 		   ;
 			
 

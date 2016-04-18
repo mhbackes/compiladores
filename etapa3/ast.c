@@ -15,8 +15,7 @@ AST_NODE *astCreate(int type, HASH_NODE *symbol, int size, ...) {
 	AST_NODE *newNode; 
 
 	if(!(newNode = (AST_NODE *) malloc(sizeof(AST_NODE)))) {
-		fprintf(stderr, "ERROR [AST]: out of memory!\n");
-		exit(1); // abort
+		fprintf(stderr, "ERROR [AST]: out of memory!\n"); exit(1); // abort
 	}
 
 	newNode->type = type;
@@ -73,8 +72,17 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 			if(node->children[1])
 			    astPrintCode(file, node->children[1]);
 		case AST_SYMBOL:
-			if(node->symbol)
-			    fprintf(file, "%s", node->symbol->text);
+			if(node->symbol) {
+				if(node->symbol->type == SYMBOL_LIT_STRING || 
+						node->symbol->type == SYMBOL_LIT_CHAR) {
+					fprintf(file, "\"");
+					fprintf(file, "%s", node->symbol->text);
+					fprintf(file, "\"");
+					break;
+				}
+				else
+					fprintf(file, "%s", node->symbol->text);
+			}
 			break;
 		case AST_VARDEC:
 			astPrintCode(file, node->children[0]);
@@ -274,10 +282,6 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 			astPrintCode(file, node->children[0]);
 			fprintf(file, ")");
 			break;
-		case AST_TEXT:
-			fprintf(file, "\"");
-			fprintf(file, node->symbol->text);
-			fprintf(file, "\"");
 		case AST_BLOCK:
 			fprintf(file, "{\n");
 			astPrintCode(file, node->children[0]);
