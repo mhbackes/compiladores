@@ -75,7 +75,7 @@ program: declaration					{ $$ = NULL; } /* TODO */
 	   ;
 
 declaration: global ';'					{ $$ = $1; } /* MARCOS */
-		   | function ';'				{ $$ = NULL; } /* TODO */
+		   | function ';'				{ $$ = $1; } /* PAULO */
 		   ;
 
 global: variable						{ $$ = $1; } /* MARCOS */
@@ -112,23 +112,24 @@ listOfLiteral: literal					{ $$ = astCreate(AST_LLIT, NULL, 2, $1, NULL); } /* P
 			 | listOfLiteral literal	{ $$ = astCreate(AST_LLIT, NULL, 2, $2, $1); } /* PAULO */
 			 ;
 
-function: functionHeader cmd			{ $$ = NULL; } /* TODO */
+function: functionHeader cmd			{ $$ = astCreate(AST_FUNDEC, NULL, 2, $1, $2); } /* PAULO */
 		;
 
-functionHeader: type TK_IDENTIFIER '(' listOfParameters ')'	{ $$ = NULL; } /* TODO */
-			  | type TK_IDENTIFIER '(' ')'					{ $$ = NULL; } /* TODO */
+functionHeader: type TK_IDENTIFIER '(' listOfParameters ')'	{ $$ = astCreate(AST_FUNHD, $2, 2, $1, $4); } /* PAULO */
+			  | type TK_IDENTIFIER '(' ')'					{ $$ = astCreate(AST_FUNHD, $2, 1, $1); } /* PAULO */
               ;
 
-listOfParameters: type TK_IDENTIFIER						{ $$ = NULL; } /* TODO */
-                | listOfParameters ',' type TK_IDENTIFIER	{ $$ = NULL; } /* TODO */
+
+listOfParameters: type TK_IDENTIFIER    { $$ = astCreate(AST_LPAR, $2, 2, $1, NULL); } /* PAULO */
+                | listOfParameters ',' type TK_IDENTIFIER	{ $$ = astCreate(AST_LPAR, $4, 2, $3, $1); } /* PAULO */
                 ;
 
 
 exp: literal							{ $$ = $1; } /* MARCOS */
    | TK_IDENTIFIER						{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */
    | TK_IDENTIFIER '[' exp ']'			{ $$ = astCreate(AST_ARRACESS, $1, 1, $3); } /* PAULO */
-   | TK_IDENTIFIER '(' listOfExp ')'	{ $$ = NULL; } /* TODO */
-   | TK_IDENTIFIER '(' ')'				{ $$ = NULL; } /* TODO */
+   | TK_IDENTIFIER '(' listOfExp ')'	{ $$ = astCreate(AST_FUNCALL, $1, 1, $3); } /* PAULO */
+   | TK_IDENTIFIER '(' ')'				{ $$ = astCreate(AST_FUNCALL, $1, 1, NULL); } /* PAULO - TODO REVIEW*/
    | '(' exp ')'						{ $$ = astCreate(AST_PAR, NULL, 1, $2); } /* MARCOS */
    | '!' exp %prec OP_NOT				{ $$ = astCreate(AST_NOT, NULL, 1, $2); } /* MARCOS */
    | exp OPERATOR_LE exp				{ $$ = astCreate(AST_LE, NULL, 2, $1, $3); } /* MARCOS */
@@ -159,7 +160,7 @@ cmd: attr								{ $$ = $1; } /* MARCOS */
    ;
 
 attr: TK_IDENTIFIER '=' exp				{ $$ = astCreate(AST_ATTR, $1, 1, $3); } /* MARCOS */
-    | TK_IDENTIFIER '[' exp ']' '=' exp	{ $$ = NULL; } /* TODO */
+    | TK_IDENTIFIER '[' exp ']' '=' exp	{ $$ = astCreate(AST_ATTRARR, $1, 2, $3, $6); } /* PAULO */
     ;
 
 
@@ -170,15 +171,16 @@ listOfInput: TK_IDENTIFIER					{ $$ = astCreate(AST_LIN, $1, 1, NULL); } /* MARC
 		   | listOfInput ',' TK_IDENTIFIER	{ $$ = astCreate(AST_LIN, $3, 1, $1); } /* MARCOS */
 		   ;
 
-output: KW_OUTPUT listOfOutput			{ $$ = NULL; } /* TODO */
+output: KW_OUTPUT listOfOutput			{ $$ = astCreate(AST_OUTPUT, NULL, 1, $2); } /* PAULO */
       ;
 
-listOfOutput: stringOrExp					{ $$ = NULL; } /* TODO */
-			| listOfOutput ',' stringOrExp	{ $$ = NULL; } /* TODO */
+
+listOfOutput: stringOrExp					{ $$ = astCreate(AST_LOUT, NULL, 2, $1, NULL); } /* PAULO */
+			| listOfOutput ',' stringOrExp	{ $$ = astCreate(AST_LOUT, NULL, 2, $3, $1); } /* PAULO */
 			;
 
-stringOrExp: exp						{ $$ = NULL; } /* TODO */
-		   | LIT_STRING					{ $$ = NULL; } /* TODO */
+stringOrExp: exp						{ $$ = $1; } 
+		   | LIT_STRING					{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* PAULO */
 		   ;
 			
 
@@ -186,7 +188,7 @@ if: KW_IF '(' exp ')' cmd %prec KW_IFX	{ $$ = astCreate(AST_IF, NULL, 2, $3, $5)
   | KW_IF '(' exp ')' cmd KW_ELSE cmd	{ $$ = astCreate(AST_IFTE, NULL, 3, $3, $5, $7); } /* PAULO */
   ;
 
-while: KW_WHILE '(' exp ')' cmd			{ $$ = NULL; } /* TODO */
+while: KW_WHILE '(' exp ')' cmd			{ $$ = astCreate(AST_WHILE, NULL, 2, $3, $5); } /* PAULO */
      ;
 
 block: '{' listOfCmd '}'				{ $$ = astCreate(AST_BLOCK, NULL, 1, $2); astPrintDot(stdout, $$); } /* MARCOS */
@@ -196,7 +198,7 @@ listOfCmd: cmd							{ $$ = astCreate(AST_LCMD, NULL, 2, $1, NULL); } /* MARCOS 
 		 | listOfCmd cmd				{ $$ = astCreate(AST_LCMD, NULL, 2, $2, $1); } /* MARCOS */
 	     ;
 
-return: KW_RETURN exp					{ $$ = NULL; } /* TODO */
+return: KW_RETURN exp					{ $$ = astCreate(AST_RETURN, NULL, 1, $2); } /* PAULO */
 
 %%
 void yyerror (char const *msg) {
