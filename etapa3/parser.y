@@ -70,8 +70,8 @@ AST_NODE* root;
 %%
 root: program							{ root = $1; } /* MARCOS */
 
-program: declaration					{ $$ = NULL; } /* TODO */
-	   | program declaration			{ $$ = NULL; } /* TODO */
+program: declaration					{ $$ = $1; } /* PAULO */
+	   | program declaration			{ $$ = astCreate(AST_PROGRAM, NULL, 2,$1, $2); } /* PAULO */
 	   ;
 
 declaration: global ';'					{ $$ = $1; } /* MARCOS */
@@ -156,7 +156,7 @@ cmd: attr								{ $$ = $1; } /* MARCOS */
    | while								{ $$ = $1; } /* MARCOS */
    | block								{ $$ = $1; } /* MARCOS */
    | return								{ $$ = $1; } /* MARCOS */
-   | ';'								{ $$ = NULL; } /* TODO */
+   | ';'								{ $$ = astCreate(AST_EMPTY, NULL, 0); } /* PAULO */
    ;
 
 attr: TK_IDENTIFIER '=' exp				{ $$ = astCreate(AST_ATTR, $1, 1, $3); } /* MARCOS */

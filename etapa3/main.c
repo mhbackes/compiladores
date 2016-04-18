@@ -32,6 +32,10 @@ int main(int argc, char *argv[])
 		astPrintDot(dot, root);
 		fclose(dot);
 		printf("Dot file written.\n");
+		FILE* prog = fopen("decompiled.txt", "w");
+		astPrintCode(prog, root);
+		printf("Decompiled program file written.\n");
+		fclose(prog);
 	}
 
 	return 0;

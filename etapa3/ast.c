@@ -68,14 +68,19 @@ void astPrintDotEdges(FILE* file, AST_NODE* node) {
 void astPrintCode(FILE* file, AST_NODE* node) {
 	if(!node) return;
 	switch(node->type) {
+		case AST_PROGRAM:
+			astPrintCode(file, node->children[0]);
+			if(node->children[1])
+			    astPrintCode(file, node->children[1]);
 		case AST_SYMBOL:
-			fprintf(file, "%s", node->symbol->text);
+			if(node->symbol)
+			    fprintf(file, "%s", node->symbol->text);
 			break;
 		case AST_VARDEC:
 			astPrintCode(file, node->children[0]);
 			fprintf(file, " %s:", node->symbol->text);
 			astPrintCode(file, node->children[1]);
-			fprintf(file, ";");
+			fprintf(file, ";\n");
 			break;
 		case AST_ARRDEC:
 			astPrintCode(file, node->children[0]);
@@ -83,77 +88,122 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 			astPrintCode(file, node->children[1]);
 			fprintf(file, "]");
 			if(node->children[2]) {
-				fprintf(file, ":");
+				fprintf(file, ": ");
 				astPrintCode(file, node->children[2]);
 			}
+			fprintf(file, ";\n");
 			break;
 		case AST_FUNDEC:
-			//TODO
+			astPrintCode(file, node->children[0]);
+			astPrintCode(file, node->children[1]);
+			fprintf(file, ";\n");
+			break;
+		case AST_FUNHD:
+			astPrintCode(file, node->children[0]);
+			fprintf(file, " %s (", node->symbol->text);
+			astPrintCode(file, node->children[1]);
+			fprintf(file, ")");
 			break;
 		case AST_FUNCALL:
-			//TODO
+			//TODO REVIEW
+			fprintf(file, " %s(", node->symbol->text);
+			if(node->children[1])
+				astPrintCode(file, node->children[1]);
+			fprintf(file, ")");
 			break;
 		case AST_ARRACESS:
-			//TODO
+			fprintf(file, " %s[", node->symbol->text);
+			astPrintCode(file, node->children[0]);
+			fprintf(file, "]");
 			break;
 		case AST_LCMD:
-			astPrintCode(file, node->children[0]);
 			if(node->children[1]) {
-				fprintf(file, "\n");
 				astPrintCode(file, node->children[1]);
 			}
+			astPrintCode(file, node->children[0]);
+			fprintf(file, "\n");
 			break;
 		case AST_LPAR:
-			//TODO
+			if(node->children[1]) {
+				astPrintCode(file, node->children[1]);
+				fprintf(file, ", ");
+			}
+			astPrintCode(file, node->children[0]);
+			fprintf(file, " %s", node->symbol->text);
 			break;
 		case AST_LLIT:
-			//TODO
+			if(node->children[1]) {
+				astPrintCode(file, node->children[1]);
+				fprintf(file, " ");
+			}
+			astPrintCode(file, node->children[0]);
 			break;
 		case AST_LEXP:
-			astPrintCode(file, node->children[0]);
+			//TODO REVIEW
 			if(node->children[1]) {
-				fprintf(file, ", ");
 				astPrintCode(file, node->children[1]);
+				fprintf(file, ", ");
 			}
+			astPrintCode(file, node->children[0]);
 			break;
 		case AST_LIN:
-			fprintf(file, "%s", node->symbol->text);
 			if(node->children[0]) {
 				fprintf(file, ", ");
 				astPrintCode(file, node->children[0]);
 			}
+			fprintf(file, "%s", node->symbol->text);
 			break;
 		case AST_LOUT:
-			//TODO
+			if(node->children[1]) {
+				astPrintCode(file, node->children[1]);
+				fprintf(file, ", ");
+			}
+			astPrintCode(file, node->children[0]);
 			break;
 		case AST_ATTR:
 			fprintf(file, "%s = ", node->symbol->text);
 			astPrintCode(file, node->children[0]);
 			break;
 		case AST_ATTRARR:
-			//TODO
+			fprintf(file, "%s [", node->symbol->text);
+			astPrintCode(file, node->children[0]);
+			fprintf(file, "] = ");
+			astPrintCode(file, node->children[1]);
 			break;
 		case AST_INPUT:
 			fprintf(file, "input ");
 			astPrintCode(file, node->children[0]);
 			break;
 		case AST_OUTPUT:
-			//TODO
+			fprintf(file, "output ");
+			astPrintCode(file, node->children[0]);
 			break;
 		case AST_IF:
-			//TODO
+			fprintf(file, "if (");
+			astPrintCode(file, node->children[0]);	
+			fprintf(file, ") ");
+			astPrintCode(file, node->children[1]);
 			break;
 		case AST_IFTE:
-			//TODO
+			fprintf(file, "if (");
+			astPrintCode(file, node->children[0]);	
+			fprintf(file, ") ");
+			astPrintCode(file, node->children[1]);
+			fprintf(file, " else ");
+			astPrintCode(file, node->children[2]);
 			break;
 		case AST_WHILE:
-			//TODO
+			fprintf(file, "while (");
+			astPrintCode(file, node->children[0]);
+			fprintf(file, ") ");
+			astPrintCode(file, node->children[1]);
 			break;
 		case AST_RETURN:
-			//TODO
+			fprintf(file, "return ");
+			astPrintCode(file, node->children[0]);
 			break;
 		case AST_EMPTY:
-			//TODO
+			fprintf(file, ";");
 			break;
 		case AST_NOT:
 			fprintf(file, "!");
@@ -227,7 +277,7 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 		case AST_BLOCK:
 			fprintf(file, "{\n");
 			astPrintCode(file, node->children[0]);
-			fprintf(file, "\n}");
+			fprintf(file, "}");
 			break;
 		case AST_BOOL:
 			fprintf(file, "bool");

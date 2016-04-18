@@ -15,6 +15,7 @@
  * ones or remove unecessary ones while we're doing it
  */
 #define FOREACH_AST(AST)\
+    AST(AST_PROGRAM)    \
     AST(AST_SYMBOL)		\
     AST(AST_VARDEC)     \
     AST(AST_ARRDEC)     \
@@ -74,5 +75,8 @@ typedef struct ast_node {
 AST_NODE *astCreate(int type, HASH_NODE *symbol, int size, ...);
 
 void astPrintDot(FILE *file, AST_NODE *node);
+
+void astPrintCode(FILE* file, AST_NODE* node);
+
 
 #endif
