@@ -189,7 +189,7 @@ if: KW_IF '(' exp ')' cmd %prec KW_IFX	{ $$ = astCreate(AST_IF, NULL, 2, $3, $5)
 while: KW_WHILE '(' exp ')' cmd			{ $$ = NULL; } /* TODO */
      ;
 
-block: '{' listOfCmd '}'				{ $$ = astCreate(AST_BLOCK, NULL, 1, $2); } /* MARCOS */
+block: '{' listOfCmd '}'				{ $$ = astCreate(AST_BLOCK, NULL, 1, $2); astPrintDot(stdout, $$); } /* MARCOS */
      ;
 
 listOfCmd: cmd							{ $$ = astCreate(AST_LCMD, NULL, 2, $1, NULL); } /* MARCOS */
