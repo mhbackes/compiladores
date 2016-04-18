@@ -283,7 +283,7 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 		case AST_BLOCK:
 			fprintf(file, "{\n");
 			astPrintCode(file, node->children[0]);
-			fprintf(file, "}");
+			fprintf(file, "\n}");
 			break;
 		case AST_BOOL:
 			fprintf(file, "bool");
