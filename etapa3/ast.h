@@ -17,6 +17,7 @@
 #define FOREACH_AST(AST)\
     AST(AST_PROGRAM)    \
     AST(AST_SYMBOL)		\
+    AST(AST_TEXT)       \
     AST(AST_VARDEC)     \
     AST(AST_ARRDEC)     \
     AST(AST_FUNDEC)     \
