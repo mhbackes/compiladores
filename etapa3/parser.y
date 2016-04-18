@@ -2,9 +2,7 @@
  * parser.y
  * ALUNOS:
  * MARCOS HENRIQUE BACKES
- * PAULO RENATO LANZARIN
- */
-
+ * PAULO RENATO LANZARIN */ 
 %{
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,15 +55,12 @@ AST_NODE* root;
 %left OPERATOR_OR
 %left OPERATOR_AND
 %left OPERATOR_EQ OPERATOR_NE
-%left '<' '>' OPERATOR_LE OPERATOR_GE 
-%left '+' '-'
-%left '*' '/'
-%left '!'
+%left '<' '>' OPERATOR_LE OPERATOR_GE %left '+' '-' %left '*' '/' %left '!'
 
 %type<ast> program declaration global variable array listOfLiteral
 %type<ast> function functionHeader listOfParameters listOfExp exp
 %type<ast> cmd attr input listOfInput output listOfOutput stringOrExp
-%type<ast> if while block listOfCmd return literal type literalInteger
+%type<ast> if while block listOfCmd return literal type literalInteger literalBool
 
 %%
 root: program							{ root = $1; } /* MARCOS */
@@ -91,14 +86,14 @@ type: KW_INT							{ $$ = astCreate(AST_INT, NULL, 0); } /* MARCOS */
 	| KW_BOOL							{ $$ = astCreate(AST_BOOL, NULL, 0); } /* MARCOS */
 	;
 
-literalBool: LIT_TRUE
-		   | LIT_FALSE
+literalBool: LIT_TRUE                   { $$ = astCreate(AST_SYMBOL, $1, 0); }
+		   | LIT_FALSE                  { $$ = astCreate(AST_SYMBOL, $1, 0); }
 		   ;
 
 literalInteger: LIT_INTEGER				{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */
 			  ;
 
-literal: literalBool					{ $$ = NULL; } /* TODO */
+literal: literalBool					{ $$ = $1; } /* TODO */
 	   | literalInteger					{ $$ = $1; } /* MARCOS */
        | LIT_REAL                       { $$ = astCreate(AST_SYMBOL, $1, 0); } /* PAULO */
 	   | LIT_CHAR						{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */

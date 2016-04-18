@@ -14,6 +14,8 @@
 #define SYMBOL_LIT_CHAR		2
 #define SYMBOL_LIT_STRING	3
 #define SYMBOL_IDENTIFIER	4
+#define SYMBOL_LIT_TRUE 5
+#define SYMBOL_LIT_FALSE 6
 
 typedef struct hash_node_struct {
     int type;
