@@ -276,7 +276,7 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 			break;
 		case AST_TEXT:
 			fprintf(file, "\"");
-			fprintf(file, node->symbol->text);
+			fprintf(file, "\"%s\"",  node->symbol->text);
 			fprintf(file, "\"");
 		case AST_BLOCK:
 			fprintf(file, "{\n");
