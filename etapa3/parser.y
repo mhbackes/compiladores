@@ -70,8 +70,8 @@ AST_NODE* root;
 %%
 root: program							{ root = $1; } /* MARCOS */
 
-program: declaration					{ $$ = $1; } /* PAULO */
-	   | program declaration			{ $$ = astCreate(AST_PROGRAM, NULL, 2,$1, $2); } /* PAULO */
+program: declaration					{ $$ = astCreate(AST_PROGRAM, NULL, 2,$1, NULL); } /* PAULO */
+	   | program declaration			{ $$ = astCreate(AST_PROGRAM, NULL, 2,$2, NULL); $2->children[1] = $$; } /* PAULO */
 	   ;
 
 declaration: global ';'					{ $$ = $1; } /* MARCOS */
@@ -109,7 +109,7 @@ array: type TK_IDENTIFIER '[' literalInteger ']'					{ $$ = astCreate(AST_ARRDEC
 	 ;
 
 listOfLiteral: literal					{ $$ = astCreate(AST_LLIT, NULL, 2, $1, NULL); } /* PAULO */
-			 | listOfLiteral literal	{ $$ = astCreate(AST_LLIT, NULL, 2, $2, $1); } /* PAULO */
+			 | listOfLiteral literal	{ $$ = astCreate(AST_LLIT, NULL, 2, $2, NULL); $1->children[1] = $$; } /* PAULO */
 			 ;
 
 function: functionHeader cmd			{ $$ = astCreate(AST_FUNDEC, NULL, 2, $1, $2); } /* PAULO */
@@ -121,7 +121,7 @@ functionHeader: type TK_IDENTIFIER '(' listOfParameters ')'	{ $$ = astCreate(AST
 
 
 listOfParameters: type TK_IDENTIFIER    { $$ = astCreate(AST_LPAR, $2, 2, $1, NULL); } /* PAULO */
-                | listOfParameters ',' type TK_IDENTIFIER	{ $$ = astCreate(AST_LPAR, $4, 2, $3, $1); } /* PAULO */
+                | listOfParameters ',' type TK_IDENTIFIER	{ $$ = astCreate(AST_LPAR, $4, 2, $3, NULL); $1->children[1] = $$; } /* PAULO */
                 ;
 
 
@@ -147,7 +147,7 @@ exp: literal							{ $$ = $1; } /* MARCOS */
    ;
 
 listOfExp: exp							{ $$ = astCreate(AST_LEXP, NULL, 2, $1, NULL); } /* MARCOS */
-		 | listOfExp ',' exp			{ $$ = astCreate(AST_LEXP, NULL, 2, $3, $1); } /* MARCOS */
+		 | listOfExp ',' exp			{ $$ = astCreate(AST_LEXP, NULL, 2, $3, NULL); $1->children[1] = $$; } /* MARCOS */
 
 cmd: attr								{ $$ = $1; } /* MARCOS */
    | input								{ $$ = $1; } /* MARCOS */
@@ -168,7 +168,7 @@ input: KW_INPUT listOfInput				{ $$ = astCreate(AST_INPUT, NULL, 1, $2); } /* MA
      ;
 
 listOfInput: TK_IDENTIFIER					{ $$ = astCreate(AST_LIN, $1, 1, NULL); } /* MARCOS */
-		   | listOfInput ',' TK_IDENTIFIER	{ $$ = astCreate(AST_LIN, $3, 1, $1); } /* MARCOS */
+		   | listOfInput ',' TK_IDENTIFIER	{ $$ = astCreate(AST_LIN, $3, 1, NULL); $1->children[0] = $$; } /* MARCOS */
 		   ;
 
 output: KW_OUTPUT listOfOutput			{ $$ = astCreate(AST_OUTPUT, NULL, 1, $2); } /* PAULO */
@@ -176,7 +176,7 @@ output: KW_OUTPUT listOfOutput			{ $$ = astCreate(AST_OUTPUT, NULL, 1, $2); } /*
 
 
 listOfOutput: stringOrExp					{ $$ = astCreate(AST_LOUT, NULL, 2, $1, NULL); } /* PAULO */
-			| listOfOutput ',' stringOrExp	{ $$ = astCreate(AST_LOUT, NULL, 2, $3, $1); } /* PAULO */
+			| listOfOutput ',' stringOrExp	{ $$ = astCreate(AST_LOUT, NULL, 2, $3, NULL); $1->children[1] = $$; } /* PAULO */
 			;
 
 stringOrExp: exp						{ $$ = $1; } 
@@ -195,7 +195,7 @@ block: '{' listOfCmd '}'				{ $$ = astCreate(AST_BLOCK, NULL, 1, $2); } /* MARCO
      ;
 
 listOfCmd: cmd							{ $$ = astCreate(AST_LCMD, NULL, 2, $1, NULL); } /* MARCOS */
-		 | listOfCmd cmd				{ $$ = astCreate(AST_LCMD, NULL, 2, $2, $1); } /* MARCOS */
+		 | listOfCmd cmd				{ $$ = astCreate(AST_LCMD, NULL, 2, $2, NULL); $1->children[1] = $$; } /* MARCOS */
 	     ;
 
 return: KW_RETURN exp					{ $$ = astCreate(AST_RETURN, NULL, 1, $2); } /* PAULO */
