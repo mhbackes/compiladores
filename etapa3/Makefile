@@ -1,19 +1,20 @@
 CC=gcc
 LEX=lex
 YACC=yacc
-CXXFLAGS=-g -Wall#-O3
+FLAGS=-g -Wall#-O3
 BIN=bin
 SRC=.
-OBJ=$(BIN)/y.tab.o $(BIN)/lex.yy.o $(BIN)/hashtable.o $(BIN)/ast.o $(BIN)/main.o
-RM=$(SRC)/lex.yy.h $(SRC)/lex.yy.c $(SRC)/y.tab.h $(SRC)/y.tab.c $(SRC)/*.dot 
-
 TARGET=etapa3
 
-$(TARGET): $(OBJ)
-	$(CC) $(CXXFLAGS) -o $@ $^
+SRC_FILES=$(SRC)/y.tab.c $(SRC)/lex.yy.c $(wildcard $(SRC)/*.c)
+OBJ_FILES=$(patsubst $(SRC)/%.c, $(BIN)/%.o, $(SRC_FILES))
+RM=$(SRC)/lex.yy.h $(SRC)/lex.yy.c $(SRC)/y.tab.h $(SRC)/y.tab.c
 
-$(BIN)/%.o: $(SRC)/%.c
-	$(CC) $(CXXFLAGS) -c -o $@ $<
+$(TARGET): $(OBJ_FILES)
+	$(CC) $(FLAGS) -o $@ $^
+
+$(BIN)/%.o: $(SRC)/%.c | $(BIN)
+	$(CC) $(FLAGS) -c -o $@ $<
 
 $(SRC)/lex.yy.c: $(SRC)/scanner.l
 	$(LEX) --header-file=$(SRC)/lex.yy.h -o $@ $<
@@ -21,7 +22,11 @@ $(SRC)/lex.yy.c: $(SRC)/scanner.l
 $(SRC)/y.tab.c: $(SRC)/parser.y $(SRC)/lex.yy.c
 	$(YACC) -d -o $@ $<
 
+$(BIN):
+	mkdir -p $(BIN)
+
+.PHONY: clean
 clean:
-	rm -f $(BIN)/*.o *~ $(TARGET) $(RM)
+	rm -f $(BIN)/*.o *~ *.dot $(TARGET) $(RM)
 
 rebuild: clean $(TARGET)
