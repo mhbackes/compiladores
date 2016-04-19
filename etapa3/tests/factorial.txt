@@ -1,0 +1,15 @@
+int x:0;
+
+int factorial(int n) {
+	if(n == 0)
+		return 1
+		return n * fatorial(n-1)
+};
+
+int main() {
+	output "Input x:\n"
+	input x
+	x = fatorial(x)
+	output "x! = ", x, "\n"
+	return x
+};
