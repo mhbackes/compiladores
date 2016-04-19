@@ -64,10 +64,15 @@ void astPrintDotEdges(FILE* file, AST_NODE* node) {
 	}
 }
 
+/* not thread safe */
 void astPrintCode(FILE* file, AST_NODE* node) {
+	static int indent = 0;
+	int i;
 	if(!node) return;
 	switch(node->type) {
 		case AST_PROGRAM:
+			for(i = 0; i < indent; i++)
+				fprintf(file, "\t");
 			astPrintCode(file, node->children[0]);
 			if(node->children[1])
 				astPrintCode(file, node->children[1]);
@@ -114,7 +119,7 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 			astPrintCode(file, node->children[0]);
 			fprintf(file, " %s (", node->symbol->text);
 			astPrintCode(file, node->children[1]);
-			fprintf(file, ")");
+			fprintf(file, ") ");
 			break;
 		case AST_FUNCALL:
 			fprintf(file, " %s(", node->symbol->text);
@@ -128,9 +133,11 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 			fprintf(file, "]");
 			break;
 		case AST_LCMD:
+			for(i = 0; i < indent; i++)
+				fprintf(file, "\t");
 			astPrintCode(file, node->children[0]);
+			fprintf(file, "\n");
 			if(node->children[1]) {
-				fprintf(file, "\n");
 				astPrintCode(file, node->children[1]);
 			}
 			break;
@@ -285,9 +292,13 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 			fprintf(file, ")");
 			break;
 		case AST_BLOCK:
+			indent++;
 			fprintf(file, "{\n");
 			astPrintCode(file, node->children[0]);
-			fprintf(file, "\n}");
+			indent--;
+			for(i = 0; i < indent; i++)
+				fprintf(file, "\t");
+			fprintf(file, "}");
 			break;
 		case AST_BOOL:
 			fprintf(file, "bool");
