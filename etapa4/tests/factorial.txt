@@ -8,7 +8,7 @@ int factorial(int n) {
 
 int main() {
 	output "Input x:\n"
-	input xa
+	input x
 	x = factorial(x)
 	output "x! = ", x, "\n"
 	return x
