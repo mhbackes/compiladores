@@ -65,6 +65,11 @@ enum ast_types {
 	FOREACH_AST(GENERATE_ENUM)
 };
 
+enum datatypes {
+    SCALAR,
+    BOOLEAN
+};
+
 typedef struct ast_node {
     int type;
 	int lineNumber;

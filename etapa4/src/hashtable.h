@@ -10,15 +10,21 @@
 
 #define HASH_SIZE 997
 
-#define SYMBOL_LIT_INT		1
-#define SYMBOL_LIT_CHAR		2
-#define SYMBOL_LIT_STRING	3
-#define SYMBOL_IDENTIFIER	4
-#define SYMBOL_LIT_TRUE 5
-#define SYMBOL_LIT_FALSE 6
+enum symbol_types {
+    SYMBOL_LIT_INT,
+    SYMBOL_LIT_CHAR,
+    SYMBOL_LIT_STRING,
+    SYMBOL_IDENTIFIER,
+    SYMBOL_LIT_TRUE,
+    SYMBOL_LIT_FALSE,
+    SYMBOL_VAR,
+    SYMBOL_ARR,
+    SYMBOL_FUN
+};
 
 typedef struct hash_node_struct {
     int type;
+    int datatype;
     char *text;
     struct hash_node_struct *next;
 } HASH_NODE;

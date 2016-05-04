@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 
 	//astPrintCode(prog, root);
 	//printf("Decompiled program written in \"%s\".\n", argv[2]);
-	astPrintDot(prog, root);
+	//astPrintDot(prog, root);
 	printf("Dot written in \"%s\".\n", argv[2]);
 	fclose(prog);
 

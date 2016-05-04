@@ -59,6 +59,8 @@ HASH_NODE *hashInsert(char *str, int type) {
 	}
 
 	newNode->type = type;
+	newNode->datatype = -1;
+
 	strncpy(newNode->text, str, strlen(str));
 
 	address = hashAddress(str);

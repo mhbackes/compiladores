@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include "ast.h"
 #include "hashtable.h"
+#include "semantic.h"
 #include "lex.yy.h"
 
 AST_NODE* root;
@@ -67,7 +68,8 @@ int getLastTokenLineNumber();
 %type<ln> lineNumber
 
 %%
-root: program							{ root = $1; } /* MARCOS */
+root: program							{ root = $1;
+                                          checkDeclaration(root); } /* MARCOS */
 
 program: declaration					{ $$ = astCreate(AST_PROGRAM, $1->lineNumber, NULL, 2,$1, NULL); } /* PAULO */
 	   | declaration program			{ $$ = astCreate(AST_PROGRAM, $1->lineNumber, NULL, 2,$1, $2); }
