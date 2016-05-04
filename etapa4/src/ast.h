@@ -20,7 +20,6 @@
     AST(AST_VARDEC)     \
     AST(AST_ARRDEC)     \
     AST(AST_FUNDEC)     \
-    AST(AST_FUNHD)      \
     AST(AST_FUNCALL)    \
     AST(AST_ARRACESS)   \
     AST(AST_LCMD)		\

@@ -112,14 +112,13 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 			break;
 		case AST_FUNDEC:
 			astPrintCode(file, node->children[0]);
-			astPrintCode(file, node->children[1]);
-			fprintf(file, ";\n");
-			break;
-		case AST_FUNHD:
-			astPrintCode(file, node->children[0]);
 			fprintf(file, " %s (", node->symbol->text);
 			astPrintCode(file, node->children[1]);
-			fprintf(file, ") ");
+			if(node->children[1]->type == AST_LPAR) {
+			    fprintf(file, ") ");
+			    astPrintCode(file, node->children[2]);
+			}
+			fprintf(file, ";\n");
 			break;
 		case AST_FUNCALL:
 			fprintf(file, " %s(", node->symbol->text);

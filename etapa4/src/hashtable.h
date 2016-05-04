@@ -17,9 +17,6 @@ enum symbol_types {
     SYMBOL_IDENTIFIER,
     SYMBOL_LIT_TRUE,
     SYMBOL_LIT_FALSE,
-    SYMBOL_VAR,
-    SYMBOL_ARR,
-    SYMBOL_FUN
 };
 
 typedef struct hash_node_struct {
@@ -28,6 +25,9 @@ typedef struct hash_node_struct {
     char *text;
     struct hash_node_struct *next;
 } HASH_NODE;
+
+/* GLOBAL VARIABLES */
+HASH_NODE *_symbolTable[HASH_SIZE];
 
 void hashInit(void);
 HASH_NODE *hashInsert(char *str, int type);

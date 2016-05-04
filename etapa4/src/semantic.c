@@ -12,9 +12,9 @@ int checkDeclaration(AST_NODE *node) {
     switch(node->type) {
 	    case AST_VARDEC:
 	    case AST_ARRDEC:
-	    case AST_FUNHD:
-		    if(node->symbol->type != SYMBOL_IDENTIFIER)
-			    fprintf(stderr, "[SEM] VAR WAS REDECLARED\n");
+	    case AST_FUNDEC:
+		    if(node->symbol->type != SYMBOL_IDENTIFIER) // TODO set err
+			    fprintf(stderr, "[SEM] ID %s REDECLARED\n", node->symbol->text);
 		    node->symbol->type = node->type;
 		    switch(node->children[0]->type) {
 			    case AST_INT:
@@ -36,7 +36,18 @@ int checkDeclaration(AST_NODE *node) {
     return 0;
 }
 
-int checkUndeclared(HASH_NODE *hash) {
+int checkUndeclared(HASH_NODE **hash) {
+    int i;
+    HASH_NODE *node;
+
+    for(i = 0; i < HASH_SIZE; i++) {
+	node = hash[i];
+	while(node) {
+		if(node->type == SYMBOL_IDENTIFIER) // TODO set err
+		    fprintf(stderr, "[SEM] ID %s UNDECLARED\n", node->text);
+		node = node->next;
+	}
+    }
 
     return 0;
 }

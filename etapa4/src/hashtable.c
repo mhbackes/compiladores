@@ -17,8 +17,6 @@ HASH_NODE *hashFind(char *str, int type);
 int hashAddress(char *str);
 HASH_NODE *hashNewNode(char *str, int type); 
 
-/* GLOBAL VARIABLES */
-HASH_NODE *_symbolTable[HASH_SIZE];
 
 void hashInit(void) {
 	int i;
