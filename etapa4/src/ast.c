@@ -114,10 +114,8 @@ void astPrintCode(FILE* file, AST_NODE* node) {
 			astPrintCode(file, node->children[0]);
 			fprintf(file, " %s (", node->symbol->text);
 			astPrintCode(file, node->children[1]);
-			if(node->children[1]->type == AST_LPAR) {
-			    fprintf(file, ") ");
-			    astPrintCode(file, node->children[2]);
-			}
+			fprintf(file, ")");
+			astPrintCode(file, node->children[2]);
 			fprintf(file, ";\n");
 			break;
 		case AST_FUNCALL:

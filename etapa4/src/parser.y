@@ -4,14 +4,6 @@
  * MARCOS HENRIQUE BACKES
  * PAULO RENATO LANZARIN */ 
 
-/* OLD FUNCTION DEF
-function: functionHeader cmd			{ $$ = astCreate(AST_FUNDEC, $1->lineNumber, NULL, 2, $1, $2); }
-		;
-
-functionHeader: type TK_IDENTIFIER '(' listOfParameters ')'	{ $$ = astCreate(AST_FUNHD, $1->lineNumber, $2, 2, $1, $4); }
-			  | type TK_IDENTIFIER '(' ')'					{ $$ = astCreate(AST_FUNHD, $1->lineNumber, $2, 1, $1); }
-              ;
-*/
 %{
 #include <stdio.h>
 #include <stdlib.h>
@@ -126,7 +118,7 @@ listOfLiteral: literal					{ $$ = astCreate(AST_LLIT, $1->lineNumber, NULL, 2, $
 			 ;
 
 function: type TK_IDENTIFIER '(' listOfParameters ')' cmd   { $$ = astCreate(AST_FUNDEC, $1->lineNumber, $2, 3, $1, $4, $6); } /* PAULO */
-        | type TK_IDENTIFIER '(' ')' cmd                    { $$ = astCreate(AST_FUNDEC, $1->lineNumber, $2, 2, $1, $5); } 
+        | type TK_IDENTIFIER '(' ')' cmd                    { $$ = astCreate(AST_FUNDEC, $1->lineNumber, $2, 3, $1, NULL, $5); } 
 		;
 
 

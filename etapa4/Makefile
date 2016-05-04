@@ -8,7 +8,7 @@ TARGET=etapa4
 
 SRC_FILES=$(SRC)/y.tab.c $(SRC)/lex.yy.c $(wildcard $(SRC)/*.c)
 OBJ_FILES=$(patsubst $(SRC)/%.c, $(BIN)/%.o, $(SRC_FILES))
-RM=$(SRC)/lex.yy.h $(SRC)/lex.yy.c $(SRC)/y.tab.h $(SRC)/y.tab.c
+RM=$(SRC)/lex.yy.h $(SRC)/lex.yy.c $(SRC)/y.tab.h $(SRC)/y.tab.c $(SRC)/*~
 
 $(TARGET): $(OBJ_FILES)
 	$(CC) $(FLAGS) -o $@ $^
