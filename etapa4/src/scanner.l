@@ -62,12 +62,12 @@ return					{ return token(KW_RETURN); }
  /* OPERATORS */
 
  /* LITERALS */
-FALSE					{ yylval.symbol = hashInsert(yytext, SYMBOL_LIT_FALSE); return token(LIT_FALSE); }
-TRUE					{ yylval.symbol = hashInsert(yytext, SYMBOL_LIT_TRUE); return token(LIT_TRUE); }
-[a-zA-Z][a-zA-Z0-9_]*	{ yylval.symbol = hashInsert(yytext, SYMBOL_IDENTIFIER); return token(TK_IDENTIFIER); }
-[0-9]+					{ yylval.symbol = hashInsert(yytext, SYMBOL_LIT_INT); return token(LIT_INTEGER); }
-\'.\'					{ yylval.symbol = hashInsert(yytext, SYMBOL_LIT_CHAR); return token(LIT_CHAR); }
-\"([^\"\\\n]|\\.)*\"	{ yylval.symbol = hashInsert(yytext, SYMBOL_LIT_STRING); return token(LIT_STRING); }
+FALSE					{ yylval.symbol = hashInsert(yytext, SYMBOL_LIT_FALSE, _lineNumber); return token(LIT_FALSE); }
+TRUE					{ yylval.symbol = hashInsert(yytext, SYMBOL_LIT_TRUE, _lineNumber); return token(LIT_TRUE); }
+[a-zA-Z][a-zA-Z0-9_]*	{ yylval.symbol = hashInsert(yytext, SYMBOL_IDENTIFIER, _lineNumber); return token(TK_IDENTIFIER); }
+[0-9]+					{ yylval.symbol = hashInsert(yytext, SYMBOL_LIT_INT, _lineNumber); return token(LIT_INTEGER); }
+\'.\'					{ yylval.symbol = hashInsert(yytext, SYMBOL_LIT_CHAR, _lineNumber); return token(LIT_CHAR); }
+\"([^\"\\\n]|\\.)*\"	{ yylval.symbol = hashInsert(yytext, SYMBOL_LIT_STRING, _lineNumber); return token(LIT_STRING); }
  /* LITERALS */
 
  /* LINE COMMENT */

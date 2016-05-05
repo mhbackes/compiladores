@@ -22,6 +22,7 @@ enum symbol_types {
 typedef struct hash_node_struct {
     int type;
     int datatype;
+	int lineNumber;
     char *text;
     struct hash_node_struct *next;
 } HASH_NODE;
@@ -30,7 +31,7 @@ typedef struct hash_node_struct {
 HASH_NODE *_symbolTable[HASH_SIZE];
 
 void hashInit(void);
-HASH_NODE *hashInsert(char *str, int type);
+HASH_NODE *hashInsert(char *str, int type, int lineNumber);
 HASH_NODE *hashFind(char *str, int type);
 void hashPrint(void);
 

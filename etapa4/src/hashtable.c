@@ -13,7 +13,6 @@
 #include "y.tab.h"
 
 /* PROTOTYPES */
-HASH_NODE *hashFind(char *str, int type);
 int hashAddress(char *str);
 HASH_NODE *hashNewNode(char *str, int type); 
 
@@ -36,7 +35,7 @@ int hashAddress(char *str) {
 	return address - 1;
 }
 
-HASH_NODE *hashInsert(char *str, int type) {
+HASH_NODE *hashInsert(char *str, int type, int lineNumber) {
 	int address;
 	HASH_NODE *newNode;
 
@@ -58,6 +57,7 @@ HASH_NODE *hashInsert(char *str, int type) {
 
 	newNode->type = type;
 	newNode->datatype = -1;
+	newNode->lineNumber = lineNumber;
 
 	strncpy(newNode->text, str, strlen(str));
 

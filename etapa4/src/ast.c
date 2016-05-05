@@ -3,7 +3,7 @@
 #include "ast.h"
 
 const char* _astString[] = {
-	FOREACH_AST(GENERATE_STRING)
+	FOREACH_AST(GENERATE_AST_STRING)
 };
 
 void astPrintDotNodes(FILE *file, AST_NODE *node);
