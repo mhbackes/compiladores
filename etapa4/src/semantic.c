@@ -19,20 +19,10 @@ int checkDeclaration(AST_NODE *node) {
         case AST_VARDEC:
         case AST_ARRDEC:
         case AST_FUNDEC:
-            if(node->symbol->type != SYMBOL_IDENTIFIER)
+            if(node->symbol->type != SYMBOL_UNDEF)
                 semError(SEM_REDECLARED, node->lineNumber, node->symbol->text);
             node->symbol->type = node->type;
-            switch(node->children[0]->type) {
-                case AST_INT:
-                case AST_REAL:
-                case AST_CHAR:
-                    node->symbol->datatype = SCALAR;
-                    break;
-                case AST_BOOL:
-                    node->symbol->datatype = BOOLEAN;
-                    break;
-            }
-            break;
+            node->symbol->datatype = node->children[0]->type;
     }
 
     for(i = 0; i < node->size; i++)
@@ -48,7 +38,7 @@ int checkUndeclared(HASH_NODE **hash) {
     for(i = 0; i < HASH_SIZE; i++) {
         node = hash[i];
         while(node) {
-            if(node->type == SYMBOL_IDENTIFIER)
+            if(node->type == SYMBOL_UNDEF)
                 semError(SEM_UNDECLARED, node->lineNumber, node->text);
             node = node->next;
         }

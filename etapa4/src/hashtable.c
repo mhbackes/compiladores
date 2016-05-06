@@ -12,6 +12,14 @@
 #include "ast.h"
 #include "y.tab.h"
 
+const char* _symboTypelString[] = {
+    FOREACH_SYMBOL_TYPE(GENERATE_HASH_STRING)
+};
+
+const char* _dataTypeString[] = {
+    FOREACH_DATA_TYPE(GENERATE_HASH_STRING)
+};
+
 /* PROTOTYPES */
 int hashAddress(char *str);
 HASH_NODE *hashNewNode(char *str, int type); 
@@ -35,18 +43,19 @@ int hashAddress(char *str) {
     return address - 1;
 }
 
-HASH_NODE *hashInsert(char *str, int type, int lineNumber) {
+HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber) {
     int address;
     HASH_NODE *newNode;
 
     // if it is a string or char, we should strip it before anything else
-    if(type == SYMBOL_LIT_STRING || type == SYMBOL_LIT_CHAR) {
+    if(type == SYMBOL_LIT && 
+            (datatype == DTYPE_STR || datatype == DTYPE_CHAR)) {
         str++; 
         str[strlen(str) - 1] = '\0';
     }
 
     // "str" is already on hashtable
-    if((newNode = hashFind(str, type)))
+    if((newNode = hashFind(str, datatype)))
         return newNode;
     // new node allocation
     if(!(newNode = (HASH_NODE *) malloc(sizeof(HASH_NODE))) ||
@@ -56,7 +65,7 @@ HASH_NODE *hashInsert(char *str, int type, int lineNumber) {
     }
 
     newNode->type = type;
-    newNode->datatype = -1;
+    newNode->datatype = datatype;
     newNode->lineNumber = lineNumber;
 
     strncpy(newNode->text, str, strlen(str));
@@ -68,12 +77,12 @@ HASH_NODE *hashInsert(char *str, int type, int lineNumber) {
     return newNode;
 }
 
-HASH_NODE *hashFind(char *str, int type) {
+HASH_NODE *hashFind(char *str, int datatype) {
     int address = hashAddress(str);
     HASH_NODE *node = _symbolTable[address];
 
     while(node) {
-        if(!strncmp(node->text, str, strlen(str)) && node->type == type)
+        if(!strncmp(node->text, str, strlen(str)) && node->datatype == datatype)
             return node;
         node = node->next;
     }
@@ -87,21 +96,11 @@ void hashPrint(void) {
     HASH_NODE *node;
     for(i = 0; i < HASH_SIZE; i++) {
         node = _symbolTable[i];
-        while(node) {
-            switch(node->type) {
-                case SYMBOL_IDENTIFIER:
-                    printf("Table[%d] -> TYPE: SYMBOL_IDENTIFIER\tTEXT: %s\n", i, node->text);
-                    break;
-                case SYMBOL_LIT_INT:
-                    printf("Table[%d] -> TYPE: SYMBOL_LIT_INT\tTEXT: %s\n", i, node->text);
-                    break;
-                case SYMBOL_LIT_CHAR:
-                    printf("Table[%d] -> TYPE: SYMBOL_LIT_CHAR\tTEXT: %s\n", i, node->text);
-                    break;
-                case SYMBOL_LIT_STRING:
-                    printf("Table[%d] -> TYPE: SYMBOL_LIT_STRING\tTEXT: %s\n", i, node->text);
-                    break;
-            }
+        while(node) { 
+            printf("Table[%d] -> ", i);
+            printf("TYPE: %s\t", _symboTypelString[node->type]);
+            printf("DATATYPE: %s\t", _dataTypeString[node->datatype]);
+            printf("TEXT: %s\n", node->text);
             node = node->next;
         }
     }

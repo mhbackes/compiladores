@@ -78,13 +78,15 @@ void astPrintCode(FILE* file, AST_NODE* node) {
                 astPrintCode(file, node->children[1]);
         case AST_SYMBOL:
             if(node->symbol) {
-                if(node->symbol->type == SYMBOL_LIT_STRING) {
+                if(node->symbol->type == SYMBOL_LIT && 
+                        node->symbol->datatype == DTYPE_STR) {
                     fprintf(file, "\"");
                     fprintf(file, "%s", node->symbol->text);
                     fprintf(file, "\"");
                     break;
                 }
-                if(node->symbol->type == SYMBOL_LIT_CHAR) {
+                if(node->symbol->type == SYMBOL_LIT &&
+                        node->symbol->datatype == DTYPE_CHAR) {
                     fprintf(file, "\'");
                     fprintf(file, "%s", node->symbol->text);
                     fprintf(file, "\'");

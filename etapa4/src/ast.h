@@ -36,8 +36,8 @@
     AST(AST_IFTE)		\
     AST(AST_WHILE)		\
     AST(AST_RETURN)		\
-	AST(AST_EMPTY)		\
-	AST(AST_NOT)		\
+    AST(AST_EMPTY)		\
+    AST(AST_NOT)		\
     AST(AST_LE)			\
     AST(AST_GE)			\
     AST(AST_EQ)			\
@@ -50,23 +50,18 @@
     AST(AST_DIV)		\
     AST(AST_LESS)		\
     AST(AST_GREATER)	\
-	AST(AST_PAR)		\
-	AST(AST_BLOCK)		\
-	AST(AST_BOOL)		\
-	AST(AST_CHAR)		\
-	AST(AST_INT)		\
-	AST(AST_REAL)
+    AST(AST_PAR)		\
+    AST(AST_BLOCK)		\
+    AST(AST_BOOL)		\
+    AST(AST_CHAR)		\
+    AST(AST_INT)		\
+    AST(AST_REAL)
 
 #define GENERATE_AST_ENUM(ENUM) ENUM,
 #define GENERATE_AST_STRING(STRING) #STRING,
 
 enum ast_types {
     FOREACH_AST(GENERATE_AST_ENUM)
-};
-
-enum datatypes {
-    SCALAR,
-    BOOLEAN
 };
 
 typedef struct ast_node {
