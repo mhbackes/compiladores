@@ -106,3 +106,11 @@ void hashPrint(void) {
     }
     return;
 }
+
+void hashPrintDotNode(FILE* file, HASH_NODE *node) {
+        fprintf(file, "\t\"%p\" [label=\"TEXT=\\\"%s\\\"\\n", node,
+                node->text);
+        fprintf(file, "STYPE=%s\\nDTYPE=%s\"", _symboTypelString[node->type], 
+                _dataTypeString[node->datatype]);
+        fprintf(file, "shape=box]\n");
+}

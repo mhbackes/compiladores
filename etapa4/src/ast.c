@@ -43,9 +43,11 @@ void astPrintDot(FILE *file, AST_NODE *node) {
 
 void astPrintDotNodes(FILE *file, AST_NODE *node) {
     if(!node) return;
-    fprintf(file, "\t\"%p\" [label=\"%s\\n%d\"]\n", node, _astString[node->type], node->lineNumber);
-    if(node->symbol)
-        fprintf(file, "\t\"%p\" [label=\"%s\"]\n", node->symbol, node->symbol->text);
+    fprintf(file, "\t\"%p\" [label=\"%s\\nLINE=%d\"]\n", node, 
+            _astString[node->type], node->lineNumber);
+    if(node->symbol) {
+        hashPrintDotNode(file, node->symbol);
+    }
     int i;
     for(i = 0; i < node->size; i++){
         astPrintDotNodes(file, node->children[i]);
