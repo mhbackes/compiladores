@@ -61,7 +61,7 @@
 #define GENERATE_AST_STRING(STRING) #STRING,
 
 enum ast_types {
-	FOREACH_AST(GENERATE_AST_ENUM)
+    FOREACH_AST(GENERATE_AST_ENUM)
 };
 
 enum datatypes {
@@ -71,9 +71,9 @@ enum datatypes {
 
 typedef struct ast_node {
     int type;
-	int lineNumber;
+    int lineNumber;
     HASH_NODE *symbol;
-	int size;
+    int size;
     struct ast_node **children;
 } AST_NODE;
 

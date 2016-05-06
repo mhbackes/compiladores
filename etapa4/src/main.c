@@ -15,26 +15,26 @@
 extern AST_NODE *root;
 
 int main(int argc, char *argv[]) {
-	if(argc >= 2) {
-		if((yyin = fopen(argv[1], "r")) == NULL) {
-			fprintf(stderr, "Error: file could not be opened.\n");
-			exit(1);
-		}
-	}
+    if(argc >= 2) {
+        if((yyin = fopen(argv[1], "r")) == NULL) {
+            fprintf(stderr, "Error: file could not be opened.\n");
+            exit(1);
+        }
+    }
 
-	yyparse();
+    yyparse();
 
-	printf("Parse successful.\n");
+    printf("Parse successful.\n");
 
-	FILE* prog = stdout;
-	if(argc >= 3)
-		prog = fopen(argv[2], "w");
+    FILE* prog = stdout;
+    if(argc >= 3)
+        prog = fopen(argv[2], "w");
 
-	//astPrintCode(prog, root);
-	//printf("Decompiled program written in \"%s\".\n", argv[2]);
-	astPrintDot(prog, root);
-	printf("Dot written in \"%s\".\n", argv[2]);
-	fclose(prog);
+    //astPrintCode(prog, root);
+    //printf("Decompiled program written in \"%s\".\n", argv[2]);
+    astPrintDot(prog, root);
+    printf("Dot written in \"%s\".\n", argv[2]);
+    fclose(prog);
 
-	return 0;
+    return 0;
 }

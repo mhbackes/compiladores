@@ -24,7 +24,7 @@ int getLastTokenLineNumber();
 %union {
     HASH_NODE *symbol;
     AST_NODE *ast;
-	int ln;
+    int ln;
 }
 
 %token KW_INT       
@@ -70,62 +70,60 @@ int getLastTokenLineNumber();
 
 %%
 root: program							{
-                                            root = $1;
+    root = $1;
                                             checkDeclaration(root);
                                             checkUndeclared(_symbolTable);
                                         } /* MARCOS */
 
 program: declaration					{ $$ = astCreate(AST_PROGRAM, $1->lineNumber, NULL, 2,$1, NULL); } /* PAULO */
-	   | declaration program			{ $$ = astCreate(AST_PROGRAM, $1->lineNumber, NULL, 2,$1, $2); }
-	   ;
+       | declaration program			{ $$ = astCreate(AST_PROGRAM, $1->lineNumber, NULL, 2,$1, $2); }
+       ;
 
 declaration: global ';'					{ $$ = $1; } /* MARCOS */
-		   | function ';'				{ $$ = $1; } /* PAULO */
-		   ;
+           | function ';'				{ $$ = $1; } /* PAULO */
+           ;
 
 global: variable						{ $$ = $1; } /* MARCOS */
-	  | array							{ $$ = $1; } /* MARCOS */
-	  ;
+      | array							{ $$ = $1; } /* MARCOS */
+      ;
 
 variable: type TK_IDENTIFIER ':' literal	{ $$ = astCreate(AST_VARDEC, $1->lineNumber, $2, 2, $1, $4); } /* MARCOS */
-	    ;
+        ;
 
 type: KW_INT lineNumber					{ $$ = astCreate(AST_INT, $2, NULL, 0); } /* MARCOS */
-	| KW_REAL lineNumber				{ $$ = astCreate(AST_REAL, $2, NULL, 0); } /* MARCOS */
-	| KW_CHAR lineNumber				{ $$ = astCreate(AST_CHAR, $2, NULL, 0); } /* MARCOS */
-	| KW_BOOL lineNumber				{ $$ = astCreate(AST_BOOL, $2, NULL, 0); } /* MARCOS */
-	;
+    | KW_REAL lineNumber				{ $$ = astCreate(AST_REAL, $2, NULL, 0); } /* MARCOS */
+    | KW_CHAR lineNumber				{ $$ = astCreate(AST_CHAR, $2, NULL, 0); } /* MARCOS */
+    | KW_BOOL lineNumber				{ $$ = astCreate(AST_BOOL, $2, NULL, 0); } /* MARCOS */
+    ;
 
 literalBool: LIT_TRUE lineNumber		{ $$ = astCreate(AST_SYMBOL, $2, $1, 0); }
-		   | LIT_FALSE lineNumber		{ $$ = astCreate(AST_SYMBOL, $2, $1, 0); }
-		   ;
+           | LIT_FALSE lineNumber		{ $$ = astCreate(AST_SYMBOL, $2, $1, 0); }
+           ;
 
 literalInteger: LIT_INTEGER	lineNumber	{ $$ = astCreate(AST_SYMBOL, $2, $1, 0); } /* MARCOS */
-			  ;
+              ;
 
 literal: literalBool					{ $$ = $1; } /* MARCOS */
-	   | literalInteger					{ $$ = $1; } /* MARCOS */
+       | literalInteger					{ $$ = $1; } /* MARCOS */
        | LIT_REAL lineNumber			{ $$ = astCreate(AST_SYMBOL, $2, $1, 0); } /* PAULO */
-	   | LIT_CHAR lineNumber			{ $$ = astCreate(AST_SYMBOL, $2, $1, 0); } /* MARCOS */
-	   ;
+       | LIT_CHAR lineNumber			{ $$ = astCreate(AST_SYMBOL, $2, $1, 0); } /* MARCOS */
+       ;
 
 array: type TK_IDENTIFIER '[' literalInteger ']'					{ $$ = astCreate(AST_ARRDEC, $1->lineNumber, $2, 2, $1, $4, NULL); } /* MARCOS */
-	 | type TK_IDENTIFIER '[' literalInteger ']' ':' listOfLiteral	{ $$ = astCreate(AST_ARRDEC, $1->lineNumber, $2, 3, $1, $4, $7); } /* TODO */
-	 ;
+     | type TK_IDENTIFIER '[' literalInteger ']' ':' listOfLiteral	{ $$ = astCreate(AST_ARRDEC, $1->lineNumber, $2, 3, $1, $4, $7); } /* PAULO */
+     ;
 
 listOfLiteral: literal					{ $$ = astCreate(AST_LLIT, $1->lineNumber, NULL, 2, $1, NULL); } /* PAULO */
-			 | literal listOfLiteral    { $$ = astCreate(AST_LLIT, $1->lineNumber, NULL, 2, $1, $2); }
-			 ;
+             | literal listOfLiteral    { $$ = astCreate(AST_LLIT, $1->lineNumber, NULL, 2, $1, $2); }
+             ;
 
 function: type TK_IDENTIFIER '(' listOfParameters ')' cmd   { $$ = astCreate(AST_FUNDEC, $1->lineNumber, $2, 3, $1, $4, $6); } /* PAULO */
         | type TK_IDENTIFIER '(' ')' cmd                    { $$ = astCreate(AST_FUNDEC, $1->lineNumber, $2, 3, $1, NULL, $5); } 
-		;
-
+        ;
 
 listOfParameters: type TK_IDENTIFIER    { $$ = astCreate(AST_LPAR, $1->lineNumber, $2, 2, $1, NULL); } /* PAULO */
                 | type TK_IDENTIFIER ',' listOfParameters { $$ = astCreate(AST_LPAR, $1->lineNumber, $2, 2, $1, $4);} /* PAULO */
                 ;
-
 
 exp: literal									{ $$ = $1; } /* MARCOS */
    | TK_IDENTIFIER lineNumber					{ $$ = astCreate(AST_SYMBOL, $2, $1, 0); } /* MARCOS */
@@ -149,7 +147,7 @@ exp: literal									{ $$ = $1; } /* MARCOS */
    ;
 
 listOfExp: exp							{ $$ = astCreate(AST_LEXP, $1->lineNumber, NULL, 2, $1, NULL); } /* MARCOS */
-		 | exp ',' listOfExp 		    { $$ = astCreate(AST_LEXP, $1->lineNumber, NULL, 2, $1, $3); }
+         | exp ',' listOfExp 		    { $$ = astCreate(AST_LEXP, $1->lineNumber, NULL, 2, $1, $3); }
 
 cmd: attr								{ $$ = $1; } /* MARCOS */
    | input								{ $$ = $1; } /* MARCOS */
@@ -170,21 +168,21 @@ input: KW_INPUT lineNumber listOfInput		{ $$ = astCreate(AST_INPUT, $2, NULL, 1,
      ;
 
 listOfInput: TK_IDENTIFIER lineNumber		{ $$ = astCreate(AST_LIN, $2, $1, 1, NULL); } /* MARCOS */
-		   | TK_IDENTIFIER lineNumber ',' listOfInput  { $$ = astCreate(AST_LIN, $2, $1, 1, $4); }
-		   ;
+           | TK_IDENTIFIER lineNumber ',' listOfInput  { $$ = astCreate(AST_LIN, $2, $1, 1, $4); }
+           ;
 
 output: KW_OUTPUT lineNumber listOfOutput	{ $$ = astCreate(AST_OUTPUT, $2, NULL, 1, $3); } /* PAULO */
       ;
 
 
 listOfOutput: stringOrExp					{ $$ = astCreate(AST_LOUT, $1->lineNumber, NULL, 2, $1, NULL); } /* PAULO */
-			| stringOrExp ',' listOfOutput  { $$ = astCreate(AST_LOUT, $1->lineNumber, NULL, 2, $1, $3); }
-			;
+            | stringOrExp ',' listOfOutput  { $$ = astCreate(AST_LOUT, $1->lineNumber, NULL, 2, $1, $3); }
+            ;
 
 stringOrExp: exp						{ $$ = $1; } 
-		   | LIT_STRING lineNumber		{ $$ = astCreate(AST_SYMBOL, $2, $1, 0); } /* PAULO */
-		   ;
-			
+           | LIT_STRING lineNumber		{ $$ = astCreate(AST_SYMBOL, $2, $1, 0); } /* PAULO */
+           ;
+
 
 if: KW_IF lineNumber '(' exp ')' cmd %prec KW_IFX	{ $$ = astCreate(AST_IF, $2, NULL, 2, $4, $6);} /* PAULO */
   | KW_IF lineNumber '(' exp ')' cmd KW_ELSE cmd	{ $$ = astCreate(AST_IFTE, $2, NULL, 3, $4, $6, $8); } /* PAULO */
@@ -197,8 +195,8 @@ block: '{' lineNumber listOfCmd '}'			{ $$ = astCreate(AST_BLOCK, $2, NULL, 1, $
      ;
 
 listOfCmd: cmd							{ $$ = astCreate(AST_LCMD, $1->lineNumber, NULL, 2, $1, NULL); } /* MARCOS */
-		 | cmd listOfCmd 			    { $$ = astCreate(AST_LCMD, $1->lineNumber, NULL, 2, $1, $2); }
-	     ;
+         | cmd listOfCmd 			    { $$ = astCreate(AST_LCMD, $1->lineNumber, NULL, 2, $1, $2); }
+         ;
 
 return: KW_RETURN exp					{ $$ = astCreate(AST_RETURN, $2->lineNumber, NULL, 1, $2); } /* PAULO */
 
@@ -207,6 +205,6 @@ lineNumber:								{ $$ = getLastTokenLineNumber(); }
 
 %%
 void yyerror (char const *msg) {
-	fprintf(stderr, "Syntax error in line %d.\n", getLineNumber());
-	exit(3);
+    fprintf(stderr, "Syntax error in line %d.\n", getLineNumber());
+    exit(3);
 }
