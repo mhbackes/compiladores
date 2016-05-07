@@ -79,15 +79,24 @@ int checkUsage(AST_NODE  *node) {
         return 0;
 
     switch(node->type) {
-        case AST_VAR:
+        // scalar
+        case AST_VAR:   // rhs usage
+        case AST_ATTR:  // lhs usage
             if(node->symbol->type != SYMBOL_SCALAR)
                 semError(SEM_USAGE, node->lineNumber, node->symbol->text);
             break;
-        case AST_FUNCALL:
+
+        // function
+        case AST_FUNCALL:   // rhs usage
             if(node->symbol->type != SYMBOL_FUNC)
                 semError(SEM_USAGE, node->lineNumber, node->symbol->text);
             break;
 
+        // vector
+        case AST_ARRACESS:  // rhs usage
+        case AST_ATTRARR:   // lhs usage
+            if(node->symbol->type != SYMBOL_VECTOR)
+                semError(SEM_USAGE, node->lineNumber, node->symbol->text);
     }
 
     for(i = 0; i < node->size; i++)

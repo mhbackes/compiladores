@@ -1,14 +1,39 @@
-// Wrong usage test
+/*
+ * Wrong usage test.
+ * USAGE ERRORS in lines: 14, 15, 17, 19, 21, 22, 28, 29, 33 and 34.
+ */
 
-bool b:0;
-char c:0;
+int a:0;
 int f();;
 int i:0;
-int j:0;
-int k:0;
 int v[10];
 
-
 int test() {
-    i = j + f;
+    // Reading tests
+    a = i;      // variable as variable:    OK
+    a = f;      // function as variable:    ERROR
+    a = v;      // vector as variable:      ERROR
+    
+    a = i();    // variable as function:    ERROR
+    a = f();    // function as function:    OK
+    a = v();    // vector as function:      ERROR
+    
+    a = i[0];   // variable as vector:      ERROR
+    a = f[0];   // function as vector:      ERROR
+    a = v[0];   // vector as vector:        OK
+    // Reading tests
+
+    // Writing tests
+    i = a;      // variable as variable:    OK
+    f = a;      // function as variable:    ERROR
+    v = a;      // vector as variable:      ERROR
+
+    // function in lhs is sintatic error
+
+    i[0] = a;   // variable as vector:      ERROR
+    f[0] = a;   // function as vector:      ERROR
+    v[0] = a;   // vector as vector:        OK
+    // Writing tests
+
+    return 0
 };
