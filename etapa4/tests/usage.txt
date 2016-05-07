@@ -1,0 +1,14 @@
+// Wrong usage test
+
+bool b:0;
+char c:0;
+int f();;
+int i:0;
+int j:0;
+int k:0;
+int v[10];
+
+
+int test() {
+    i = j + f;
+};

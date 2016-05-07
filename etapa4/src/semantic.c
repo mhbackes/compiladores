@@ -45,6 +45,7 @@ int checkDeclaration(AST_NODE *node) {
                 semError(SEM_REDECLARED, node->lineNumber, node->symbol->text);
             node->symbol->type = astSymbolType(node->type);
             node->symbol->datatype = astDataType(node->children[0]->type);
+            break;
     }
 
     for(i = 0; i < node->size; i++)
@@ -69,7 +70,28 @@ int checkUndeclared(HASH_NODE **hash) {
     return 0;
 }
 
+extern char* _symboTypelString[];
+
 int checkUsage(AST_NODE  *node) {
+    int i = 0;
+
+    if(!node)
+        return 0;
+
+    switch(node->type) {
+        case AST_VAR:
+            if(node->symbol->type != SYMBOL_SCALAR)
+                semError(SEM_USAGE, node->lineNumber, node->symbol->text);
+            break;
+        case AST_FUNCALL:
+            if(node->symbol->type != SYMBOL_FUNC)
+                semError(SEM_USAGE, node->lineNumber, node->symbol->text);
+            break;
+
+    }
+
+    for(i = 0; i < node->size; i++)
+        checkUsage(node->children[i]);
 
     return 0;
 }

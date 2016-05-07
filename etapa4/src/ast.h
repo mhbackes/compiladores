@@ -16,10 +16,11 @@
  */
 #define FOREACH_AST(AST)\
     AST(AST_PROGRAM)    \
-    AST(AST_SYMBOL)		\
     AST(AST_VARDEC)     \
     AST(AST_ARRDEC)     \
     AST(AST_FUNDEC)     \
+    AST(AST_LIT)		\
+    AST(AST_VAR)        \
     AST(AST_FUNCALL)    \
     AST(AST_ARRACESS)   \
     AST(AST_LCMD)		\

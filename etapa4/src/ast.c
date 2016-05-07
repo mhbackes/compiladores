@@ -78,7 +78,8 @@ void astPrintCode(FILE* file, AST_NODE* node) {
             astPrintCode(file, node->children[0]);
             if(node->children[1])
                 astPrintCode(file, node->children[1]);
-        case AST_SYMBOL:
+        case AST_LIT:
+        case AST_VAR:
             if(node->symbol) {
                 if(node->symbol->type == SYMBOL_LIT && 
                         node->symbol->datatype == DTYPE_STR) {
