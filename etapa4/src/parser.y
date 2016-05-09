@@ -129,7 +129,7 @@ listOfParameters: type TK_IDENTIFIER    { $$ = astCreate(AST_LPAR, $1->lineNumbe
 
 exp: literal									{ $$ = $1; } /* MARCOS */
    | TK_IDENTIFIER lineNumber					{ $$ = astCreate(AST_VAR, $2, $1, 0); } /* MARCOS */
-   | TK_IDENTIFIER lineNumber '[' exp ']'		{ $$ = astCreate(AST_ARRACESS, $2, $1, 1, $4); } /* PAULO */
+   | TK_IDENTIFIER lineNumber '[' exp ']'		{ $$ = astCreate(AST_ARRACCESS, $2, $1, 1, $4); } /* PAULO */
    | TK_IDENTIFIER lineNumber '(' listOfExp ')'	{ $$ = astCreate(AST_FUNCALL, $2, $1, 1, $4); } /* PAULO */
    | TK_IDENTIFIER lineNumber '(' ')'			{ $$ = astCreate(AST_FUNCALL, $2, $1, 1, NULL); } /* PAULO */
    | '(' lineNumber exp ')'						{ $$ = astCreate(AST_PAR, $2, NULL, 1, $3); } /* MARCOS */

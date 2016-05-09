@@ -9,8 +9,13 @@ bool b:0;
 char c:0;
 int i:0;
 real r:0;
+int itest:0;
+bool btest:1;
+
 
 int main() {
+    
+
     // operator not
     b = !b // OK
     b = !c // ERROR
@@ -107,4 +112,28 @@ int main() {
     r = r / i // OK
     r = r / r // OK
 
+    // function call parameters
+    test = incn(2, 2)   // OK
+    test = incn(2)      // ERROR
+    test = incn(2, b)   // ERROR
+    test = incn(2, r)   // OK
+    test = incn()       // ERROR
+    btest = bts(2, b)   // OK
+    btest = bts(2, 0)   // ERROR 
+
+    // function call return    
+    itest = bts(2, b)   // ERROR
+    btest = incn(2, 2)  // ERROR
+
+
 };
+
+int incn (int x, int n)
+  {
+  return x+n
+  };
+
+bool bts (int bti, bool btb)
+  {
+  return btb
+  };

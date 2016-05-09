@@ -140,6 +140,11 @@ int checkArithmetic(int type1, int type2, int lineNumber) {
     return DTYPE_UNDEF;
 }
 
+int scalarAndBool(int t1, int t2) {
+    return (t1 != DTYPE_UNDEF && t2 != DTYPE_UNDEF &&
+		    t1 != t2 && (t1 == DTYPE_BOOL || t2 == DTYPE_BOOL));
+}
+
 int checkTypes(AST_NODE *node) {
     int i;
 
@@ -215,6 +220,21 @@ int checkTypes(AST_NODE *node) {
 	case AST_ARRACCESS:
 	    node->datatype = node->symbol->datatype;
 	    break;
+	
+	case AST_ATTR:
+	    if(scalarAndBool(node->symbol->datatype, node->children[0]->datatype)) {
+		fprintf(stderr, "FOUND AN RETURN TYPE ERR -> ");
+		semError(SEM_TYPE, node->lineNumber, "ret");
+	    }
+	    break;
+
+	case AST_ATTRARR:
+	    if(scalarAndBool(node->symbol->datatype, node->children[1]->datatype)) {
+			fprintf(stderr, "FOUND AN RETURN TYPE ERR -> ");
+			semError(SEM_TYPE, node->lineNumber, "ret");
+	    }
+	    break;
+
     }
 
     return 0;
@@ -222,31 +242,25 @@ int checkTypes(AST_NODE *node) {
 
 // expList = list of call arguments, parList = list of declaration parameters
 int checkParameters(AST_NODE *node) {
-    int nArg = 0, nPar = 0; 
-    AST_NODE *tArg = node->children[0], *tPar = node->symbol->declaration->children[1];
+	int nArg = 0, nPar = 0; 
+	AST_NODE *tArg = node->children[0], *tPar = node->symbol->declaration->children[1];
 
-    while(tPar) {
-
-	if(tArg != NULL) {
-		if(tArg->children[0]->datatype !=  tPar->datatype && 
-				(tPar->datatype == DTYPE_BOOL ||
-				 tArg->children[0]->datatype == DTYPE_BOOL)) {
-			fprintf(stderr, "FOUND AN PAR ERR -> ");
-			semError(SEM_TYPE, node->lineNumber, "funcall");
+	while(tPar) {
+		if(tArg != NULL) {
+			if(scalarAndBool(tArg->children[0]->datatype, tPar->datatype))
+				semError(SEM_TYPE, node->lineNumber, "funcall");
+			nArg++;
+			tArg = tArg->children[1];
 		}
-	    nArg++;
-	    tArg = tArg->children[1];
+
+		nPar++;
+		tPar = tPar->children[1];
 	}
 
-	nPar++;
-	tPar = tPar->children[1];
-    }
+	if(nPar != nArg)
+		semError(SEM_TYPE, node->lineNumber, NULL);
 
-    if(nPar != nArg)
-	    semError(SEM_TYPE, node->lineNumber, NULL);
-
-
-    return 0;
+	return 0;
 }
 
 void semError(int error, int line, char *msg) {
