@@ -219,19 +219,29 @@ int checkTypes(AST_NODE *node) {
 	
 	case AST_ARRACCESS:
 	    node->datatype = node->symbol->datatype;
+	    if(node->children[0]->datatype != DTYPE_INT) {
+		fprintf(stderr, "FOUND AN ARR INDEX TYPE ERR -> ");
+                semError(SEM_TYPE, node->lineNumber, NULL);
+	    }
+
 	    break;
 	
 	case AST_ATTR:
 	    if(scalarAndBool(node->symbol->datatype, node->children[0]->datatype)) {
 		fprintf(stderr, "FOUND AN RETURN TYPE ERR -> ");
-		semError(SEM_TYPE, node->lineNumber, "ret");
+		semError(SEM_TYPE, node->lineNumber, NULL);
 	    }
 	    break;
 
 	case AST_ATTRARR:
 	    if(scalarAndBool(node->symbol->datatype, node->children[1]->datatype)) {
 			fprintf(stderr, "FOUND AN RETURN TYPE ERR -> ");
-			semError(SEM_TYPE, node->lineNumber, "ret");
+			semError(SEM_TYPE, node->lineNumber, NULL);
+	    }
+
+	    if(node->children[0]->datatype != DTYPE_INT) {
+	    	fprintf(stderr, "FOUND AN ARR INDEX TYPE ERR -> ");
+                semError(SEM_TYPE, node->lineNumber, NULL);
 	    }
 	    break;
 
@@ -248,7 +258,7 @@ int checkParameters(AST_NODE *node) {
 	while(tPar) {
 		if(tArg != NULL) {
 			if(scalarAndBool(tArg->children[0]->datatype, tPar->datatype))
-				semError(SEM_TYPE, node->lineNumber, "funcall");
+				semError(SEM_TYPE, node->lineNumber, NULL);
 			nArg++;
 			tArg = tArg->children[1];
 		}

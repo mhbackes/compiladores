@@ -11,6 +11,7 @@ int i:0;
 real r:0;
 int itest:0;
 bool btest:1;
+int mat[1000];
 
 
 int main() {
@@ -113,11 +114,11 @@ int main() {
     r = r / r // OK
 
     // function call parameters
-    test = incn(2, 2)   // OK
-    test = incn(2)      // ERROR
-    test = incn(2, b)   // ERROR
-    test = incn(2, r)   // OK
-    test = incn()       // ERROR
+    itest = incn(2, 2)   // OK
+    itest = incn(2)      // ERROR
+    itest = incn(2, b)   // ERROR
+    itest = incn(2, r)   // OK
+    itest = incn()       // ERROR
     btest = bts(2, b)   // OK
     btest = bts(2, 0)   // ERROR 
 
@@ -125,7 +126,14 @@ int main() {
     itest = bts(2, b)   // ERROR
     btest = incn(2, 2)  // ERROR
 
-
+    // arr index
+    mat[i] = 2          // OK
+    mat[r] = 2          // ERR
+    mat[b] = 2          // ERR  
+    mat[c] = 2          // ERR
+    itest = incn(mat[i], 2) // OK
+    itest = incn(mat[b], 2) // ERR
+    
 };
 
 int incn (int x, int n)
