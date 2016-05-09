@@ -41,10 +41,12 @@ void astPrintDot(FILE *file, AST_NODE *node) {
     fprintf(file, "}\n");
 }
 
+extern const char* _dataTypeString[];
 void astPrintDotNodes(FILE *file, AST_NODE *node) {
     if(!node) return;
-    fprintf(file, "\t\"%p\" [label=\"%s\\nLINE=%d\"]\n", node, 
-            _astString[node->type], node->lineNumber);
+    fprintf(file, "\t\"%p\" [label=\"%s\\nDTYPE=%s\\nLINE=%d\"]\n", node, 
+            _astString[node->type], _dataTypeString[node->datatype],
+            node->lineNumber);
     if(node->symbol) {
         hashPrintDotNode(file, node->symbol);
     }

@@ -33,8 +33,8 @@ int main(int argc, char *argv[]) {
     //hashPrint();
     //astPrintCode(prog, root);
     //printf("Decompiled program written in \"%s\".\n", argv[2]);
-    //astPrintDot(prog, root);
-    //printf("Dot written in \"%s\".\n", argv[2]);
+    astPrintDot(prog, root);
+    printf("Dot written in \"%s\".\n", argv[2]);
     fclose(prog);
 
     return 0;

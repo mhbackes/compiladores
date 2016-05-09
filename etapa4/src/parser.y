@@ -74,6 +74,7 @@ root: program							{
                                             checkDeclaration(root);
                                             checkUndeclared(_symbolTable);
                                             checkUsage(root);
+                                            checkTypes(root);
                                         } /* MARCOS */
 
 program: declaration					{ $$ = astCreate(AST_PROGRAM, $1->lineNumber, NULL, 2,$1, NULL); } /* PAULO */

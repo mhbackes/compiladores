@@ -45,6 +45,7 @@ int checkDeclaration(AST_NODE *node) {
                 semError(SEM_REDECLARED, node->lineNumber, node->symbol->text);
             node->symbol->type = astSymbolType(node->type);
             node->symbol->datatype = astDataType(node->children[0]->type);
+            node->datatype = node->symbol->datatype;
             break;
     }
 
@@ -69,8 +70,6 @@ int checkUndeclared(HASH_NODE **hash) {
 
     return 0;
 }
-
-extern char* _symboTypelString[];
 
 int checkUsage(AST_NODE  *node) {
     int i = 0;
@@ -101,6 +100,99 @@ int checkUsage(AST_NODE  *node) {
 
     for(i = 0; i < node->size; i++)
         checkUsage(node->children[i]);
+
+    return 0;
+}
+
+int checkArithmetic(int type1, int type2, int lineNumber) {
+    if(type1 == DTYPE_BOOL || type2 == DTYPE_BOOL) {
+        semError(SEM_TYPE, lineNumber, NULL);
+        return DTYPE_INT;
+    }
+    switch(type1) {
+        case DTYPE_CHAR:
+            if(type2 == DTYPE_CHAR)
+                return DTYPE_CHAR;
+            else
+                return type2;
+        case DTYPE_INT:
+            if(type2 == DTYPE_REAL)
+                return DTYPE_REAL;
+            else
+                return type1;
+        case DTYPE_REAL:
+            return DTYPE_REAL;
+    }
+    return DTYPE_UNDEF;
+}
+
+int checkTypes(AST_NODE *node) {
+    int i;
+
+    if(!node) return 0;
+
+    for(i = 0; i < node->size; i++)
+        checkTypes(node->children[i]);
+
+    switch (node->type) {
+        case AST_VAR:
+        case AST_LIT:
+            node->datatype = node->symbol->datatype;
+            break;
+
+        case AST_NOT:
+            if(node->children[0]->datatype != DTYPE_BOOL)
+                semError(SEM_TYPE, node->lineNumber, NULL);
+            node->datatype = DTYPE_BOOL;
+            break;
+
+        case AST_AND:
+        case AST_OR:
+            if(node->children[0]->datatype != DTYPE_BOOL ||
+                    node->children[1]->datatype != DTYPE_BOOL)
+                semError(SEM_TYPE, node->lineNumber, NULL);
+            node->datatype = DTYPE_BOOL;
+            break;
+
+        case AST_EQ:
+        case AST_NE:
+            if((node->children[0]->datatype == DTYPE_BOOL &&
+                    node->children[1]->datatype != DTYPE_BOOL) || 
+                    (node->children[0]->datatype != DTYPE_BOOL &&
+                    node->children[1]->datatype == DTYPE_BOOL))
+                semError(SEM_TYPE, node->lineNumber, NULL);
+            node->datatype = DTYPE_BOOL;
+            break;
+
+        case AST_LE:
+        case AST_GE:
+        case AST_LESS:
+        case AST_GREATER:
+            if(node->children[0]->datatype == DTYPE_BOOL ||
+                    node->children[1]->datatype == DTYPE_BOOL)
+                semError(SEM_TYPE, node->lineNumber, NULL);
+            node->datatype = DTYPE_BOOL;
+            break;
+
+        case AST_ADD:
+        case AST_SUB:
+        case AST_MUL:
+            node->datatype = checkArithmetic(node->children[0]->datatype,
+                                             node->children[1]->datatype,
+                                             node->lineNumber);
+            break;
+
+        case AST_DIV:
+            if(node->children[0]->datatype == DTYPE_BOOL ||
+                    node->children[1]->datatype == DTYPE_BOOL)
+                semError(SEM_TYPE, node->lineNumber, NULL);
+            node->datatype = DTYPE_REAL;
+            break;
+
+        case AST_PAR:
+            node->datatype = node->children[0]->datatype;
+            break;
+    }
 
     return 0;
 }

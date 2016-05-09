@@ -1,0 +1,110 @@
+/*
+ * Wrong type test.
+ * TYPE ERRORS in lines: 16-18, 22-36, 40-43, 47, 51, 57-61, 65, 69, 75-79, 83,
+ * 87, 93-97, 101, 105.
+ */
+
+
+bool b:0;
+char c:0;
+int i:0;
+real r:0;
+
+int main() {
+    // operator not
+    b = !b // OK
+    b = !c // ERROR
+    b = !i // ERROR
+    b = !r // ERROR
+
+    // binary bool
+    b = b && b // OK
+    b = b && c // ERROR
+    b = b && i // ERROR
+    b = b && r // ERROR
+    b = i && b // ERROR
+    b = i && c // ERROR
+    b = i && i // ERROR
+    b = i && r // ERROR
+    b = c && b // ERROR
+    b = c && c // ERROR
+    b = c && i // ERROR
+    b = c && r // ERROR
+    b = r && b // ERROR
+    b = r && c // ERROR
+    b = r && i // ERROR
+    b = r && r // ERROR
+
+    // binary type compare
+    b = b == b // OK
+    b = b == c // ERROR
+    b = b == i // ERROR
+    b = b == r // ERROR
+    b = i == b // ERROR
+    b = i == c // OK
+    b = i == i // OK
+    b = i == r // OK
+    b = c == b // ERROR
+    b = c == c // OK
+    b = c == i // OK
+    b = c == r // OK
+    b = r == b // ERROR
+    b = r == c // OK
+    b = r == i // OK
+    b = r == r // OK
+
+    // binary arithmetic compare
+    b = b > b // ERROR
+    b = b > c // ERROR
+    b = b > i // ERROR
+    b = b > r // ERROR
+    b = i > b // ERROR
+    b = i > c // OK
+    b = i > i // OK
+    b = i > r // OK
+    b = c > b // ERROR
+    b = c > c // OK
+    b = c > i // OK
+    b = c > r // OK
+    b = r > b // ERROR
+    b = r > c // OK
+    b = r > i // OK
+    b = r > r // OK
+
+    // binary arithmetic operator
+    b = b + b // ERROR
+    c = b + c // ERROR
+    i = b + i // ERROR
+    r = b + r // ERROR
+    i = i + b // ERROR
+    i = i + c // OK
+    i = i + i // OK
+    r = i + r // OK
+    c = c + b // ERROR
+    c = c + c // OK
+    i = c + i // OK
+    r = c + r // OK
+    r = r + b // ERROR
+    r = r + c // OK
+    r = r + i // OK
+    r = r + r // OK
+
+    // binary divide operator
+    r = b / b // ERROR
+    r = b / c // ERROR
+    r = b / i // ERROR
+    r = b / r // ERROR
+    r = i / b // ERROR
+    r = i / c // OK
+    r = i / i // OK
+    r = i / r // OK
+    r = c / b // ERROR
+    r = c / c // OK
+    r = c / i // OK
+    r = c / r // OK
+    r = r / b // ERROR
+    r = r / c // OK
+    r = r / i // OK
+    r = r / r // OK
+
+};

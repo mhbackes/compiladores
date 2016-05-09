@@ -67,6 +67,7 @@ enum ast_types {
 
 typedef struct ast_node {
     int type;
+    int datatype;
     int lineNumber;
     HASH_NODE *symbol;
     int size;

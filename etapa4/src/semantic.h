@@ -15,6 +15,7 @@
     ERROR(SEM_REDECLARED, "ID %s REDECLARED")	\
     ERROR(SEM_UNDECLARED, "ID %s UNDECLARED")	\
     ERROR(SEM_USAGE, "ID %s WRONG USAGE")		\
+    ERROR(SEM_TYPE, "WRONG TYPE")       		\
 
 #define GENERATE_ERROR_ENUM(ENUM, STRING) ENUM,
 #define GENERATE_ERROR_STRING(ENUM, STRING) STRING,
@@ -26,6 +27,7 @@ enum sem_error {
 int checkDeclaration(AST_NODE  *node);
 int checkUndeclared(HASH_NODE **hash);
 int checkUsage(AST_NODE *node);
+int checkTypes(AST_NODE *node);
 
 void semError(int error, int line, char *msg);
 
