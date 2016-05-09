@@ -116,7 +116,7 @@ int checkUsage(AST_NODE  *node) {
 
 int checkArithmetic(int type1, int type2, int lineNumber) {
     if(type1 == DTYPE_BOOL || type2 == DTYPE_BOOL) {
-        semError(SEM_TYPE, lineNumber, NULL);
+        semError(SEM_TYPE_EXPECTED_NUMBER, lineNumber, NULL);
         return DTYPE_INT;
     }
     switch(type1) {
@@ -153,7 +153,7 @@ int checkTypes(AST_NODE *node) {
 
         case AST_NOT:
             if(node->children[0]->datatype != DTYPE_BOOL)
-                semError(SEM_TYPE, node->lineNumber, NULL);
+                semError(SEM_TYPE_EXPECTED_BOOL, node->lineNumber, NULL);
             node->datatype = DTYPE_BOOL;
             break;
 
@@ -161,7 +161,7 @@ int checkTypes(AST_NODE *node) {
         case AST_OR:
             if(node->children[0]->datatype != DTYPE_BOOL ||
                     node->children[1]->datatype != DTYPE_BOOL)
-                semError(SEM_TYPE, node->lineNumber, NULL);
+                semError(SEM_TYPE_EXPECTED_BOOL, node->lineNumber, NULL);
             node->datatype = DTYPE_BOOL;
             break;
 
@@ -171,7 +171,7 @@ int checkTypes(AST_NODE *node) {
                     node->children[1]->datatype != DTYPE_BOOL) || 
                     (node->children[0]->datatype != DTYPE_BOOL &&
                     node->children[1]->datatype == DTYPE_BOOL))
-                semError(SEM_TYPE, node->lineNumber, NULL);
+                semError(SEM_TYPE_INCOMPATIBLE_OPS, node->lineNumber, NULL);
             node->datatype = DTYPE_BOOL;
             break;
 
@@ -181,7 +181,7 @@ int checkTypes(AST_NODE *node) {
         case AST_GREATER:
             if(node->children[0]->datatype == DTYPE_BOOL ||
                     node->children[1]->datatype == DTYPE_BOOL)
-                semError(SEM_TYPE, node->lineNumber, NULL);
+                semError(SEM_TYPE_EXPECTED_NUMBER, node->lineNumber, NULL);
             node->datatype = DTYPE_BOOL;
             break;
 
@@ -196,7 +196,7 @@ int checkTypes(AST_NODE *node) {
         case AST_DIV:
             if(node->children[0]->datatype == DTYPE_BOOL ||
                     node->children[1]->datatype == DTYPE_BOOL)
-                semError(SEM_TYPE, node->lineNumber, NULL);
+                semError(SEM_TYPE_EXPECTED_NUMBER, node->lineNumber, NULL);
             node->datatype = DTYPE_REAL;
             break;
 
@@ -212,28 +212,24 @@ int checkTypes(AST_NODE *node) {
 	case AST_ARRACCESS:
 	    node->datatype = node->symbol->datatype;
 	    if(node->children[0]->datatype != DTYPE_INT) {
-		fprintf(stderr, "FOUND AN ARR INDEX TYPE ERR -> ");
-                semError(SEM_TYPE, node->lineNumber, NULL);
+                semError(SEM_TYPE_EXPECTED_INT, node->lineNumber, node->symbol->text);
 	    }
 
 	    break;
 	
 	case AST_ATTR:
 	    if(numAndBool(node->symbol->datatype, node->children[0]->datatype)) {
-		fprintf(stderr, "FOUND AN RETURN TYPE ERR -> ");
-		semError(SEM_TYPE, node->lineNumber, NULL);
+		semError(SEM_TYPE_INCOMPATIBLE_RETURN, node->lineNumber, NULL);
 	    }
 	    break;
 
 	case AST_ATTRARR:
 	    if(numAndBool(node->symbol->datatype, node->children[1]->datatype)) {
-			fprintf(stderr, "FOUND AN RETURN TYPE ERR -> ");
-			semError(SEM_TYPE, node->lineNumber, NULL);
+		semError(SEM_TYPE_INCOMPATIBLE_RETURN, node->lineNumber, NULL);
 	    }
 
 	    if(node->children[0]->datatype != DTYPE_INT) {
-	    	fprintf(stderr, "FOUND AN ARR INDEX TYPE ERR -> ");
-                semError(SEM_TYPE, node->lineNumber, NULL);
+                semError(SEM_TYPE_EXPECTED_INT, node->lineNumber, node->symbol->text);
 	    }
 	    break;
 
@@ -250,7 +246,8 @@ int checkParameters(AST_NODE *node) {
 	while(tPar) {
 		if(tArg != NULL) {
 			if(numAndBool(tArg->children[0]->datatype, tPar->datatype))
-				semError(SEM_TYPE, node->lineNumber, NULL);
+				semError(SEM_TYPE_INCOMPATIBLE_ARGS, node->lineNumber, 
+						node->symbol->text);
 			nArg++;
 			tArg = tArg->children[1];
 		}
@@ -260,7 +257,7 @@ int checkParameters(AST_NODE *node) {
 	}
 
 	if(nPar != nArg)
-		semError(SEM_TYPE, node->lineNumber, NULL);
+		semError(SEM_USAGE_NOF_ARGS, node->lineNumber, node->symbol->text);
 
 	return 0;
 }
