@@ -5,6 +5,8 @@
 
 int _numErrors;
 
+int returnType = DTYPE_UNDEF;
+
 const char *_errorMessage[] = {
     FOREACH_ERROR(GENERATE_ERROR_STRING)
 }; 
@@ -260,6 +262,19 @@ int checkTypes(AST_NODE *node) {
 	    break;
 	case AST_OUTPUT:
 	    checkOutput(node->children[0]);
+	    break;
+
+	case AST_FUNDEC:
+	    if(node->datatype != returnType && returnType != DTYPE_UNDEF) 
+		semError(SEM_TYPE_INCOMPATIBLE_RETURN, node->lineNumber, NULL);
+
+	    returnType = DTYPE_UNDEF;
+
+	    break;
+
+	case AST_RETURN:
+	    node->datatype = node->children[0]->datatype;
+	    returnType = node->datatype;
 	    break;
     }
 

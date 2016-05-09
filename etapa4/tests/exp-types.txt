@@ -152,3 +152,8 @@ bool bts (int bti, bool btb)
   {
   return btb
   };
+
+bool reterr (int bsq) {
+    return i
+    return bsq
+};
