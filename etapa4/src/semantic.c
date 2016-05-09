@@ -33,12 +33,9 @@ int astDataType(int astType) {
     return DTYPE_UNDEF;
 }
 
-void parTypes(AST_NODE *par) {
-    AST_NODE *tPar = par;
-    while(tPar) {
-	tPar->datatype = astDataType(tPar->children[0]->type);
-	tPar = tPar->children[1];
-    }
+int numAndBool(int t1, int t2) {
+    return (t1 != DTYPE_UNDEF && t2 != DTYPE_UNDEF &&
+		    t1 != t2 && (t1 == DTYPE_BOOL || t2 == DTYPE_BOOL));
 }
 
 int checkDeclaration(AST_NODE *node) {
@@ -140,10 +137,6 @@ int checkArithmetic(int type1, int type2, int lineNumber) {
     return DTYPE_UNDEF;
 }
 
-int scalarAndBool(int t1, int t2) {
-    return (t1 != DTYPE_UNDEF && t2 != DTYPE_UNDEF &&
-		    t1 != t2 && (t1 == DTYPE_BOOL || t2 == DTYPE_BOOL));
-}
 
 int checkTypes(AST_NODE *node) {
     int i;
@@ -227,14 +220,14 @@ int checkTypes(AST_NODE *node) {
 	    break;
 	
 	case AST_ATTR:
-	    if(scalarAndBool(node->symbol->datatype, node->children[0]->datatype)) {
+	    if(numAndBool(node->symbol->datatype, node->children[0]->datatype)) {
 		fprintf(stderr, "FOUND AN RETURN TYPE ERR -> ");
 		semError(SEM_TYPE, node->lineNumber, NULL);
 	    }
 	    break;
 
 	case AST_ATTRARR:
-	    if(scalarAndBool(node->symbol->datatype, node->children[1]->datatype)) {
+	    if(numAndBool(node->symbol->datatype, node->children[1]->datatype)) {
 			fprintf(stderr, "FOUND AN RETURN TYPE ERR -> ");
 			semError(SEM_TYPE, node->lineNumber, NULL);
 	    }
@@ -257,7 +250,7 @@ int checkParameters(AST_NODE *node) {
 
 	while(tPar) {
 		if(tArg != NULL) {
-			if(scalarAndBool(tArg->children[0]->datatype, tPar->datatype))
+			if(numAndBool(tArg->children[0]->datatype, tPar->datatype))
 				semError(SEM_TYPE, node->lineNumber, NULL);
 			nArg++;
 			tArg = tArg->children[1];
