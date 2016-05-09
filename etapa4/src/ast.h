@@ -22,7 +22,7 @@
     AST(AST_LIT)		\
     AST(AST_VAR)        \
     AST(AST_FUNCALL)    \
-    AST(AST_ARRACESS)   \
+    AST(AST_ARRACCESS)   \
     AST(AST_LCMD)		\
     AST(AST_LPAR)		\
     AST(AST_LLIT)		\

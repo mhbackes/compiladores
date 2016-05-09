@@ -22,6 +22,8 @@
     SYMBOL(SYMBOL_VECTOR)           \
     SYMBOL(SYMBOL_FUNC)             \
 
+typedef struct ast_node AST_NODE;
+
 enum hash_symbol_type {
     FOREACH_SYMBOL_TYPE(GENERATE_HASH_ENUM)
 };
@@ -43,6 +45,7 @@ typedef struct hash_node_struct {
     int datatype;
     int lineNumber;
     char *text;
+    AST_NODE *declaration;
     struct hash_node_struct *next;
 } HASH_NODE;
 

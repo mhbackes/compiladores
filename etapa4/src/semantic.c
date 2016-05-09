@@ -11,6 +11,7 @@ const char *_errorMessage[] = {
 
 int astSymbolType(int astType);
 int astDataType(int astType);
+int checkParameters(AST_NODE *node);
 
 int astSymbolType(int astType) {
     switch (astType) {
@@ -31,6 +32,14 @@ int astDataType(int astType) {
     return DTYPE_UNDEF;
 }
 
+void parTypes(AST_NODE *par) {
+    AST_NODE *tPar = par;
+    while(tPar) {
+	tPar->datatype = astDataType(tPar->children[0]->type);
+	tPar = tPar->children[1];
+    }
+}
+
 int checkDeclaration(AST_NODE *node) {
     int i = 0;
 
@@ -45,8 +54,13 @@ int checkDeclaration(AST_NODE *node) {
                 semError(SEM_REDECLARED, node->lineNumber, node->symbol->text);
             node->symbol->type = astSymbolType(node->type);
             node->symbol->datatype = astDataType(node->children[0]->type);
+	    node->symbol->declaration = node;
             node->datatype = node->symbol->datatype;
+
+	    if(node->type == AST_FUNDEC) // filling parameter types
+		    parTypes(node->children[1]);
             break;
+
     }
 
     for(i = 0; i < node->size; i++)
@@ -92,7 +106,7 @@ int checkUsage(AST_NODE  *node) {
             break;
 
         // vector
-        case AST_ARRACESS:  // rhs usage
+        case AST_ARRACCESS:  // rhs usage
         case AST_ATTRARR:   // lhs usage
             if(node->symbol->type != SYMBOL_VECTOR)
                 semError(SEM_USAGE, node->lineNumber, node->symbol->text);
@@ -191,8 +205,46 @@ int checkTypes(AST_NODE *node) {
 
         case AST_PAR:
             node->datatype = node->children[0]->datatype;
-            break;
+            break;	
+
+	case AST_FUNCALL:
+	    node->datatype = node->symbol->declaration->datatype;
+	    checkParameters(node);
+	    break;
+	
+	case AST_ARRACCESS:
+	    node->datatype = node->symbol->datatype;
+	    break;
     }
+
+    return 0;
+}
+
+// expList = list of call arguments, parList = list of declaration parameters
+int checkParameters(AST_NODE *node) {
+    int nArg = 0, nPar = 0; 
+    AST_NODE *tArg = node->children[0], *tPar = node->symbol->declaration->children[1];
+
+    while(tPar) {
+
+	if(tArg != NULL) {
+		if(tArg->children[0]->datatype !=  tPar->datatype && 
+				(tPar->datatype == DTYPE_BOOL ||
+				 tArg->children[0]->datatype == DTYPE_BOOL)) {
+			fprintf(stderr, "FOUND AN PAR ERR -> ");
+			semError(SEM_TYPE, node->lineNumber, "funcall");
+		}
+	    nArg++;
+	    tArg = tArg->children[1];
+	}
+
+	nPar++;
+	tPar = tPar->children[1];
+    }
+
+    if(nPar != nArg)
+	    semError(SEM_TYPE, node->lineNumber, NULL);
+
 
     return 0;
 }

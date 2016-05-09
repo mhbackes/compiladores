@@ -131,7 +131,7 @@ void astPrintCode(FILE* file, AST_NODE* node) {
                 astPrintCode(file, node->children[0]);
             fprintf(file, ")");
             break;
-        case AST_ARRACESS:
+        case AST_ARRACCESS:
             fprintf(file, " %s[", node->symbol->text);
             astPrintCode(file, node->children[0]);
             fprintf(file, "]");

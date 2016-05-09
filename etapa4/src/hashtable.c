@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hashtable.h"
-#include "ast.h"
 #include "y.tab.h"
 
 const char* _symboTypelString[] = {
@@ -67,6 +66,7 @@ HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber) {
     newNode->type = type;
     newNode->datatype = datatype;
     newNode->lineNumber = lineNumber;
+    newNode->declaration = NULL;
 
     strncpy(newNode->text, str, strlen(str));
 
