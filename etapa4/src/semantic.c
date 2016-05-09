@@ -229,8 +229,9 @@ int checkTypes(AST_NODE *node) {
 	
 	case AST_ARRACCESS:
 	    node->datatype = node->symbol->datatype;
-	    if(node->children[0]->datatype != DTYPE_INT) 
-                semError(SEM_TYPE_EXPECTED_INT, node->lineNumber, node->symbol->text);
+	    if(node->children[0]->datatype != DTYPE_INT && 
+			    node->children[0]->datatype != DTYPE_CHAR) 
+                semError(SEM_TYPE_INDEX, node->lineNumber, node->symbol->text);
 	    break;
 	
 	case AST_ATTR:
@@ -242,8 +243,9 @@ int checkTypes(AST_NODE *node) {
 	    if(numAndBool(node->symbol->datatype, node->children[1]->datatype)) 
 		semError(SEM_TYPE_ATTR_TYPE, node->lineNumber, NULL);
 
-	    if(node->children[0]->datatype != DTYPE_INT) 
-                semError(SEM_TYPE_EXPECTED_INT, node->lineNumber, node->symbol->text);
+	    if(node->children[0]->datatype != DTYPE_INT && 
+			    node->children[0]->datatype != DTYPE_CHAR) 
+                semError(SEM_TYPE_INDEX, node->lineNumber, node->symbol->text);
 	    break;
 	
 	case AST_IF:
