@@ -15,6 +15,7 @@ int checkParameters(AST_NODE *node);
 
 int astSymbolType(int astType) {
     switch (astType) {
+	case AST_LPAR:
         case AST_VARDEC: return SYMBOL_SCALAR;
         case AST_ARRDEC: return SYMBOL_VECTOR;
         case AST_FUNDEC: return SYMBOL_FUNC;
@@ -47,6 +48,8 @@ int checkDeclaration(AST_NODE *node) {
         return 0;
 
     switch(node->type) {
+	case AST_LPAR:
+		node->datatype = astDataType(node->children[0]->type);
         case AST_VARDEC:
         case AST_ARRDEC:
         case AST_FUNDEC:
@@ -56,9 +59,6 @@ int checkDeclaration(AST_NODE *node) {
             node->symbol->datatype = astDataType(node->children[0]->type);
 	    node->symbol->declaration = node;
             node->datatype = node->symbol->datatype;
-
-	    if(node->type == AST_FUNDEC) // filling parameter types
-		    parTypes(node->children[1]);
             break;
 
     }
