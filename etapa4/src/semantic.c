@@ -7,8 +7,7 @@ int _numErrors;
 
 const char *_errorMessage[] = {
     FOREACH_ERROR(GENERATE_ERROR_STRING)
-};
-
+}; 
 int astSymbolType(int astType);
 int astDataType(int astType);
 int checkParameters(AST_NODE *node);
@@ -36,6 +35,24 @@ int astDataType(int astType) {
 int numAndBool(int t1, int t2) {
     return (t1 != DTYPE_UNDEF && t2 != DTYPE_UNDEF &&
 		    t1 != t2 && (t1 == DTYPE_BOOL || t2 == DTYPE_BOOL));
+}
+
+void checkInput(AST_NODE *node) {
+    AST_NODE *in = node;
+    while(in) {
+	if(in->symbol->type != SYMBOL_SCALAR)
+		semError(SEM_TYPE_EXPECTED_SCALAR, in->lineNumber, NULL);
+	in = in->children[0];
+    }
+}
+
+void checkOutput(AST_NODE *node) {
+    AST_NODE *out = node;
+    while(out) {
+	if(out->children[0]->datatype == DTYPE_BOOL)
+		semError(SEM_TYPE_OUTPUT, out->children[0]->lineNumber, NULL);
+	out = out->children[1];
+    }
 }
 
 int checkDeclaration(AST_NODE *node) {
@@ -182,6 +199,7 @@ int checkTypes(AST_NODE *node) {
             if(node->children[0]->datatype == DTYPE_BOOL ||
                     node->children[1]->datatype == DTYPE_BOOL)
                 semError(SEM_TYPE_EXPECTED_NUMBER, node->lineNumber, NULL);
+
             node->datatype = DTYPE_BOOL;
             break;
 
@@ -211,32 +229,42 @@ int checkTypes(AST_NODE *node) {
 	
 	case AST_ARRACCESS:
 	    node->datatype = node->symbol->datatype;
-	    if(node->children[0]->datatype != DTYPE_INT) {
+	    if(node->children[0]->datatype != DTYPE_INT) 
                 semError(SEM_TYPE_EXPECTED_INT, node->lineNumber, node->symbol->text);
-	    }
-
 	    break;
 	
 	case AST_ATTR:
-	    if(numAndBool(node->symbol->datatype, node->children[0]->datatype)) {
-		semError(SEM_TYPE_INCOMPATIBLE_RETURN, node->lineNumber, NULL);
-	    }
+	    if(numAndBool(node->symbol->datatype, node->children[0]->datatype)) 
+		semError(SEM_TYPE_ATTR_TYPE, node->lineNumber, NULL);
 	    break;
 
 	case AST_ATTRARR:
-	    if(numAndBool(node->symbol->datatype, node->children[1]->datatype)) {
-		semError(SEM_TYPE_INCOMPATIBLE_RETURN, node->lineNumber, NULL);
-	    }
+	    if(numAndBool(node->symbol->datatype, node->children[1]->datatype)) 
+		semError(SEM_TYPE_ATTR_TYPE, node->lineNumber, NULL);
 
-	    if(node->children[0]->datatype != DTYPE_INT) {
+	    if(node->children[0]->datatype != DTYPE_INT) 
                 semError(SEM_TYPE_EXPECTED_INT, node->lineNumber, node->symbol->text);
-	    }
+	    break;
+	
+	case AST_IF:
+	case AST_IFTE:
+	case AST_WHILE:
+	    if(node->children[0]->datatype != DTYPE_BOOL)
+		semError(SEM_TYPE_EXPECTED_BOOL, node->lineNumber, NULL);
 	    break;
 
+	case AST_INPUT:
+	    checkInput(node->children[0]);
+	    break;
+	case AST_OUTPUT:
+	    checkOutput(node->children[0]);
+	    break;
     }
 
     return 0;
 }
+
+
 
 // expList = list of call arguments, parList = list of declaration parameters
 int checkParameters(AST_NODE *node) {

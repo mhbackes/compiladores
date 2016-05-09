@@ -88,7 +88,7 @@ TRUE                        {
                             }
 \"([^\"\\\n]|\\.)*\"        { 
                                 yylval.symbol = hashInsert(yytext, SYMBOL_LIT,
-                                                    DTYPE_CHAR, _lineNumber); 
+                                                    DTYPE_STR, _lineNumber); 
                                 return token(LIT_STRING);
                             }
  /* LITERALS */

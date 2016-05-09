@@ -16,6 +16,13 @@ int mat[1000];
 
 int main() {
     
+    input i                     // OK
+    output "Digite um numero: " // OK
+    output "ABC", (2+2)         // OK
+    output i, "ABC"             // OK 
+    output b, "ABC"             // ERROR
+    output 1, 2                 // OK
+    input i, mat                // ERROR
 
     // operator not
     b = !b // OK
@@ -130,7 +137,7 @@ int main() {
     mat[i] = 2          // OK
     mat[r] = 2          // ERR
     mat[b] = 2          // ERR  
-    mat[c] = 2          // ERR
+    mat[c] = 2          // OK
     itest = incn(mat[i], 2) // OK
     itest = incn(mat[b], 2) // ERR
     
