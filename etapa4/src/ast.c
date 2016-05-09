@@ -21,6 +21,7 @@ AST_NODE *astCreate(int type, int lineNumber, HASH_NODE *symbol, int size, ...) 
     newNode->lineNumber = lineNumber;
     newNode->symbol = symbol;
     newNode->size = size;
+    newNode->datatype = DTYPE_UNDEF;
     newNode->children = malloc(sizeof(AST_NODE *) * size);
 
     va_start(args, size);

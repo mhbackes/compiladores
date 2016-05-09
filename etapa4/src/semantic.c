@@ -46,7 +46,6 @@ int checkDeclaration(AST_NODE *node) {
 
     switch(node->type) {
 	case AST_LPAR:
-		node->datatype = astDataType(node->children[0]->type);
         case AST_VARDEC:
         case AST_ARRDEC:
         case AST_FUNDEC:
