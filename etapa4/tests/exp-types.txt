@@ -22,7 +22,9 @@ int main() {
     output i, "ABC"             // OK 
     output b, "ABC"             // ERROR
     output 1, 2                 // OK
+    output incn(2, 2), mat[30]  // OK
     input i, mat                // ERROR
+    input i, b                  // OK
 
     // operator not
     b = !b // OK
@@ -128,16 +130,27 @@ int main() {
     itest = incn()       // ERROR
     btest = bts(2, b)   // OK
     btest = bts(2, 0)   // ERROR 
+    btest = bts(mat[30], (2 < 2))   // OK
+    itest = cts(itest); // OK
+    c = cts(r);         // OK
+    c = cts(b);         // ERROR
 
     // function call return    
     itest = bts(2, b)   // ERROR
     btest = incn(2, 2)  // ERROR
+    mat[10] = bts(2, b) // ERROR
+    mat[10] = incn(2,2) // OK
+    itest = cts(c);     // OK
+    r = cts(c);         // OK
+    b = cts(c);         // ERROR
 
     // arr index
     mat[i] = 2          // OK
+    mat[c] = 2          // OK
+    mat[incn(2, 2)] = 2 // OK
+    mat[bts(2, b)] = 2  // ERR
     mat[r] = 2          // ERR
     mat[b] = 2          // ERR  
-    mat[c] = 2          // OK
     itest = incn(mat[i], 2) // OK
     itest = incn(mat[b], 2) // ERR
     
@@ -167,6 +180,14 @@ bool bts (int bti, bool btb)
   };
 
 bool reterr (int bsq) {
-    return i
-    return bsq
+    return i    // ERROR
+    return bsq  // ERROR 
+    return b    // OK
+    return (2<2) // OK
+    return (2+2) // ERROR
+    return bts(bsq, b) // OK
+};
+
+char cts(char ctsc) {
+    return ctsc
 };
