@@ -127,6 +127,7 @@ int main() {
     itest = incn(2)      // ERROR
     itest = incn(2, b)   // ERROR
     itest = incn(2, r)   // OK
+    itest = incn(2, 2, 2)   // ERROR
     itest = incn()       // ERROR
     btest = bts(2, b)   // OK
     btest = bts(2, 0)   // ERROR 

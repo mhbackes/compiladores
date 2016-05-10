@@ -297,6 +297,11 @@ int checkParameters(AST_NODE *node) {
 		tPar = tPar->children[1];
 	}
 
+	while(tArg) {
+	    tArg = tArg->children[1];
+	    nArg++;
+	}
+
 	if(nPar != nArg)
 		semError(SEM_USAGE_NOF_ARGS, node->lineNumber, node->symbol->text);
 
