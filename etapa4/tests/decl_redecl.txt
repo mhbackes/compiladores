@@ -1,0 +1,35 @@
+/*
+ * Declaration test
+ * ERRS IN: 12, 15, 24, 25, 26, 26, 30, 31, 34
+ */
+
+int a:0;
+bool b:1;
+real r:2;
+char c:3;
+int mi[100];
+int mir[10];
+int mir[10];    // ERRO
+real mr[100];
+real mrr[10];
+real mrr[10];   // ERRO
+char mc[100];
+bool mb[100];
+
+int fi();;
+real fr();;
+char fc();;
+bool fb();;
+char fcr();;
+char fcr();;        // ERRO
+int fcp(int a);;    // ERRO, PARAMETRO, REDECL
+int fcpp(char c, bool b);; // ERRO, PAR, REDECL x2
+
+int test() {
+    a = 2+2
+    ab = 2+2    // ERRO
+    bb = 2 < 2  // ERRO
+    r = 3 + 3
+    mi[49] = 4
+    mmi[49] = 4 // ERRO
+};
