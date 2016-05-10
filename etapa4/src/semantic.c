@@ -55,11 +55,20 @@ void checkOutput(AST_NODE *node) {
     }
 }
 
-int checkDeclaration(AST_NODE *node) {
+int semCheck(AST_NODE* node) {
+    _numErrors = 0;
+    semCheckDeclaration(node);
+    semCheckUndeclared(_symbolTable);
+    semCheckUsage(node);
+    semCheckTypes(node);
+    return _numErrors;
+}
+
+void semCheckDeclaration(AST_NODE *node) {
     int i = 0;
 
     if(!node)
-        return 0;
+        return;
 
     switch(node->type) {
 	case AST_LPAR:
@@ -77,12 +86,10 @@ int checkDeclaration(AST_NODE *node) {
     }
 
     for(i = 0; i < node->size; i++)
-        checkDeclaration(node->children[i]);
-
-    return 0;
+        semCheckDeclaration(node->children[i]);
 }
 
-int checkUndeclared(HASH_NODE **hash) {
+void semCheckUndeclared(HASH_NODE **hash) {
     int i;
     HASH_NODE *node;
 
@@ -94,15 +101,13 @@ int checkUndeclared(HASH_NODE **hash) {
             node = node->next;
         }
     }
-
-    return 0;
 }
 
-int checkUsage(AST_NODE  *node) {
+void semCheckUsage(AST_NODE  *node) {
     int i = 0;
 
     if(!node)
-        return 0;
+        return;
 
     switch(node->type) {
         // scalar
@@ -126,9 +131,7 @@ int checkUsage(AST_NODE  *node) {
     }
 
     for(i = 0; i < node->size; i++)
-        checkUsage(node->children[i]);
-
-    return 0;
+        semCheckUsage(node->children[i]);
 }
 
 int checkArithmetic(int type1, int type2, int lineNumber) {
@@ -154,17 +157,17 @@ int checkArithmetic(int type1, int type2, int lineNumber) {
 }
 
 
-int checkTypes(AST_NODE *node) {
+void semCheckTypes(AST_NODE *node) {
     static int returnType = DTYPE_UNDEF;
     int i;
 
-    if(!node) return 0;
+    if(!node) return;
 
     if(node->type == AST_FUNDEC)
         returnType = node->datatype;
 
     for(i = 0; i < node->size; i++)
-        checkTypes(node->children[i]);
+        semCheckTypes(node->children[i]);
 
     switch (node->type) {
     case AST_VAR:
@@ -272,8 +275,6 @@ int checkTypes(AST_NODE *node) {
 		    semError(SEM_TYPE_INCOMPATIBLE_RETURN, node->lineNumber, NULL);
 	    break;
     }
-
-    return 0;
 }
 
 

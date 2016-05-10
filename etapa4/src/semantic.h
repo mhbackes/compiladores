@@ -35,10 +35,11 @@ enum sem_error {
     FOREACH_ERROR(GENERATE_ERROR_ENUM)
 };
 
-int checkDeclaration(AST_NODE  *node);
-int checkUndeclared(HASH_NODE **hash);
-int checkUsage(AST_NODE *node);
-int checkTypes(AST_NODE *node);
+int semCheck(AST_NODE*);
+void semCheckDeclaration(AST_NODE  *node);
+void semCheckUndeclared(HASH_NODE **hash);
+void semCheckUsage(AST_NODE *node);
+void semCheckTypes(AST_NODE *node);
 
 void semError(int error, int line, char *msg);
 

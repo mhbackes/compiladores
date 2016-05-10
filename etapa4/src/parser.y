@@ -9,8 +9,8 @@
 #include <stdlib.h>
 #include "ast.h"
 #include "hashtable.h"
-#include "semantic.h"
 #include "lex.yy.h"
+#include "error.h"
 
 AST_NODE* root;
 
@@ -69,13 +69,7 @@ int getLastTokenLineNumber();
 %type<ln> lineNumber
 
 %%
-root: program							{
-                                            root = $1;
-                                            checkDeclaration(root);
-                                            checkUndeclared(_symbolTable);
-                                            checkUsage(root);
-                                            checkTypes(root);
-                                        } /* MARCOS */
+root: program							{ root = $1; } /* MARCOS */
 
 program: declaration					{ $$ = astCreate(AST_PROGRAM, $1->lineNumber, NULL, 2,$1, NULL); } /* PAULO */
        | declaration program			{ $$ = astCreate(AST_PROGRAM, $1->lineNumber, NULL, 2,$1, $2); }
@@ -208,5 +202,5 @@ lineNumber:								{ $$ = getLastTokenLineNumber(); }
 %%
 void yyerror (char const *msg) {
     fprintf(stderr, "Syntax error in line %d.\n", getLineNumber());
-    exit(3);
+    exit(EXIT_SYNTAX_ERROR);
 }
