@@ -141,6 +141,19 @@ int main() {
     itest = incn(mat[i], 2) // OK
     itest = incn(mat[b], 2) // ERR
     
+    // if
+    if(2) ; // ERROR
+    if(b) ; // OK
+    if(2 < 2) ; // OK
+    if(1 + 1) ; // ERROR
+    if(b) ; else ; // OK
+    if(2) ; else ; // ERROR
+
+    // while
+    while(b) ;  // OK
+    while(2) ;  // ERR
+    while(1 + 1) ; // ERROR
+
 };
 
 int incn (int x, int n)
