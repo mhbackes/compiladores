@@ -5,8 +5,6 @@
 
 int _numErrors;
 
-int returnType = DTYPE_UNDEF;
-
 const char *_errorMessage[] = {
     FOREACH_ERROR(GENERATE_ERROR_STRING)
 }; 
@@ -157,72 +155,76 @@ int checkArithmetic(int type1, int type2, int lineNumber) {
 
 
 int checkTypes(AST_NODE *node) {
+    static int returnType = DTYPE_UNDEF;
     int i;
 
     if(!node) return 0;
+
+    if(node->type == AST_FUNDEC)
+        returnType = node->datatype;
 
     for(i = 0; i < node->size; i++)
         checkTypes(node->children[i]);
 
     switch (node->type) {
-        case AST_VAR:
-        case AST_LIT:
-            node->datatype = node->symbol->datatype;
-            break;
+    case AST_VAR:
+    case AST_LIT:
+        node->datatype = node->symbol->datatype;
+        break;
 
-        case AST_NOT:
-            if(node->children[0]->datatype != DTYPE_BOOL)
-                semError(SEM_TYPE_EXPECTED_BOOL, node->lineNumber, NULL);
-            node->datatype = DTYPE_BOOL;
-            break;
+    case AST_NOT:
+        if(node->children[0]->datatype != DTYPE_BOOL)
+            semError(SEM_TYPE_EXPECTED_BOOL, node->lineNumber, NULL);
+        node->datatype = DTYPE_BOOL;
+        break;
 
-        case AST_AND:
-        case AST_OR:
-            if(node->children[0]->datatype != DTYPE_BOOL ||
-                    node->children[1]->datatype != DTYPE_BOOL)
-                semError(SEM_TYPE_EXPECTED_BOOL, node->lineNumber, NULL);
-            node->datatype = DTYPE_BOOL;
-            break;
+    case AST_AND:
+    case AST_OR:
+        if(node->children[0]->datatype != DTYPE_BOOL ||
+                node->children[1]->datatype != DTYPE_BOOL)
+            semError(SEM_TYPE_EXPECTED_BOOL, node->lineNumber, NULL);
+        node->datatype = DTYPE_BOOL;
+        break;
 
-        case AST_EQ:
-        case AST_NE:
-            if((node->children[0]->datatype == DTYPE_BOOL &&
-                    node->children[1]->datatype != DTYPE_BOOL) || 
-                    (node->children[0]->datatype != DTYPE_BOOL &&
-                    node->children[1]->datatype == DTYPE_BOOL))
-                semError(SEM_TYPE_INCOMPATIBLE_OPS, node->lineNumber, NULL);
-            node->datatype = DTYPE_BOOL;
-            break;
+    case AST_EQ:
+    case AST_NE:
+        if((node->children[0]->datatype == DTYPE_BOOL &&
+                node->children[1]->datatype != DTYPE_BOOL) || 
+                (node->children[0]->datatype != DTYPE_BOOL &&
+                node->children[1]->datatype == DTYPE_BOOL))
+            semError(SEM_TYPE_INCOMPATIBLE_OPS, node->lineNumber, NULL);
+        node->datatype = DTYPE_BOOL;
+        break;
 
-        case AST_LE:
-        case AST_GE:
-        case AST_LESS:
-        case AST_GREATER:
-            if(node->children[0]->datatype == DTYPE_BOOL ||
-                    node->children[1]->datatype == DTYPE_BOOL)
-                semError(SEM_TYPE_EXPECTED_NUMBER, node->lineNumber, NULL);
+    case AST_LE:
+    case AST_GE:
+    case AST_LESS:
+    case AST_GREATER:
+        if(node->children[0]->datatype == DTYPE_BOOL ||
+                node->children[1]->datatype == DTYPE_BOOL)
+            semError(SEM_TYPE_EXPECTED_NUMBER, node->lineNumber, NULL);
 
-            node->datatype = DTYPE_BOOL;
-            break;
+        node->datatype = DTYPE_BOOL;
+        break;
 
-        case AST_ADD:
-        case AST_SUB:
-        case AST_MUL:
-            node->datatype = checkArithmetic(node->children[0]->datatype,
-                                             node->children[1]->datatype,
-                                             node->lineNumber);
-            break;
+    case AST_ADD:
+    case AST_SUB:
+    case AST_MUL:
+        node->datatype = checkArithmetic(node->children[0]->datatype,
+                                         node->children[1]->datatype,
+                                         node->lineNumber);
+        break;
 
-        case AST_DIV:
-            if(node->children[0]->datatype == DTYPE_BOOL ||
-                    node->children[1]->datatype == DTYPE_BOOL)
-                semError(SEM_TYPE_EXPECTED_NUMBER, node->lineNumber, NULL);
-            node->datatype = DTYPE_REAL;
-            break;
+    case AST_DIV:
+        if(node->children[0]->datatype == DTYPE_BOOL ||
+                node->children[1]->datatype == DTYPE_BOOL)
+            semError(SEM_TYPE_EXPECTED_NUMBER, node->lineNumber, NULL);
+        node->datatype = DTYPE_REAL;
+        break;
 
-        case AST_PAR:
-            node->datatype = node->children[0]->datatype;
-            break;	
+    case AST_PAR:
+        node->datatype = node->children[0]->datatype;
+        break;	
 
 	case AST_FUNCALL:
 	    node->datatype = node->symbol->declaration->datatype;
@@ -260,21 +262,14 @@ int checkTypes(AST_NODE *node) {
 	case AST_INPUT:
 	    checkInput(node->children[0]);
 	    break;
+
 	case AST_OUTPUT:
 	    checkOutput(node->children[0]);
 	    break;
 
-	case AST_FUNDEC:
-	    if(node->datatype != returnType && returnType != DTYPE_UNDEF) 
-		semError(SEM_TYPE_INCOMPATIBLE_RETURN, node->lineNumber, NULL);
-
-	    returnType = DTYPE_UNDEF;
-
-	    break;
-
 	case AST_RETURN:
-	    node->datatype = node->children[0]->datatype;
-	    returnType = node->datatype;
+        if(numAndBool(node->children[0]->datatype, returnType))
+		    semError(SEM_TYPE_INCOMPATIBLE_RETURN, node->lineNumber, NULL);
 	    break;
     }
 
