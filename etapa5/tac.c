@@ -3,12 +3,17 @@
  * ALUNOS:
  * MARCOS HENRIQUE BACKES
  * PAULO RENATO LANZARIN
- * >>>>>>>>><3 CODE SPONSORED BY THE ORDER OF THE LABLE <3<<<<<<<<<<
+ * >>>>>>>>> CODE SPONSORED BY THE ORDER OF THE LABLE <<<<<<<<<<
  */
 
 #include "tac.h"
 #include <stdlib.h>
 #include <stdarg.h>
+
+
+const char* _tacString[] = {
+    FOREACH_TAC(GENERATE_TAC_STRING)
+};
 
 TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2) {
     TAC *newTac; 
@@ -27,6 +32,7 @@ TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2) {
     return newTac;
 }
 
+/* nof: number of TACs to be joined */
 TAC *tacJoin(int nof, ...) {
     va_list args;
     TAC *tacs[nof];
@@ -36,7 +42,66 @@ TAC *tacJoin(int nof, ...) {
     for(i = 0; i < nof; i++)
         tacs[i] = va_arg(args, TAC*);
     va_end(args);
-    
 
-    return NULL;
+    for(i = nof; i > 0; i--) {
+	while(tacs[i]->prev) 
+	    tacs[i] = tacs[i]->prev;
+	
+	tacs[i]->prev = tacs[i-1];
+	tacs[i-1]->next = tacs[i];
+    }
+    
+    return tacs[i];
+}
+
+TAC *generateCode(AST_NODE *node) {
+    TAC *code[4];    
+    int i;
+
+    for(i = 0; i < node->size; i++)
+	if(!node->children[i])
+	    code[i] = NULL;
+	else
+	    code[i] = generateCode(node->children[i]); 
+
+    switch(node->type) {
+	case AST_FUNCALL:
+	    return NULL;
+        case AST_ARRACCESS:
+	    return NULL;
+	case AST_LPAR:
+	    return NULL;
+	case AST_ATTR:
+            return NULL;
+        case AST_ATTRARR:
+            return NULL;
+        case AST_OUTPUT:
+            return NULL;
+        case AST_IF:
+            return NULL;
+        case AST_IFTE:
+            return NULL;
+        case AST_WHILE:
+            return NULL;
+        case AST_RETURN:
+            return NULL;
+        case AST_NOT:
+            return NULL;
+        case AST_LE:
+        case AST_GE:
+        case AST_EQ:
+        case AST_NE:
+        case AST_AND:
+        case AST_OR:
+        case AST_LESS:
+        case AST_GREATER:
+        case AST_ADD:
+        case AST_SUB:
+        case AST_MUL:
+        case AST_DIV:
+            return NULL;
+        default:
+            fprintf(stderr, "Unknown");
+    }
+   return NULL;
 }
