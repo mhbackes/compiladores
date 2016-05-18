@@ -60,7 +60,7 @@ HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber) {
     if(!(newNode = (HASH_NODE *) malloc(sizeof(HASH_NODE))) ||
             !(newNode->text = (char *) malloc(sizeof(char) *  strlen(str)))) {
         fprintf(stderr, "Error: out of memory\n");
-        exit(1); // abort?
+        exit(-1); // abort
     }
 
     newNode->type = type;

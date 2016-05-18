@@ -11,9 +11,6 @@
 #include "hashtable.h"
 #include <stdio.h>
 
-/* preliminary types; doing it on the fly, add missing
- * ones or remove unecessary ones while we're doing it
- */
 #define FOREACH_AST(AST)\
     AST(AST_PROGRAM)    \
     AST(AST_VARDEC)     \

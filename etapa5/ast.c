@@ -14,7 +14,8 @@ AST_NODE *astCreate(int type, int lineNumber, HASH_NODE *symbol, int size, ...) 
     AST_NODE *newNode; 
 
     if(!(newNode = (AST_NODE *) malloc(sizeof(AST_NODE)))) {
-        fprintf(stderr, "ERROR [AST]: out of memory!\n"); exit(1); // abort
+        fprintf(stderr, "ERROR [AST]: out of memory!\n"); 
+	exit(-1); // abort
     }
 
     newNode->type = type;
