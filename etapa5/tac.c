@@ -33,15 +33,8 @@ TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2) {
 }
 
 /* nof: number of TACs to be joined */
-TAC *tacJoin(int nof, ...) {
-    va_list args;
-    TAC *tacs[nof];
+TAC *tacJoin(int nof, TAC **tacs) {
     int i;
-
-    va_start(args, nof);
-    for(i = 0; i < nof; i++)
-        tacs[i] = va_arg(args, TAC*);
-    va_end(args);
 
     for(i = nof; i > 0; i--) {
 	while(tacs[i]->prev) 
@@ -55,7 +48,7 @@ TAC *tacJoin(int nof, ...) {
 }
 
 TAC *generateCode(AST_NODE *node) {
-    TAC *code[4];    
+    TAC *code[node->size];    
     int i;
 
     for(i = 0; i < node->size; i++)

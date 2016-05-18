@@ -54,7 +54,7 @@ typedef struct tac_s {
 
 TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2);
 
-TAC *tacJoin(int nof, ...);
+TAC *tacJoin(int nof, TAC **tacs); 
 
 TAC *generateCode(AST_NODE *node);
 #endif
