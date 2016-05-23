@@ -55,6 +55,7 @@ HASH_NODE *_symbolTable[HASH_SIZE];
 void hashInit(void);
 HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber);
 HASH_NODE *hashFind(char *str, int datatype);
+HASH_NODE *makeTemp(int type);
 
 void hashPrint(void);
 void hashPrintDotNode(FILE* file, HASH_NODE *node);

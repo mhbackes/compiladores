@@ -45,6 +45,22 @@
 
 #define GENERATE_TAC_ENUM(ENUM) ENUM,
 #define GENERATE_TAC_STRING(STRING) #STRING,
+ 
+#define FOREACH_TEMP(TEMP)  \
+    TEMP(LABEL_CODE, "#LABEL%d")  \
+    TEMP(RES_CODE, "#RES%d")        
+
+#define GENERATE_TEMP_ENUM(ENUM, STRING) ENUM,
+#define GENERATE_TEMP_STRING(ENUM, STRING) STRING,
+
+
+enum tac_types {
+    FOREACH_TAC(GENERATE_TAC_ENUM)
+};
+
+enum temp_labels {
+    FOREACH_TEMP(GENERATE_TEMP_ENUM)
+};
 
 typedef struct tac_s {
     int type;

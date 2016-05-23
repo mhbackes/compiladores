@@ -19,6 +19,8 @@ const char* _dataTypeString[] = {
     FOREACH_DATA_TYPE(GENERATE_HASH_STRING)
 };
 
+long TMP_IDX = 0;
+
 /* PROTOTYPES */
 int hashAddress(char *str);
 HASH_NODE *hashNewNode(char *str, int type); 
@@ -113,4 +115,10 @@ void hashPrintDotNode(FILE* file, HASH_NODE *node) {
         fprintf(file, "STYPE=%s\\nDTYPE=%s\"", _symboTypelString[node->type], 
                 _dataTypeString[node->datatype]);
         fprintf(file, "shape=box]\n");
+}
+
+//HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber) {
+
+HASH_NODE *makeTemp(int type) {
+    return hashInsert("###", SYMBOL_UNDEF, DTYPE_UNDEF, -1);
 }
