@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include "hashtable.h"
 #include "ast.h"
+#include "tac.h"
 #include "y.tab.h"
 #include "lex.yy.h"
 #include "semantic.h"
@@ -35,6 +36,8 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "%d semantic error(s) found.\n", semErrors);   
         exit(EXIT_SEMANTIC_ERROR);
     }
+
+    TAC *tacs = generateCode(root);
 
     printf("Parse successful.\n");
 

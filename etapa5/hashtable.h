@@ -12,6 +12,9 @@
 
 #define HASH_SIZE 997
 
+#define TEMP_P  "#TEMP%d"
+#define LABEL_P "#LABEL%d"
+
 #define GENERATE_HASH_ENUM(ENUM) ENUM,
 #define GENERATE_HASH_STRING(STRING) #STRING,
 
@@ -55,7 +58,8 @@ HASH_NODE *_symbolTable[HASH_SIZE];
 void hashInit(void);
 HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber);
 HASH_NODE *hashFind(char *str, int datatype);
-HASH_NODE *makeTemp(int type);
+HASH_NODE *makeTemp();
+HASH_NODE *makeLabel();
 
 void hashPrint(void);
 void hashPrintDotNode(FILE* file, HASH_NODE *node);
