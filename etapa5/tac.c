@@ -35,7 +35,7 @@ TAC *tacWhile(TAC **code);
 
 TAC *tacFunDec(HASH_NODE *res, TAC **code);
 
-TAC *tacOutput(TAC **code);
+TAC *tacOutput(AST_NODE *node, TAC **code);
 
 /* CODE */
 
@@ -245,10 +245,11 @@ TAC *tacFunDec(HASH_NODE *res, TAC **code) {
     return tacMultiJoin(3, begin, code[2], end);
 }
 
+/* unfinished */
 TAC *tacOutput(AST_NODE *node, TAC **code) {
     TAC *lArg = generateCode(node->children[1]);
-    TAC *output = tacCreate(TAC_OUTPUT, NULL, NULL, NULL);
-    return NULL;
+    TAC *output = tacCreate(TAC_PRINT, NULL, NULL, NULL);
+    return tacJoin(lArg, output);
 }
 
 TAC *tacIfThenElse(TAC **code) {
