@@ -43,7 +43,7 @@ TAC *tacJoin(TAC *t, TAC *s) {
         return t;
 
     TAC *tmp = s;
-    while(tmp)
+    while(tmp->prev)
         tmp = tmp->prev;
 
     // double linking list
