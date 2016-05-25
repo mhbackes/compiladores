@@ -1,0 +1,12 @@
+int n:0;
+
+int main() {
+    output "Digite um número"
+    input n
+    if(n == 14) {
+        output "Você acertou o número!"
+    } else {
+        output "Errrou!"
+    }
+    return 0
+};
