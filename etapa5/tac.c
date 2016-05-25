@@ -2,8 +2,7 @@
  * tac.c
  * ALUNOS:
  * MARCOS HENRIQUE BACKES
- * PAULO RENATO LANZARIN
- * >>>>>>>>> CODE SPONSORED BY THE ORDER OF THE LABLE <<<<<<<<<<
+ * PAULO RENATO LANZARIN * >>>>>>>>> CODE SPONSORED BY THE ORDER OF THE LABLE <<<<<<<<<<
  */
 
 #include "tac.h"
@@ -35,6 +34,8 @@ TAC *tacIfThenElse(TAC **code);
 TAC *tacWhile(TAC **code);
 
 TAC *tacFunDec(HASH_NODE *res, TAC **code);
+
+TAC *tacOutput(TAC **code);
 
 /* CODE */
 
@@ -244,7 +245,9 @@ TAC *tacFunDec(HASH_NODE *res, TAC **code) {
     return tacMultiJoin(3, begin, code[2], end);
 }
 
-TAC *tacOutput(TAC **code) {
+TAC *tacOutput(AST_NODE *node, TAC **code) {
+    TAC *lArg = generateCode(node->children[1]);
+    TAC *output = tacCreate(TAC_OUTPUT, NULL, NULL, NULL);
     return NULL;
 }
 
