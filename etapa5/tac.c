@@ -30,6 +30,8 @@ TAC *tacReadArr(HASH_NODE* vec, TAC **code);
 
 TAC *tacIfThen(TAC **code);
 
+TAC *tacIfThenElse(TAC **code);
+
 TAC *tacWhile(TAC **code);
 
 TAC *tacFunDec(HASH_NODE *res, TAC **code);
@@ -134,8 +136,8 @@ TAC *generateCode(AST_NODE *node) {
             //return NULL;
         case AST_IF:
             return tacIfThen(code);
-        //case AST_IFTE:
-            //return NULL;
+        case AST_IFTE:
+            return tacIfThenElse(code);
         case AST_WHILE:
             return tacWhile(code);
         //case AST_RETURN:
@@ -244,6 +246,30 @@ TAC *tacFunDec(HASH_NODE *res, TAC **code) {
 
 TAC *tacOutput(TAC **code) {
     return NULL;
+}
+
+TAC *tacIfThenElse(TAC **code) {
+    TAC *tacExp = code[0];
+    TAC *tacThen = code[1];
+    TAC *tacElse = code[2];
+    
+    // label before else
+    HASH_NODE* labelElse = makeLabel();
+    TAC *tacLabelElse = tacCreate(TAC_LABEL, labelElse, NULL, NULL);
+
+    // label after else
+    HASH_NODE* labelNext = makeLabel();
+    TAC *tacLabelNext = tacCreate(TAC_LABEL, labelNext, NULL, NULL);
+
+    // ifz conditional jump
+    TAC *tacIfz = tacCreate(TAC_IFZ, labelElse, tacExp?tacExp->res:NULL,
+            NULL);
+
+    // jump at end of then command
+    TAC *tacJmp = tacCreate(TAC_JUMP, labelNext, NULL, NULL);
+    
+    return tacMultiJoin(7, tacExp, tacIfz, tacThen, tacJmp, tacLabelElse,
+            tacElse, tacLabelNext);
 }
 
 void tacPrint(TAC *tac) {
