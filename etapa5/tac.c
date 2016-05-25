@@ -27,6 +27,8 @@ TAC *tacAttrArr(HASH_NODE* res, TAC **code);
 
 TAC *tacReadArr(HASH_NODE* vec, TAC **code);
 
+TAC *tacArg(TAC **code);
+
 TAC *tacIfThen(TAC **code);
 
 TAC *tacIfThenElse(TAC **code);
@@ -123,6 +125,8 @@ TAC *generateCode(AST_NODE *node) {
             return tacReadArr(node->symbol, code);
         //case AST_FUNCALL:
             //return NULL;
+        case AST_LEXP:
+            return tacArg(code);
         //case AST_ARRACCESS:
             //return NULL;
         case AST_ATTR:
@@ -274,6 +278,15 @@ TAC *tacIfThenElse(TAC **code) {
     
     return tacMultiJoin(7, tacExp, tacIfz, tacThen, tacJmp, tacLabelElse,
             tacElse, tacLabelNext);
+}
+
+TAC *tacArg(TAC **code) {
+    TAC *tacExp = code[0];
+    TAC *tacNext = code[1];
+
+    TAC *tacArg = tacCreate(TAC_ARG, NULL, tacExp?tacExp->res:NULL, NULL);
+
+    return tacMultiJoin(3, tacExp, tacArg, tacNext);
 }
 
 void tacPrint(TAC *tac) {
