@@ -22,7 +22,17 @@ TAC *tacUnaryOp(int type, TAC **code);
 
 TAC *tacBinOp(int type, TAC **code);
 
+TAC *tacAttr(HASH_NODE* res, TAC **code);
+
+TAC *tacAttrArr(HASH_NODE* res, TAC **code);
+
+TAC *tacReadArr(HASH_NODE* vec, TAC **code);
+
 TAC *tacIfThen(TAC **code);
+
+TAC *tacWhile(TAC **code);
+
+TAC *tacFunDec(HASH_NODE *res, TAC **code);
 
 /* CODE */
 
@@ -106,16 +116,18 @@ TAC *generateCode(AST_NODE *node) {
         case AST_LIT:
         case AST_VAR:
             return tacCreate(TAC_SYMBOL, node->symbol, NULL, NULL);
+        case AST_ARRACCESS:
+            return tacReadArr(node->symbol, code);
         //case AST_FUNCALL:
             //return NULL;
         //case AST_ARRACCESS:
             //return NULL;
-        //case AST_LPAR:
-            //return NULL;
-        //case AST_ATTR:
-            //return NULL;
-        //case AST_ATTRARR:
-            //return NULL;
+        case AST_ATTR:
+            return tacAttr(node->symbol, code);
+        case AST_ATTRARR:
+            return tacAttrArr(node->symbol, code);
+        case AST_FUNDEC:
+            return tacFunDec(node->symbol, code);
         //case AST_OUTPUT:
             //return NULL;
         //case AST_INPUT:
@@ -124,8 +136,8 @@ TAC *generateCode(AST_NODE *node) {
             return tacIfThen(code);
         //case AST_IFTE:
             //return NULL;
-        //case AST_WHILE:
-            //return NULL;
+        case AST_WHILE:
+            return tacWhile(code);
         //case AST_RETURN:
             //return NULL;
             // UNARY
@@ -162,14 +174,52 @@ TAC *generateCode(AST_NODE *node) {
 }
 
 TAC *tacBinOp(int type, TAC **code) {
-    TAC *new = tacCreate(type, makeTemp(), code[0]?code[0]->res:NULL, 
+    TAC *newTac = tacCreate(type, makeTemp(), code[0]?code[0]->res:NULL, 
 		    code[1]?code[1]->res:NULL);
-    return tacMultiJoin(3, code[0], code[1], new);
+    return tacMultiJoin(3, code[0], code[1], newTac);
 }
 
 TAC *tacUnaryOp(int type, TAC **code) {
-    TAC *new = tacCreate(type, makeTemp(), code[0]?code[0]->res:NULL, NULL);
-    return tacMultiJoin(2, code[0], new);
+    TAC *newTac = tacCreate(type, makeTemp(), code[0]?code[0]->res:NULL, NULL);
+    return tacMultiJoin(2, code[0], newTac);
+}
+
+TAC *tacAttr(HASH_NODE* res, TAC **code) {
+    TAC *newTac = tacCreate(TAC_ATTR, res, code[0]?code[0]->res:NULL, NULL);
+    return tacMultiJoin(2, code[0], newTac);
+}
+
+TAC *tacAttrArr(HASH_NODE* res, TAC **code) {
+    TAC *newTac = tacCreate(TAC_ATTRARR, res, code[0]?code[0]->res:NULL,
+            code[1]?code[1]->res:NULL);
+    return tacMultiJoin(3, code[0], code[1], newTac);
+}
+
+TAC *tacReadArr(HASH_NODE* vec, TAC **code) {
+    TAC *newTac = tacCreate(TAC_READARR, makeTemp(), vec,
+            code[0]?code[0]->res:NULL);
+    return tacMultiJoin(2, code[0], newTac);
+}
+
+TAC *tacWhile(TAC **code) {
+    TAC *tacExp = code[0];
+    TAC *tacCmd = code[1];
+
+    // label before test expression
+    HASH_NODE *labelPrev = makeLabel();
+    TAC *tacPrev = tacCreate(TAC_LABEL, labelPrev, NULL, NULL);
+
+    // label after while command
+    HASH_NODE *labelNext = makeLabel();
+    TAC *tacNext = tacCreate(TAC_LABEL, labelNext, NULL, NULL);
+    
+    // while conditional jump
+    TAC *tacIfz = tacCreate(TAC_IFZ, labelNext, tacExp?tacExp->res:NULL, NULL);
+
+    // jump back to test expression after command
+    TAC *tacJmp = tacCreate(TAC_JUMP, labelPrev, NULL, NULL);
+
+    return tacMultiJoin(6, tacPrev, tacExp, tacIfz, tacCmd, tacJmp, tacNext);
 }
 
 TAC *tacIfThen(TAC **code) {
@@ -183,21 +233,26 @@ TAC *tacIfThen(TAC **code) {
     return tacMultiJoin(4, code[0], nIf, code[1], target);
 }
 
-TAC *tacFunDec(TAC **code) { 
+TAC *tacFunDec(HASH_NODE *res, TAC **code) { 
     TAC *begin, *end;
 
-    begin = tacCreate(TAC_BEGINFUN, makeLabel(), NULL, NULL);
-    end = tacCreate(TAC_ENDFUN, makeLabel(), NULL, NULL);
+    begin = tacCreate(TAC_BEGINFUN, res, NULL, NULL);
+    end = tacCreate(TAC_ENDFUN, res, NULL, NULL);
     
-    return tacMultiJoin(3, end, code[2], begin);
+    return tacMultiJoin(3, begin, code[2], end);
+}
+
+TAC *tacOutput(TAC **code) {
+    return NULL;
 }
 
 void tacPrint(TAC *tac) {
     TAC *tmp;
     for(tmp = tac; tmp; tmp = tmp->next)  // johann tm
-	fprintf(stderr, "%s %s, %s, %s\n", _tacString[tmp->type],
-		        tmp->res?tmp->res->text:"_", 
-			tmp->op1?tmp->op1->text:"_",
-			tmp->op2?tmp->op2->text:"_");
+        if(tmp->type != TAC_SYMBOL) // removed symbol printing
+            fprintf(stderr, "%s %s, %s, %s\n", _tacString[tmp->type], 
+                    tmp->res?tmp->res->text:"_", 
+                    tmp->op1?tmp->op1->text:"_",
+                    tmp->op2?tmp->op2->text:"_");
     return;
 }
