@@ -23,6 +23,7 @@ TAC *tacUnaryOp(int type, TAC **code);
 TAC *tacBinOp(int type, TAC **code);
 
 TAC *tacAttr(HASH_NODE* res, TAC **code);
+
 TAC *tacAttrArr(HASH_NODE* res, TAC **code);
 
 TAC *tacReadArr(HASH_NODE* vec, TAC **code);
@@ -30,8 +31,12 @@ TAC *tacReadArr(HASH_NODE* vec, TAC **code);
 TAC *tacArg(TAC **code);
 
 TAC *tacIfThen(TAC **code);
+
 TAC *tacIfThenElse(TAC **code);
+
 TAC *tacWhile(TAC **code);
+
+TAC *tacFunDec(HASH_NODE *res, TAC **code);
 
 /* CODE */
 
@@ -123,12 +128,12 @@ TAC *generateCode(AST_NODE *node) {
             return tacArg(code);
         //case AST_ARRACCESS:
             //return NULL;
-        //case AST_LPAR:
-            //return NULL;
         case AST_ATTR:
             return tacAttr(node->symbol, code);
         case AST_ATTRARR:
             return tacAttrArr(node->symbol, code);
+        case AST_FUNDEC:
+            return tacFunDec(node->symbol, code);
         //case AST_OUTPUT:
             //return NULL;
         //case AST_INPUT:
@@ -232,6 +237,19 @@ TAC *tacIfThen(TAC **code) {
     target = tacCreate(TAC_LABEL, label, NULL, NULL);
 
     return tacMultiJoin(4, code[0], nIf, code[1], target);
+}
+
+TAC *tacFunDec(HASH_NODE *res, TAC **code) { 
+    TAC *begin, *end;
+
+    begin = tacCreate(TAC_BEGINFUN, res, NULL, NULL);
+    end = tacCreate(TAC_ENDFUN, res, NULL, NULL);
+    
+    return tacMultiJoin(3, begin, code[2], end);
+}
+
+TAC *tacOutput(TAC **code) {
+    return NULL;
 }
 
 TAC *tacIfThenElse(TAC **code) {
