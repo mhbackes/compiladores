@@ -24,7 +24,7 @@ TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2) {
 
     if(!(newTac = (TAC *) malloc(sizeof(TAC)))) {
         fprintf(stderr, "ERROR [TAC]: out of memory!\n"); 
-	exit(-1); // abort
+	    exit(-1); // abort
     }
 
     newTac->type = type;
@@ -34,6 +34,35 @@ TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2) {
     newTac->prev = newTac->next = NULL;
 
     return newTac;
+}
+
+TAC *tacJoin2(TAC *t, TAC *s) {
+    if(!t)
+        return s;
+    if(!s)
+        return t;
+
+    TAC *tmp = s;
+    while(tmp)
+        tmp = tmp->prev;
+
+    // double linking list
+    tmp->prev = t;
+    t->next = tmp;
+
+    return s;
+}
+
+TAC *tacMultiJoin(int numTacs, ...) {
+    int i;
+    va_list args;
+    TAC *acc = NULL, *t;
+    va_start(args, numTacs);
+    for(i = 0; i < numTacs; i++) {
+        t = va_arg(args, TAC*);
+        acc = tacJoin2(acc, t);
+    }
+    return acc;
 }
 
 TAC *tacJoin(int nofTacs, TAC **tacs) {
