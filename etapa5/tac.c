@@ -36,7 +36,7 @@ TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2) {
     return newTac;
 }
 
-TAC *tacJoin2(TAC *t, TAC *s) {
+TAC *tacJoin(TAC *t, TAC *s) {
     if(!t)
         return s;
     if(!s)
@@ -60,34 +60,9 @@ TAC *tacMultiJoin(int numTacs, ...) {
     va_start(args, numTacs);
     for(i = 0; i < numTacs; i++) {
         t = va_arg(args, TAC*);
-        acc = tacJoin2(acc, t);
+        acc = tacJoin(acc, t);
     }
     return acc;
-}
-
-TAC *tacJoin(int nofTacs, TAC **tacs) {
-    int i;
-    TAC *tmp = tacs[nofTacs-1];
-
-    for(i = nofTacs - 1; i > 0; i--) {
-	if(!tmp) {
-	    tmp = tacs[i-1];
-	    continue;
-	}
-
-	if(!tacs[i-1])
-	    continue;
-
-	while(tmp->prev) 
-	    tmp = tmp->prev;
-
-	tmp->prev = tacs[i-1];
-	tacs[i-1]->next = tmp; // already doing half reversing
-
-	tmp = tacs[i-1];
-    }
-    
-    return tmp;
 }
 
 TAC *tacReverse(TAC *tac) {
@@ -166,25 +141,30 @@ TAC *generateCode(AST_NODE *node) {
 	    return tacBinOp(TAC_MUL, code);
         case AST_DIV:
 	    return tacBinOp(TAC_DIV, code);
-        default:
-	    tacJoin(node->size, code);
+        default: 
+	    return NULL;
     }
 
     return NULL;
 }
 
 TAC *tacBinOp(int type, TAC **code) {
-    TAC *tmp[3];
-    tmp[0] = code[0];
-    tmp[1] = code[1];
-    tmp[2] = tacCreate(type, makeTemp(), tmp[0]?tmp[0]->res:NULL, tmp[1]?tmp[1]->res:NULL);
-    return tacJoin(3, tmp);
+    TAC *new = tacCreate(type, makeTemp(), code[0]?code[0]->res:NULL, 
+		    code[1]?code[1]->res:NULL);
+    return tacMultiJoin(3, code[0], code[1], new);
 }
 
 TAC *tacUnaryOp(int type, TAC **code) {
-    TAC *tmp[2];
-    tmp[0] = code[0];
-    tmp[1] = tacCreate(type, makeTemp(), tmp[0]?tmp[0]->res:NULL, NULL);
-    return tacJoin(2, tmp);
+    TAC *new = tacCreate(type, makeTemp(), code[0]?code[0]->res:NULL, NULL);
+    return tacMultiJoin(2, code[0], new);
 }
 
+void tacPrint(TAC *tac) {
+    TAC *tmp;
+    for(tmp = tac; tmp; tmp = tmp->next)  // johann tm
+	fprintf(stderr, "%s %s, %s, %s\n", _tacString[tmp->type], 
+			tmp->res?tmp->res->text:"_", 
+			tmp->op1?tmp->op1->text:"_",
+			tmp->op2?tmp->op2->text:"_");
+    return;
+}

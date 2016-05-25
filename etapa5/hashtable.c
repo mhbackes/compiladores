@@ -11,6 +11,9 @@
 #include "hashtable.h"
 #include "y.tab.h"
 
+#define TEMP_P  "#TEMP"
+#define LABEL_P "#LABEL"
+
 const char* _symboTypelString[] = {
     FOREACH_SYMBOL_TYPE(GENERATE_HASH_STRING)
 };
@@ -118,8 +121,8 @@ void hashPrintDotNode(FILE* file, HASH_NODE *node) {
 HASH_NODE *makeTemp() {
     static int tmpIdx = 0;
 
-    char *str = (char *) malloc(sizeof(TEMP_P) + sizeof(int) - 2); 
-    sprintf(str, TEMP_P, tmpIdx);
+    char *str = (char *) malloc(sizeof(TEMP_P) + sizeof(int)); 
+    sprintf(str, "%s%d", TEMP_P, tmpIdx);
     tmpIdx++;
 
     return hashInsert(str, SYMBOL_UNDEF, DTYPE_UNDEF, -1);
@@ -128,8 +131,8 @@ HASH_NODE *makeTemp() {
 HASH_NODE *makeLabel() {
     static int labelIdx = 0;
 
-    char *str = (char *) malloc(sizeof(LABEL_P) + sizeof(int) - 2); 
-    sprintf(str, LABEL_P, labelIdx);
+    char *str = (char *) malloc(sizeof(LABEL_P) + sizeof(int)); 
+    sprintf(str, "%s%d", LABEL_P, labelIdx);
     labelIdx++;
 
     return hashInsert(str, SYMBOL_UNDEF, DTYPE_UNDEF, -1);

@@ -38,6 +38,8 @@ int main(int argc, char *argv[]) {
     }
 
     TAC *tacs = generateCode(root);
+    tacs = tacReverse(tacs);
+    tacPrint(tacs);
 
     printf("Parse successful.\n");
 
