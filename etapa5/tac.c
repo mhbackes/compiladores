@@ -65,6 +65,14 @@ TAC *tacMultiJoin(int numTacs, ...) {
     return acc;
 }
 
+TAC *tacArrayJoin(int numTacs, TAC **tacs) {
+    int i;
+    TAC *acc = NULL;
+    for(i = 0; i < numTacs; i++)
+        acc = tacJoin(acc, tacs[i]);
+    return acc;
+}
+
 TAC *tacReverse(TAC *tac) {
     TAC *tmp = tac;
 
@@ -82,70 +90,68 @@ TAC *generateCode(AST_NODE *node) {
     int i;
 
     for(i = 0; i < node->size; i++)
-	if(!node->children[i])
-	    code[i] = NULL;
-	else
-	    code[i] = generateCode(node->children[i]); 
+        if(!node->children[i])
+            code[i] = NULL;
+        else
+            code[i] = generateCode(node->children[i]); 
 
     switch(node->type) {
-	case AST_LIT:
-	case AST_VAR:
-	    return tacCreate(TAC_SYMBOL, node->symbol, NULL, NULL);
-	case AST_FUNCALL:
-	    return NULL;
-        case AST_ARRACCESS:
-	    return NULL;
-	case AST_LPAR:
-	    return NULL;
-	case AST_ATTR:
-            return NULL;
-        case AST_ATTRARR:
-            return NULL;
-        case AST_OUTPUT:
-            return NULL;
-	case AST_INPUT:
-	    return NULL;
-        case AST_IF:
-            return NULL;
-        case AST_IFTE:
-            return NULL;
-        case AST_WHILE:
-            return NULL;
-        case AST_RETURN:
-            return NULL;
-	// UNARY
+        case AST_LIT:
+        case AST_VAR:
+            return tacCreate(TAC_SYMBOL, node->symbol, NULL, NULL);
+        //case AST_FUNCALL:
+            //return NULL;
+        //case AST_ARRACCESS:
+            //return NULL;
+        //case AST_LPAR:
+            //return NULL;
+        //case AST_ATTR:
+            //return NULL;
+        //case AST_ATTRARR:
+            //return NULL;
+        //case AST_OUTPUT:
+            //return NULL;
+        //case AST_INPUT:
+            //return NULL;
+        //case AST_IF:
+            //return NULL;
+        //case AST_IFTE:
+            //return NULL;
+        //case AST_WHILE:
+            //return NULL;
+        //case AST_RETURN:
+            //return NULL;
+            // UNARY
         case AST_NOT:
             return tacUnaryOp(TAC_NOT, code);
-	// BINARY
+            // BINARY
         case AST_LE:
-	    return tacBinOp(TAC_LE, code);
+            return tacBinOp(TAC_LE, code);
         case AST_GE:
-	    return tacBinOp(TAC_GE, code);
+            return tacBinOp(TAC_GE, code);
         case AST_EQ:
-	    return tacBinOp(TAC_EQ, code);
+            return tacBinOp(TAC_EQ, code);
         case AST_NE:
-	    return tacBinOp(TAC_NE, code);
+            return tacBinOp(TAC_NE, code);
         case AST_AND:
-	    return tacBinOp(TAC_AND, code);
+            return tacBinOp(TAC_AND, code);
         case AST_OR:
-	    return tacBinOp(TAC_OR, code);
+            return tacBinOp(TAC_OR, code);
         case AST_LESS:
-	    return tacBinOp(TAC_LESS, code);
+            return tacBinOp(TAC_LESS, code);
         case AST_GREATER:
-	    return tacBinOp(TAC_GREATER, code);
+            return tacBinOp(TAC_GREATER, code);
         case AST_ADD:
-	    return tacBinOp(TAC_ADD, code);
+            return tacBinOp(TAC_ADD, code);
         case AST_SUB:
-	    return tacBinOp(TAC_SUB, code);
+            return tacBinOp(TAC_SUB, code);
         case AST_MUL:
-	    return tacBinOp(TAC_MUL, code);
+            return tacBinOp(TAC_MUL, code);
         case AST_DIV:
-	    return tacBinOp(TAC_DIV, code);
+            return tacBinOp(TAC_DIV, code);
         default: 
-	    return NULL;
+            return tacArrayJoin(node->size, code);
     }
-
-    return NULL;
 }
 
 TAC *tacBinOp(int type, TAC **code) {

@@ -62,6 +62,8 @@ TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2);
 
 TAC *tacMultiJoin(int numTacs, ...);
 
+TAC *tacArrayJoin(int numTacs, TAC **tacs);
+
 TAC *tacReverse(TAC *tac);
 
 TAC *generateCode(AST_NODE *node);
