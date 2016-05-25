@@ -27,7 +27,9 @@ TAC *tacAttrArr(HASH_NODE* res, TAC **code);
 
 TAC *tacReadArr(HASH_NODE* vec, TAC **code);
 
-TAC *tacArg(TAC **code);
+TAC *tacArgs(AST_NODE *larg, AST_NODE *lexp);
+
+TAC *tacFunCall(AST_NODE *fun);
 
 TAC *tacIfThen(TAC **code);
 
@@ -111,6 +113,9 @@ TAC *generateCode(AST_NODE *node) {
     TAC *code[node->size];    
     int i;
 
+    if(node->type == AST_FUNCALL)
+        return tacFunCall(node);
+
     for(i = 0; i < node->size; i++)
         if(!node->children[i])
             code[i] = NULL;
@@ -123,12 +128,6 @@ TAC *generateCode(AST_NODE *node) {
             return tacCreate(TAC_SYMBOL, node->symbol, NULL, NULL);
         case AST_ARRACCESS:
             return tacReadArr(node->symbol, code);
-        //case AST_FUNCALL:
-            //return NULL;
-        case AST_LEXP:
-            return tacArg(code);
-        //case AST_ARRACCESS:
-            //return NULL;
         case AST_ATTR:
             return tacAttr(node->symbol, code);
         case AST_ATTRARR:
@@ -280,13 +279,33 @@ TAC *tacIfThenElse(TAC **code) {
             tacElse, tacLabelNext);
 }
 
-TAC *tacArg(TAC **code) {
-    TAC *tacExp = code[0];
-    TAC *tacNext = code[1];
+TAC *tacFunCall(AST_NODE *funCall) {
+    AST_NODE *funDef = funCall->symbol->declaration;
+    AST_NODE *largs = funDef->children[1];
+    AST_NODE *lexp = funCall->children[0];
 
-    TAC *tacArg = tacCreate(TAC_ARG, NULL, tacExp?tacExp->res:NULL, NULL);
+    TAC *tacArg = tacArgs(largs, lexp);
+    TAC *tacCall = tacCreate(TAC_CALL, makeTemp(), funCall->symbol, NULL);
+    return tacMultiJoin(2, tacArg, tacCall);
+}
 
-    return tacMultiJoin(3, tacExp, tacArg, tacNext);
+TAC *tacArgs(AST_NODE *larg, AST_NODE *lexp) {
+    TAC *tacAcc = NULL;
+
+    while(larg && lexp) {
+        HASH_NODE *arg = larg->symbol;
+        AST_NODE *exp = lexp->children[0];
+        
+        TAC *tacExp = generateCode(exp);
+        TAC *tacArg = tacCreate(TAC_ARG, arg, tacExp?tacExp->res:NULL, NULL);
+
+        tacAcc = tacMultiJoin(3, tacAcc, tacExp, tacArg);
+
+        larg = larg->children[1];
+        lexp = lexp->children[1];
+    }
+
+    return tacAcc;
 }
 
 void tacPrint(TAC *tac) {
