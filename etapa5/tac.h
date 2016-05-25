@@ -19,7 +19,6 @@
     TAC(TAC_BEGINFUN)   \
     TAC(TAC_ENDFUN)     \
     TAC(TAC_IFZ)        \
-    TAC(TAC_WHILE)      \
     TAC(TAC_JUMP)       \
     TAC(TAC_CALL)       \
     TAC(TAC_ARG)        \

@@ -10,14 +10,21 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+/* GLOBAL DECS */
 
 const char* _tacString[] = {
     FOREACH_TAC(GENERATE_TAC_STRING)
 };
 
+/* PROTOTYPES */
+
 TAC *tacUnaryOp(int type, TAC **code);
 
 TAC *tacBinOp(int type, TAC **code);
+
+TAC *tacIfThen(TAC **code);
+
+/* CODE */
 
 TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2) {
     TAC *newTac; 
@@ -113,8 +120,8 @@ TAC *generateCode(AST_NODE *node) {
             //return NULL;
         //case AST_INPUT:
             //return NULL;
-        //case AST_IF:
-            //return NULL;
+        case AST_IF:
+            return tacIfThen(code);
         //case AST_IFTE:
             //return NULL;
         //case AST_WHILE:
@@ -163,6 +170,17 @@ TAC *tacBinOp(int type, TAC **code) {
 TAC *tacUnaryOp(int type, TAC **code) {
     TAC *new = tacCreate(type, makeTemp(), code[0]?code[0]->res:NULL, NULL);
     return tacMultiJoin(2, code[0], new);
+}
+
+TAC *tacIfThen(TAC **code) {
+    TAC *nIf, *target;
+    HASH_NODE *label = makeLabel();
+    /* ifz tac */
+    nIf = tacCreate(TAC_IFZ, label, code[0]?code[0]->res:NULL, NULL);
+    /* ifz false target */
+    target = tacCreate(TAC_LABEL, label, NULL, NULL);
+
+    return tacMultiJoin(4, code[0], nIf, code[1], target);
 }
 
 void tacPrint(TAC *tac) {
