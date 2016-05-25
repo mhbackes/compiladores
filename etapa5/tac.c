@@ -183,11 +183,20 @@ TAC *tacIfThen(TAC **code) {
     return tacMultiJoin(4, code[0], nIf, code[1], target);
 }
 
+TAC *tacFunDec(TAC **code) { 
+    TAC *begin, *end;
+
+    begin = tacCreate(TAC_BEGINFUN, makeLabel(), NULL, NULL);
+    end = tacCreate(TAC_ENDFUN, makeLabel(), NULL, NULL);
+    
+    return tacMultiJoin(3, end, code[2], begin);
+}
+
 void tacPrint(TAC *tac) {
     TAC *tmp;
     for(tmp = tac; tmp; tmp = tmp->next)  // johann tm
-	fprintf(stderr, "%s %s, %s, %s\n", _tacString[tmp->type], 
-			tmp->res?tmp->res->text:"_", 
+	fprintf(stderr, "%s %s, %s, %s\n", _tacString[tmp->type],
+		        tmp->res?tmp->res->text:"_", 
 			tmp->op1?tmp->op1->text:"_",
 			tmp->op2?tmp->op2->text:"_");
     return;
