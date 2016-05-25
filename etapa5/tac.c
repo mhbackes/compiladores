@@ -19,6 +19,10 @@ TAC *tacUnaryOp(int type, TAC **code);
 
 TAC *tacBinOp(int type, TAC **code);
 
+TAC *tacAttr(HASH_NODE* res, TAC **code);
+TAC *tacAttrArr(HASH_NODE* res, TAC **code);
+TAC *tacReadArr(HASH_NODE* vec, TAC **code);
+
 TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2) {
     TAC *newTac; 
 
@@ -99,16 +103,18 @@ TAC *generateCode(AST_NODE *node) {
         case AST_LIT:
         case AST_VAR:
             return tacCreate(TAC_SYMBOL, node->symbol, NULL, NULL);
+        case AST_ARRACCESS:
+            return tacReadArr(node->symbol, code);
         //case AST_FUNCALL:
             //return NULL;
         //case AST_ARRACCESS:
             //return NULL;
         //case AST_LPAR:
             //return NULL;
-        //case AST_ATTR:
-            //return NULL;
-        //case AST_ATTRARR:
-            //return NULL;
+        case AST_ATTR:
+            return tacAttr(node->symbol, code);
+        case AST_ATTRARR:
+            return tacAttrArr(node->symbol, code);
         //case AST_OUTPUT:
             //return NULL;
         //case AST_INPUT:
@@ -155,14 +161,31 @@ TAC *generateCode(AST_NODE *node) {
 }
 
 TAC *tacBinOp(int type, TAC **code) {
-    TAC *new = tacCreate(type, makeTemp(), code[0]?code[0]->res:NULL, 
+    TAC *newTac = tacCreate(type, makeTemp(), code[0]?code[0]->res:NULL, 
 		    code[1]?code[1]->res:NULL);
-    return tacMultiJoin(3, code[0], code[1], new);
+    return tacMultiJoin(3, code[0], code[1], newTac);
 }
 
 TAC *tacUnaryOp(int type, TAC **code) {
-    TAC *new = tacCreate(type, makeTemp(), code[0]?code[0]->res:NULL, NULL);
-    return tacMultiJoin(2, code[0], new);
+    TAC *newTac = tacCreate(type, makeTemp(), code[0]?code[0]->res:NULL, NULL);
+    return tacMultiJoin(2, code[0], newTac);
+}
+
+TAC *tacAttr(HASH_NODE* res, TAC **code) {
+    TAC *newTac = tacCreate(TAC_ATTR, res, code[0]?code[0]->res:NULL, NULL);
+    return tacMultiJoin(2, code[0], newTac);
+}
+
+TAC *tacAttrArr(HASH_NODE* res, TAC **code) {
+    TAC *newTac = tacCreate(TAC_ATTRARR, res, code[0]?code[0]->res:NULL,
+            code[1]?code[1]->res:NULL);
+    return tacMultiJoin(3, code[0], code[1], newTac);
+}
+
+TAC *tacReadArr(HASH_NODE* vec, TAC **code) {
+    TAC *newTac = tacCreate(TAC_READARR, makeTemp(), vec,
+            code[0]?code[0]->res:NULL);
+    return tacMultiJoin(2, code[0], newTac);
 }
 
 void tacPrint(TAC *tac) {
