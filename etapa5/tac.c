@@ -2,7 +2,7 @@
  * tac.c
  * ALUNOS:
  * MARCOS HENRIQUE BACKES
- * PAULO RENATO LANZARIN * >>>>>>>>> CODE SPONSORED BY THE ORDER OF THE LABLE <<<<<<<<<<
+ * PAULO RENATO LANZARIN
  */
 
 #include "tac.h"
@@ -39,7 +39,15 @@ TAC *tacWhile(TAC **code);
 
 TAC *tacFunDec(HASH_NODE *res, TAC **code);
 
-TAC *tacOutput(AST_NODE *node, TAC **code);
+TAC *tacOutputArgs(TAC **code);
+
+TAC *tacOutput(TAC **code);
+
+TAC *tacInput(TAC **code);
+
+TAC *tacInputArgs(TAC **code, HASH_NODE *id);
+
+TAC *tacReturn(TAC **code);
 
 /* CODE */
 
@@ -134,22 +142,24 @@ TAC *generateCode(AST_NODE *node) {
             return tacAttrArr(node->symbol, code);
         case AST_FUNDEC:
             return tacFunDec(node->symbol, code);
-        //case AST_OUTPUT:
-            //return NULL;
-        //case AST_INPUT:
-            //return NULL;
+        case AST_OUTPUT:
+            return tacOutput(code);
+        case AST_LOUT:
+            return tacOutputArgs(code);
+        case AST_INPUT:
+            return tacInput(code);
+        case AST_LIN:
+            return tacInputArgs(code, node->symbol);
         case AST_IF:
             return tacIfThen(code);
         case AST_IFTE:
             return tacIfThenElse(code);
         case AST_WHILE:
             return tacWhile(code);
-        //case AST_RETURN:
-            //return NULL;
-            // UNARY
+        case AST_RETURN:
+            return tacReturn(code);
         case AST_NOT:
             return tacUnaryOp(TAC_NOT, code);
-            // BINARY
         case AST_LE:
             return tacBinOp(TAC_LE, code);
         case AST_GE:
@@ -248,12 +258,6 @@ TAC *tacFunDec(HASH_NODE *res, TAC **code) {
     return tacMultiJoin(3, begin, code[2], end);
 }
 
-/* unfinished */
-TAC *tacOutput(AST_NODE *node, TAC **code) {
-    TAC *lArg = generateCode(node->children[1]);
-    TAC *output = tacCreate(TAC_PRINT, NULL, NULL, NULL);
-    return tacJoin(lArg, output);
-}
 
 TAC *tacIfThenElse(TAC **code) {
     TAC *tacExp = code[0];
@@ -308,9 +312,54 @@ TAC *tacArgs(AST_NODE *larg, AST_NODE *lexp) {
     return tacAcc;
 }
 
+// deus abencoe a america 
+TAC *tacOutputArgs(TAC **code) {
+    TAC *lout = code[1];
+    TAC *litOrExp = code[0]; 
+    if(!litOrExp)
+        return NULL; // no args
+    if(!lout) { // end of tree's list
+        return tacJoin(litOrExp, tacCreate(TAC_OUT_ARG, litOrExp?litOrExp->res:NULL,
+                                            NULL, NULL));
+    }
+    // there's still args
+    return tacMultiJoin(3, litOrExp, tacCreate(TAC_OUT_ARG, litOrExp?litOrExp->res:NULL,
+                                        NULL, NULL), lout);
+}
+
+// make america great again 
+TAC *tacInputArgs(TAC **code, HASH_NODE *id) {
+    TAC *lin = code[0];
+    if(!id)
+        return NULL; // no args
+    if(!lin) { // end of tree's list
+        return tacCreate(TAC_INPUT_ARG, id?id:NULL, NULL, NULL);
+    }
+    // there's still args
+    return tacJoin(tacCreate(TAC_INPUT_ARG, id?id:NULL, NULL, NULL), lin);
+}
+
+TAC *tacOutput(TAC **code) {
+    TAC *lout = code[0];
+    TAC *output = tacCreate(TAC_PRINT, NULL, NULL, NULL);
+    return tacJoin(lout, output);
+}
+
+TAC *tacInput(TAC **code) {
+    TAC *lin = code[0];
+    TAC *input = tacCreate(TAC_INPUT, NULL, NULL, NULL);
+    return tacJoin(lin, input);
+}
+
+TAC *tacReturn(TAC **code) {
+    TAC *retExp = code[0];
+    TAC *retTac = tacCreate(TAC_RET, NULL, retExp?retExp->res:NULL, NULL);
+    return tacJoin(retExp, retTac);
+}
+
 void tacPrint(TAC *tac) {
     TAC *tmp;
-    for(tmp = tac; tmp; tmp = tmp->next)  // johann tm
+    for(tmp = tac; tmp; tmp = tmp->next)  
         if(tmp->type != TAC_SYMBOL) // removed symbol printing
             fprintf(stderr, "%s %s, %s, %s\n", _tacString[tmp->type], 
                     tmp->res?tmp->res->text:"_", 
