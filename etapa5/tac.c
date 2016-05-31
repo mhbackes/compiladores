@@ -49,6 +49,9 @@ TAC *tacInputArgs(TAC **code, HASH_NODE *id);
 
 TAC *tacReturn(TAC **code);
 
+void tacPrintDotNodes(FILE *file, TAC *tac);
+void tacPrintDotEdges(FILE* file, TAC *node);
+
 /* CODE */
 
 TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2) {
@@ -357,13 +360,52 @@ TAC *tacReturn(TAC **code) {
     return tacJoin(retExp, retTac);
 }
 
-void tacPrint(TAC *tac) {
+void tacPrint(FILE* file, TAC *tac) {
     TAC *tmp;
     for(tmp = tac; tmp; tmp = tmp->next)  
         if(tmp->type != TAC_SYMBOL) // removed symbol printing
-            fprintf(stderr, "%s %s, %s, %s\n", _tacString[tmp->type], 
+            fprintf(file, "%s %s, %s, %s\n", _tacString[tmp->type], 
                     tmp->res?tmp->res->text:"_", 
                     tmp->op1?tmp->op1->text:"_",
                     tmp->op2?tmp->op2->text:"_");
     return;
+}
+
+void tacPrintDot(FILE *file, TAC *node) {
+    fprintf(file, "digraph program {\n");
+    tacPrintDotNodes(file, node);
+    tacPrintDotEdges(file, node);
+    fprintf(file, "}\n");
+}
+
+void tacPrintDotNodes(FILE *file, TAC *tac) {
+    TAC *tmp;
+    for(tmp = tac; tmp; tmp = tmp->next) {
+        fprintf(file, "\t\"%p\" [shape=box, label=\"%s\\n%s, %s, %s\"]\n",
+                tmp, _tacString[tmp->type], tmp->res?tmp->res->text:"_", 
+                tmp->op1?tmp->op1->text:"_", tmp->op2?tmp->op2->text:"_");
+        if(tmp->res)
+            hashPrintDotNode(file, tmp->res);
+        if(tmp->op1)
+            hashPrintDotNode(file, tmp->op1);
+        if(tmp->op2)
+            hashPrintDotNode(file, tmp->op2);
+    }
+}
+
+void tacPrintDotEdges(FILE* file, TAC *tac) {
+    TAC *tmp;
+    for(tmp = tac; tmp; tmp = tmp->next) {
+        fprintf(file, "\t\"%p\" -> \"%p\" [label=\"prev\"]\n", tmp, tmp->prev);
+        fprintf(file, "\t\"%p\" -> \"%p\" [label=\"next\"]\n", tmp, tmp->next);
+        if(tmp->res)
+            fprintf(file, "\t\"%p\" -> \"%p\" [label=\"res\"]\n", tmp,
+                    tmp->res);
+        if(tmp->op2)
+            fprintf(file, "\t\"%p\" -> \"%p\" [label=\"op1\"]\n", tmp,
+                    tmp->op1);
+        if(tmp->op2)
+            fprintf(file, "\t\"%p\" -> \"%p\" [label=\"op2\"]\n", tmp,
+                    tmp->op2);
+    }
 }

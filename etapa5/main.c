@@ -39,13 +39,15 @@ int main(int argc, char *argv[]) {
 
     TAC *tacs = generateCode(root);
     tacs = tacReverse(tacs);
-    tacPrint(tacs);
+    tacPrint(stderr, tacs);
 
     printf("Parse successful.\n");
 
     FILE* prog = stdout;
     if(argc >= 3)
         prog = fopen(argv[2], "w");
+
+    //tacPrintDot(prog, tacs);
 
     //hashPrint();
     //astPrintCode(prog, root);

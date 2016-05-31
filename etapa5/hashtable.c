@@ -14,7 +14,7 @@
 #define TEMP_P  "#TEMP"
 #define LABEL_P "#LABEL"
 
-const char* _symboTypelString[] = {
+const char* _symbolTypeString[] = {
     FOREACH_SYMBOL_TYPE(GENERATE_HASH_STRING)
 };
 
@@ -101,7 +101,7 @@ void hashPrint(void) {
         node = _symbolTable[i];
         while(node) { 
             printf("Table[%d] -> ", i);
-            printf("TYPE: %s\t", _symboTypelString[node->type]);
+            printf("TYPE: %s\t", _symbolTypeString[node->type]);
             printf("DATATYPE: %s\t", _dataTypeString[node->datatype]);
             printf("TEXT: %s\n", node->text);
             node = node->next;
@@ -113,7 +113,7 @@ void hashPrint(void) {
 void hashPrintDotNode(FILE* file, HASH_NODE *node) {
         fprintf(file, "\t\"%p\" [label=\"TEXT=\\\"%s\\\"\\n", node,
                 node->text);
-        fprintf(file, "STYPE=%s\\nDTYPE=%s\"", _symboTypelString[node->type], 
+        fprintf(file, "STYPE=%s\\nDTYPE=%s\"", _symbolTypeString[node->type], 
                 _dataTypeString[node->datatype]);
         fprintf(file, "shape=box]\n");
 }

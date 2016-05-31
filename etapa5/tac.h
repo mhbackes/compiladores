@@ -67,7 +67,9 @@ TAC *tacReverse(TAC *tac);
 
 TAC *generateCode(AST_NODE *node);
 
-void tacPrint(TAC *tac);
+void tacPrint(FILE *file, TAC *tac);
+
+void tacPrintDot(FILE *file, TAC *node);
 
 #endif
 
