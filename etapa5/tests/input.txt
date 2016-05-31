@@ -1,0 +1,11 @@
+int a:0;
+int i:0;
+char c:0;
+
+int main()
+  {
+    input c
+    input a, i
+    input a, c, i
+    input a, i, c
+  };
