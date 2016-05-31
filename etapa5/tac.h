@@ -21,8 +21,6 @@
     TAC(TAC_JUMP)       \
     TAC(TAC_CALL)       \
     TAC(TAC_ARG)        \
-    TAC(TAC_OUT_ARG)    \
-    TAC(TAC_INPUT_ARG)  \
     TAC(TAC_RET)        \
     TAC(TAC_PRINT)      \
     TAC(TAC_INPUT)      \
