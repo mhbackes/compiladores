@@ -142,12 +142,8 @@ TAC *generateCode(AST_NODE *node) {
             return tacAttrArr(node->symbol, code);
         case AST_FUNDEC:
             return tacFunDec(node->symbol, code);
-        case AST_OUTPUT:
-            return tacOutput(code);
         case AST_LOUT:
             return tacOutputArgs(code);
-        case AST_INPUT:
-            return tacInput(code);
         case AST_LIN:
             return tacInputArgs(code, node->symbol);
         case AST_IF:
@@ -316,39 +312,31 @@ TAC *tacArgs(AST_NODE *larg, AST_NODE *lexp) {
 TAC *tacOutputArgs(TAC **code) {
     TAC *lout = code[1];
     TAC *litOrExp = code[0]; 
+
     if(!litOrExp)
         return NULL; // no args
-    if(!lout) { // end of tree's list
-        return tacJoin(litOrExp, tacCreate(TAC_OUT_ARG, litOrExp?litOrExp->res:NULL,
-                                            NULL, NULL));
-    }
+
+    if(!lout)   // end of tree's list
+        return tacJoin(litOrExp, tacCreate(TAC_PRINT, NULL, litOrExp?litOrExp->res:NULL, NULL));
+
     // there's still args
-    return tacMultiJoin(3, litOrExp, tacCreate(TAC_OUT_ARG, litOrExp?litOrExp->res:NULL,
-                                        NULL, NULL), lout);
+    return tacMultiJoin(3, litOrExp, tacCreate(TAC_PRINT, NULL, 
+                                                litOrExp?litOrExp->res:NULL, NULL), 
+                        lout);
 }
 
 // make america great again 
 TAC *tacInputArgs(TAC **code, HASH_NODE *id) {
     TAC *lin = code[0];
+
     if(!id)
         return NULL; // no args
-    if(!lin) { // end of tree's list
-        return tacCreate(TAC_INPUT_ARG, id?id:NULL, NULL, NULL);
-    }
+
+    if(!lin) // end of tree's list
+        return tacCreate(TAC_INPUT, NULL, id?id:NULL, NULL);
+
     // there's still args
-    return tacJoin(tacCreate(TAC_INPUT_ARG, id?id:NULL, NULL, NULL), lin);
-}
-
-TAC *tacOutput(TAC **code) {
-    TAC *lout = code[0];
-    TAC *output = tacCreate(TAC_PRINT, NULL, NULL, NULL);
-    return tacJoin(lout, output);
-}
-
-TAC *tacInput(TAC **code) {
-    TAC *lin = code[0];
-    TAC *input = tacCreate(TAC_INPUT, NULL, NULL, NULL);
-    return tacJoin(lin, input);
+    return tacJoin(tacCreate(TAC_INPUT, NULL, id?id:NULL, NULL), lin);
 }
 
 TAC *tacReturn(TAC **code) {
