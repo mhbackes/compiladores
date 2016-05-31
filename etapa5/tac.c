@@ -71,6 +71,29 @@ TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2) {
     return newTac;
 }
 
+void tacDelete(TAC *tac) {
+    free(tac);
+}
+
+TAC *tacRemoveSymbols(TAC *head) {
+    TAC *tac = head, *tmp;
+    while(head && (head->type == TAC_SYMBOL))
+        head = head->next;
+    while(tac) {
+        if(tac->type == TAC_SYMBOL) {
+            if(tac->prev != NULL)
+                tac->prev->next = tac->next;
+            if(tac->next != NULL)
+                tac->next->prev = tac->prev;
+            tmp = tac->next;
+            tacDelete(tac);
+            tac = tmp;
+        } else
+            tac = tac->next;
+    }
+    return head;
+}
+
 TAC *tacJoin(TAC *t, TAC *s) {
     if(!t)
         return s;
@@ -389,7 +412,7 @@ void tacPrintDotEdges(FILE* file, TAC *tac) {
         if(tmp->res)
             fprintf(file, "\t\"%p\" -> \"%p\" [label=\"res\"]\n", tmp,
                     tmp->res);
-        if(tmp->op2)
+        if(tmp->op1)
             fprintf(file, "\t\"%p\" -> \"%p\" [label=\"op1\"]\n", tmp,
                     tmp->op1);
         if(tmp->op2)

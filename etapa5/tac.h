@@ -57,6 +57,10 @@ typedef struct tac_s {
 
 TAC *tacCreate(int type, HASH_NODE *res, HASH_NODE *op1, HASH_NODE *op2);
 
+void tacDelete(TAC *tac);
+
+TAC *tacRemoveSymbols(TAC *head);
+
 TAC *tacMultiJoin(int numTacs, ...);
 
 TAC *tacArrayJoin(int numTacs, TAC **tacs);
@@ -64,6 +68,7 @@ TAC *tacArrayJoin(int numTacs, TAC **tacs);
 TAC *tacReverse(TAC *tac);
 
 TAC *generateCode(AST_NODE *node);
+
 
 void tacPrint(FILE *file, TAC *tac);
 

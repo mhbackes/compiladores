@@ -47,7 +47,8 @@ int main(int argc, char *argv[]) {
     if(argc >= 3)
         prog = fopen(argv[2], "w");
 
-    //tacPrintDot(prog, tacs);
+    tacs = tacRemoveSymbols(tacs);
+    tacPrintDot(prog, tacs);
 
     //hashPrint();
     //astPrintCode(prog, root);
