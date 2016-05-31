@@ -21,6 +21,7 @@
     SYMBOL(SYMBOL_SCALAR)           \
     SYMBOL(SYMBOL_VECTOR)           \
     SYMBOL(SYMBOL_FUNC)             \
+    SYMBOL(SYMBOL_LABEL)            \
 
 typedef struct ast_node AST_NODE;
 
@@ -55,7 +56,7 @@ HASH_NODE *_symbolTable[HASH_SIZE];
 void hashInit(void);
 HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber);
 HASH_NODE *hashFind(char *str, int datatype);
-HASH_NODE *makeTemp();
+HASH_NODE *makeTemp(int dataType);
 HASH_NODE *makeLabel();
 
 void hashPrint(void);

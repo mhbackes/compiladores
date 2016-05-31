@@ -73,6 +73,9 @@ typedef struct ast_node {
 
 AST_NODE *astCreate(int type, int lineNumber, HASH_NODE *symbol, int size, ...);
 
+int astSymbolType(int astType);
+int astDataType(int astType);
+
 void astPrintDot(FILE *file, AST_NODE *node);
 
 void astPrintCode(FILE* file, AST_NODE* node);

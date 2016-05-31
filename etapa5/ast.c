@@ -322,3 +322,24 @@ void astPrintCode(FILE* file, AST_NODE* node) {
             fprintf(stderr, "Unknown");
     }
 }
+
+int astSymbolType(int astType) {
+    switch (astType) {
+	case AST_LPAR:
+        case AST_VARDEC: return SYMBOL_SCALAR;
+        case AST_ARRDEC: return SYMBOL_VECTOR;
+        case AST_FUNDEC: return SYMBOL_FUNC;
+    }
+    return SYMBOL_UNDEF;
+}
+
+int astDataType(int astType) {
+    switch (astType) {
+        case AST_BOOL: return DTYPE_BOOL;
+        case AST_CHAR: return DTYPE_CHAR;
+        case AST_INT:  return DTYPE_INT;
+        case AST_REAL: return DTYPE_REAL;
+    }
+    return DTYPE_UNDEF;
+}
+

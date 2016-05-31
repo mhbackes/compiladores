@@ -8,29 +8,8 @@ int _numErrors;
 const char *_errorMessage[] = {
     FOREACH_ERROR(GENERATE_ERROR_STRING)
 }; 
-int astSymbolType(int astType);
-int astDataType(int astType);
+
 int checkParameters(AST_NODE *node);
-
-int astSymbolType(int astType) {
-    switch (astType) {
-	case AST_LPAR:
-        case AST_VARDEC: return SYMBOL_SCALAR;
-        case AST_ARRDEC: return SYMBOL_VECTOR;
-        case AST_FUNDEC: return SYMBOL_FUNC;
-    }
-    return SYMBOL_UNDEF;
-}
-
-int astDataType(int astType) {
-    switch (astType) {
-        case AST_BOOL: return DTYPE_BOOL;
-        case AST_CHAR: return DTYPE_CHAR;
-        case AST_INT:  return DTYPE_INT;
-        case AST_REAL: return DTYPE_REAL;
-    }
-    return DTYPE_UNDEF;
-}
 
 int numAndBool(int t1, int t2) {
     return (t1 != DTYPE_UNDEF && t2 != DTYPE_UNDEF &&

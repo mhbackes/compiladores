@@ -17,9 +17,9 @@ const char* _tacString[] = {
 
 /* PROTOTYPES */
 
-TAC *tacUnaryOp(int type, TAC **code);
+TAC *tacUnaryOp(int type, int datatype, TAC **code);
 
-TAC *tacBinOp(int type, TAC **code);
+TAC *tacBinOp(int type, int datatype, TAC **code);
 
 TAC *tacAttr(HASH_NODE* res, TAC **code);
 
@@ -159,44 +159,44 @@ TAC *generateCode(AST_NODE *node) {
         case AST_RETURN:
             return tacReturn(code);
         case AST_NOT:
-            return tacUnaryOp(TAC_NOT, code);
+            return tacUnaryOp(TAC_NOT, node->datatype, code);
         case AST_LE:
-            return tacBinOp(TAC_LE, code);
+            return tacBinOp(TAC_LE, node->datatype, code);
         case AST_GE:
-            return tacBinOp(TAC_GE, code);
+            return tacBinOp(TAC_GE, node->datatype, code);
         case AST_EQ:
-            return tacBinOp(TAC_EQ, code);
+            return tacBinOp(TAC_EQ, node->datatype, code);
         case AST_NE:
-            return tacBinOp(TAC_NE, code);
+            return tacBinOp(TAC_NE, node->datatype, code);
         case AST_AND:
-            return tacBinOp(TAC_AND, code);
+            return tacBinOp(TAC_AND, node->datatype, code);
         case AST_OR:
-            return tacBinOp(TAC_OR, code);
+            return tacBinOp(TAC_OR, node->datatype, code);
         case AST_LESS:
-            return tacBinOp(TAC_LESS, code);
+            return tacBinOp(TAC_LESS, node->datatype, code);
         case AST_GREATER:
-            return tacBinOp(TAC_GREATER, code);
+            return tacBinOp(TAC_GREATER, node->datatype, code);
         case AST_ADD:
-            return tacBinOp(TAC_ADD, code);
+            return tacBinOp(TAC_ADD, node->datatype, code);
         case AST_SUB:
-            return tacBinOp(TAC_SUB, code);
+            return tacBinOp(TAC_SUB, node->datatype, code);
         case AST_MUL:
-            return tacBinOp(TAC_MUL, code);
+            return tacBinOp(TAC_MUL, node->datatype, code);
         case AST_DIV:
-            return tacBinOp(TAC_DIV, code);
+            return tacBinOp(TAC_DIV, node->datatype, code);
         default: 
             return tacArrayJoin(node->size, code);
     }
 }
 
-TAC *tacBinOp(int type, TAC **code) {
-    TAC *newTac = tacCreate(type, makeTemp(), code[0]?code[0]->res:NULL, 
+TAC *tacBinOp(int type, int datatype, TAC **code) {
+    TAC *newTac = tacCreate(type, makeTemp(datatype), code[0]?code[0]->res:NULL, 
 		    code[1]?code[1]->res:NULL);
     return tacMultiJoin(3, code[0], code[1], newTac);
 }
 
-TAC *tacUnaryOp(int type, TAC **code) {
-    TAC *newTac = tacCreate(type, makeTemp(), code[0]?code[0]->res:NULL, NULL);
+TAC *tacUnaryOp(int type, int datatype, TAC **code) {
+    TAC *newTac = tacCreate(type, makeTemp(datatype), code[0]?code[0]->res:NULL, NULL);
     return tacMultiJoin(2, code[0], newTac);
 }
 
@@ -212,7 +212,7 @@ TAC *tacAttrArr(HASH_NODE* res, TAC **code) {
 }
 
 TAC *tacReadArr(HASH_NODE* vec, TAC **code) {
-    TAC *newTac = tacCreate(TAC_READARR, makeTemp(), vec,
+    TAC *newTac = tacCreate(TAC_READARR, makeTemp(vec->datatype), vec,
             code[0]?code[0]->res:NULL);
     return tacMultiJoin(2, code[0], newTac);
 }
@@ -289,7 +289,7 @@ TAC *tacFunCall(AST_NODE *funCall) {
     AST_NODE *lexp = funCall->children[0];
 
     TAC *tacArg = tacArgs(largs, lexp);
-    TAC *tacCall = tacCreate(TAC_CALL, makeTemp(), funCall->symbol, NULL);
+    TAC *tacCall = tacCreate(TAC_CALL, makeTemp(funCall->datatype), funCall->symbol, NULL);
     return tacMultiJoin(2, tacArg, tacCall);
 }
 

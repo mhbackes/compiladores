@@ -118,14 +118,14 @@ void hashPrintDotNode(FILE* file, HASH_NODE *node) {
         fprintf(file, "shape=box]\n");
 }
 
-HASH_NODE *makeTemp() {
+HASH_NODE *makeTemp(int dataType) {
     static int tmpIdx = 0;
 
     char *str = (char *) malloc(sizeof(TEMP_P) + sizeof(int)); 
     sprintf(str, "%s%d", TEMP_P, tmpIdx);
     tmpIdx++;
 
-    return hashInsert(str, SYMBOL_UNDEF, DTYPE_UNDEF, -1);
+    return hashInsert(str, SYMBOL_SCALAR, dataType, 0);
 }
 
 HASH_NODE *makeLabel() {
@@ -135,5 +135,5 @@ HASH_NODE *makeLabel() {
     sprintf(str, "%s%d", LABEL_P, labelIdx);
     labelIdx++;
 
-    return hashInsert(str, SYMBOL_UNDEF, DTYPE_UNDEF, -1);
+    return hashInsert(str, SYMBOL_LABEL, DTYPE_UNDEF, 0);
 }
