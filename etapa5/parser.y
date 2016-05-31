@@ -105,7 +105,7 @@ literal: literalBool					{ $$ = $1; } /* MARCOS */
        | LIT_CHAR lineNumber			{ $$ = astCreate(AST_LIT, $2, $1, 0); } /* MARCOS */
        ;
 
-array: type TK_IDENTIFIER '[' literalInteger ']'					{ $$ = astCreate(AST_ARRDEC, $1->lineNumber, $2, 2, $1, $4, NULL); } /* MARCOS */
+array: type TK_IDENTIFIER '[' literalInteger ']'					{ $$ = astCreate(AST_ARRDEC, $1->lineNumber, $2, 3, $1, $4, NULL); } /* MARCOS */
      | type TK_IDENTIFIER '[' literalInteger ']' ':' listOfLiteral	{ $$ = astCreate(AST_ARRDEC, $1->lineNumber, $2, 3, $1, $4, $7); } /* PAULO */
      ;
 

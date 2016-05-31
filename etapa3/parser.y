@@ -99,7 +99,7 @@ literal: literalBool					{ $$ = $1; } /* TODO */
 	   | LIT_CHAR						{ $$ = astCreate(AST_SYMBOL, $1, 0); } /* MARCOS */
 	   ;
 
-array: type TK_IDENTIFIER '[' literalInteger ']'					{ $$ = astCreate(AST_ARRDEC, $2, 2, $1, $4, NULL); } /* MARCOS */
+array: type TK_IDENTIFIER '[' literalInteger ']'					{ $$ = astCreate(AST_ARRDEC, $2, 3, $1, $4, NULL); } /* MARCOS */
 	 | type TK_IDENTIFIER '[' literalInteger ']' ':' listOfLiteral	{ $$ = astCreate(AST_ARRDEC, $2, 3, $1, $4, $7); } /* TODO */
 	 ;
 
