@@ -61,7 +61,7 @@ HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber) {
         return newNode;
     // new node allocation
     if(!(newNode = (HASH_NODE *) malloc(sizeof(HASH_NODE))) ||
-            !(newNode->text = (char *) malloc(sizeof(char) *  strlen(str)))) {
+            !(newNode->text = (char *) malloc(sizeof(char) *  (strlen(str) + 1)))) {
         fprintf(stderr, "Error: out of memory\n");
         exit(-1); // abort
     }
@@ -71,7 +71,7 @@ HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber) {
     newNode->lineNumber = lineNumber;
     newNode->declaration = NULL;
 
-    strncpy(newNode->text, str, strlen(str));
+    strncpy(newNode->text, str, strlen(str) + 1);
 
     address = hashAddress(str);
     newNode->next = _symbolTable[address];
