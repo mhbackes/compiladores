@@ -17,6 +17,8 @@ const char* _tacString[] = {
 
 /* PROTOTYPES */
 
+TAC *tacGenerateCodeAux(AST_NODE* root);
+
 TAC *tacUnaryOp(int type, int datatype, TAC **code);
 
 TAC *tacBinOp(int type, int datatype, TAC **code);
@@ -144,15 +146,21 @@ TAC *tacReverse(TAC *tac) {
     TAC *tmp = tac;
 
     if(!tac)
-	return NULL;
+	    return NULL;
 
     while(tmp->prev) 
-	tmp = tmp->prev;
+	    tmp = tmp->prev;
 
     return tmp;
 }
 
-TAC *generateCode(AST_NODE *node) {
+TAC *tacGenerateCode(AST_NODE* root) {
+    TAC *tail = tacGenerateCodeAux(root);
+    TAC *head = tacReverse(tail);
+    return tacRemoveSymbols(head);
+}
+
+TAC *tacGenerateCodeAux(AST_NODE *node) {
     TAC *code[node->size];    
     int i;
 
@@ -163,7 +171,7 @@ TAC *generateCode(AST_NODE *node) {
         if(!node->children[i])
             code[i] = NULL;
         else
-            code[i] = generateCode(node->children[i]); 
+            code[i] = tacGenerateCodeAux(node->children[i]); 
 
     switch(node->type) {
         case AST_LIT:
@@ -331,7 +339,7 @@ TAC *tacArgs(AST_NODE *larg, AST_NODE *lexp) {
         HASH_NODE *arg = larg->symbol;
         AST_NODE *exp = lexp->children[0];
         
-        TAC *tacExp = generateCode(exp);
+        TAC *tacExp = tacGenerateCodeAux(exp);
         TAC *tacArg = tacCreate(TAC_ARG, arg, tacExp?tacExp->res:NULL, NULL);
 
         tacAcc = tacMultiJoin(3, tacAcc, tacExp, tacArg);
@@ -383,11 +391,10 @@ TAC *tacReturn(TAC **code) {
 void tacPrint(FILE* file, TAC *tac) {
     TAC *tmp;
     for(tmp = tac; tmp; tmp = tmp->next)  
-        if(tmp->type != TAC_SYMBOL) // removed symbol printing
-            fprintf(file, "%s %s, %s, %s\n", _tacString[tmp->type], 
-                    tmp->res?tmp->res->text:"_", 
-                    tmp->op1?tmp->op1->text:"_",
-                    tmp->op2?tmp->op2->text:"_");
+        fprintf(file, "%s %s, %s, %s\n", _tacString[tmp->type], 
+                tmp->res?tmp->res->text:"_", 
+                tmp->op1?tmp->op1->text:"_",
+                tmp->op2?tmp->op2->text:"_");
     return;
 }
 

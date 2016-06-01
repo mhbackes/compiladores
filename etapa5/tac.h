@@ -69,7 +69,7 @@ TAC *tacArrayJoin(int numTacs, TAC **tacs);
 
 TAC *tacReverse(TAC *tac);
 
-TAC *generateCode(AST_NODE *node);
+TAC *tacGenerateCode(AST_NODE *node);
 
 void tacPrint(FILE *file, TAC *tac);
 

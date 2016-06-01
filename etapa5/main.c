@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Parsing */
+    // yyparse output stored in extern variable root
     yyparse();
 
     // free input and lex buffers
@@ -49,28 +50,26 @@ int main(int argc, char *argv[]) {
     printf("Semantic check successful.\n");
     /* Semantic checking */
 
-    /* TAC generating */
-    TAC *tacs = generateCode(root);
-    tacs = tacReverse(tacs);
-    tacs = tacRemoveSymbols(tacs);
+    /* TAC creation */
+    TAC *tacs = tacGenerateCode(root);
 
     // syntax tree not needed anymore
     astDeleteTree(root);
 
-    printf("TACs created.");
-    /* TAC generating */
+    printf("TACs created.\n");
+    /* TAC creation */
 
     FILE* prog = stdout;
     if(argc >= 3)
         prog = fopen(argv[2], "w");
 
     tacPrint(prog, tacs);
+    printf("Program written in file \"%s\"\n", argv[2]);
     fclose(prog);
 
     // free tacs and symbol table
     tacDeleteList(tacs);
     hashClean();
-
 
     return 0;
 }
