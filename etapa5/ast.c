@@ -36,6 +36,20 @@ AST_NODE *astCreate(int type, int lineNumber, HASH_NODE *symbol, int size, ...) 
     return newNode;
 }
 
+void astDelete(AST_NODE *node) {
+    free(node->children);
+    free(node);
+}
+
+void astDeleteTree(AST_NODE *root) {
+    int i;
+    if(!root) return;
+    for(i = 0; i < root->size; i++){
+        astDeleteTree(root->children[i]);
+    }
+    astDelete(root);
+}
+
 void astPrintDot(FILE *file, AST_NODE *node) {
     fprintf(file, "digraph program {\n");
     astPrintDotNodes(file, node);

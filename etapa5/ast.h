@@ -73,6 +73,10 @@ typedef struct ast_node {
 
 AST_NODE *astCreate(int type, int lineNumber, HASH_NODE *symbol, int size, ...);
 
+void astDelete(AST_NODE *node);
+
+void astDeleteTree(AST_NODE *root);
+
 int astSymbolType(int astType);
 int astDataType(int astType);
 

@@ -75,6 +75,15 @@ void tacDelete(TAC *tac) {
     free(tac);
 }
 
+void tacDeleteList(TAC *head) {
+    TAC *tmp;
+    while(head) {
+        tmp = head->next;
+        tacDelete(head);
+        head = tmp;
+    }
+}
+
 TAC *tacRemoveSymbols(TAC *head) {
     TAC *tac = head, *tmp;
     while(head && (head->type == TAC_SYMBOL))

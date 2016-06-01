@@ -28,8 +28,17 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FILE_ERROR);
     }
 
+    /* Parsing */
     yyparse();
 
+    // free input and lex buffers
+    fclose(yyin);
+    yylex_destroy();
+
+    printf("Parse successful.\n");
+    /* Parsing */
+
+    /* Semantic checking */
     int semErrors = semCheck(root);
 
     if(semErrors) {
@@ -37,26 +46,31 @@ int main(int argc, char *argv[]) {
         exit(EXIT_SEMANTIC_ERROR);
     }
 
+    printf("Semantic check successful.\n");
+    /* Semantic checking */
+
+    /* TAC generating */
     TAC *tacs = generateCode(root);
     tacs = tacReverse(tacs);
-    tacPrint(stderr, tacs);
+    tacs = tacRemoveSymbols(tacs);
 
-    printf("Parse successful.\n");
+    // syntax tree not needed anymore
+    astDeleteTree(root);
+
+    printf("TACs created.");
+    /* TAC generating */
 
     FILE* prog = stdout;
     if(argc >= 3)
         prog = fopen(argv[2], "w");
 
-    tacs = tacRemoveSymbols(tacs);
-    tacPrintDot(prog, tacs);
-
-    //hashPrint();
-    //astPrintCode(prog, root);
-    //printf("Decompiled program written in \"%s\".\n", argv[2]);
-    //astPrintDot(prog, root);
-    //printf("Dot written in \"%s\".\n", argv[2]);
-    fclose(yyin);
+    tacPrint(prog, tacs);
     fclose(prog);
+
+    // free tacs and symbol table
+    tacDeleteList(tacs);
+    hashClean();
+
 
     return 0;
 }

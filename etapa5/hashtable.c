@@ -93,6 +93,21 @@ HASH_NODE *hashFind(char *str, int datatype) {
     return NULL;
 }
 
+void hashClean(void) {
+    int i;
+    HASH_NODE *node, *tmp;
+    for(i = 0; i < HASH_SIZE; i++) {
+        node = _symbolTable[i];
+        while(node) { 
+            tmp = node->next;
+            free(node->text);
+            free(node);
+            node = tmp;
+        }
+        _symbolTable[i] = NULL;
+    }
+}
+
 /* testing purposes, should be removed */
 void hashPrint(void) {
     int i;
@@ -121,19 +136,24 @@ void hashPrintDotNode(FILE* file, HASH_NODE *node) {
 HASH_NODE *makeTemp(int dataType) {
     static int tmpIdx = 0;
 
-    char *str = (char *) malloc(sizeof(TEMP_P) + sizeof(int)); 
+    char *str = (char *) malloc(sizeof(TEMP_P) + 20 * sizeof(char)); 
     sprintf(str, "%s%d", TEMP_P, tmpIdx);
     tmpIdx++;
 
-    return hashInsert(str, SYMBOL_SCALAR, dataType, 0);
+    HASH_NODE* temp =  hashInsert(str, SYMBOL_SCALAR, dataType, 0);
+    free(str);
+    return temp;
+
 }
 
 HASH_NODE *makeLabel() {
     static int labelIdx = 0;
 
-    char *str = (char *) malloc(sizeof(LABEL_P) + sizeof(int)); 
+    char *str = (char *) malloc(sizeof(LABEL_P) + 20 * sizeof(char)); 
     sprintf(str, "%s%d", LABEL_P, labelIdx);
     labelIdx++;
 
-    return hashInsert(str, SYMBOL_LABEL, DTYPE_UNDEF, 0);
+    HASH_NODE* label = hashInsert(str, SYMBOL_LABEL, DTYPE_UNDEF, 0);
+    free(str);
+    return label;
 }

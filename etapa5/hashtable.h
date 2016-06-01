@@ -56,6 +56,7 @@ HASH_NODE *_symbolTable[HASH_SIZE];
 void hashInit(void);
 HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber);
 HASH_NODE *hashFind(char *str, int datatype);
+void hashClean(void);
 HASH_NODE *makeTemp(int dataType);
 HASH_NODE *makeLabel();
 
