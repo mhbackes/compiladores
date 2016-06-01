@@ -1,0 +1,53 @@
+int vector[10]:8 2 4 6 3 1 10 9 7 5;
+int size:10;
+
+// dummy for "void" functions
+int void:0;
+
+int main() {
+    output "Input vector:\n"
+    void = print()
+
+    void = sort()
+
+    output "Sorted vector:\n"
+    void = print()
+    return 0
+};
+
+int a:0;
+int print() {
+    a = 0
+    while(a < size) {
+        output vector[a]
+        a = a + 1;
+    }
+    output "\n"
+};
+
+int i:0;
+int n:0;
+bool swapped:FALSE;
+int sort() {
+    n = size
+    swapped = TRUE
+    while(swapped) {
+        swapped = FALSE
+        i = 0
+        while(i < n - 1) {
+            if(vector[i] > vector[i+1]) {
+                void = swap(i, i + 1)
+                swapped = TRUE
+            }
+            i = i + 1
+        }
+        n = n - 1
+    }
+};
+
+int tmp:0;
+int swap(int x, int y) {
+    tmp = vector[x]
+    vector[x] = vector[y]
+    vector[y] = tmp
+};

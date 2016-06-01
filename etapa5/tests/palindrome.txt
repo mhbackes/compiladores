@@ -1,0 +1,76 @@
+
+// palindrome
+char word[22] : 'm' 'u' 'r' 'd' 'e' 'r'
+                'f' 'o' 'r'
+                'a'
+                'j' 'a''r'
+                'o' 'f'
+                'r' 'e' 'd'
+                'r' 'u' 'm'
+                0;
+
+// palindrome
+/*
+char word[15] : 'n' 'e' 'v' 'e' 'r'
+                'o' 'd' 'd'
+                'o' 'r'
+                'e' 'v' 'e' 'n'
+                0;
+*/
+
+// palindrome
+/*
+char word[1] : 0;
+*/
+
+// palindrome
+/*
+char word[2] : 'a' 0;
+*/
+
+// palindrome
+/*
+char word[3] : 'a' 'a' 0;
+*/
+
+// not palindrome
+/*
+char word[4] : 'a' 'b' 'c' 0;
+*/
+
+// not palindrome
+/*
+char word[15] : 'n' 'o' 't'
+                'a'
+                'p' 'a' 'l' 'i' 'n' 'd' 'r' 'o' 'm' 'e'
+                0;
+*/
+
+int main() {
+    if(isPalindrome()) 
+        output "The word is a palindrome.\n"
+    else
+        output "The word is NOT a palindrome.\n"
+};
+
+int i:0;
+int j:0;
+bool isPalindrome() {
+    i = 0
+    j = size() - 1
+    while(i < j) {
+        if(word[i] != word[j])
+            return FALSE
+        i = i + 1
+        j = j - 1
+    }
+    return TRUE
+};
+
+int s:0;
+int size() {
+    s = 0
+    while(word[s] != 0)
+        s = s + 1
+    return s
+};
