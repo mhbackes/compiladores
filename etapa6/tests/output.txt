@@ -1,0 +1,18 @@
+int a:0;
+int i:0;
+char c:0;
+
+int main()
+  {
+  output "a"
+  output a
+  output 4*3
+  output "Incrementado algumas vezes fica ",a,"\n"
+  output a, i, c
+  output 2+2, 3*3, incn(2+3, 2*5)
+  };
+
+int incn (int x, int n)
+  {
+  return x+n
+  };

@@ -1,0 +1,26 @@
+int d:0;
+int i:2;
+int j:0;
+int n:0;
+bool isPrime:TRUE;
+
+int main() {
+    output "List primes until:\n"
+    input n
+    output "Generating primes:\n"
+    while (i < n) {
+        isPrime = TRUE
+        j = 2
+        while (isPrime && j <= (i / 2)) {
+            d = i / j
+            if(d * j == i)
+                isPrime = FALSE
+            j = j + 1
+        }
+        if(isPrime)
+            output i, " "
+        i = i + 1
+    }
+    output "\n"
+    return 0
+};

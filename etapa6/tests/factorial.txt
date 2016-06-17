@@ -1,0 +1,19 @@
+int x:0;
+int f:1;
+
+int factorial(int n) {
+    f = 1
+    while(n > 1) {
+        f = f * n
+        n = n - 1
+    }
+    return f
+};
+
+int main() {
+	output "Input x:\n"
+	input x
+	x = factorial(x)
+	output "x! = ", x, "\n"
+	return x
+};
