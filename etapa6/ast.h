@@ -84,4 +84,8 @@ void astPrintDot(FILE *file, AST_NODE *node);
 
 void astPrintCode(FILE* file, AST_NODE* node);
 
+int astGetDeclarationValue(AST_NODE *node);
+
+int astGetLiteralValue(AST_NODE *node);
+
 #endif

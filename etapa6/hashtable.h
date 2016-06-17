@@ -42,6 +42,7 @@ enum hash_data_type {
 };
 
 typedef struct hash_node_struct {
+    int id;
     int type;
     int datatype;
     int lineNumber;
@@ -52,6 +53,7 @@ typedef struct hash_node_struct {
 
 /* GLOBAL VARIABLES */
 HASH_NODE *_symbolTable[HASH_SIZE];
+int _hashNodeId;
 
 void hashInit(void);
 HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber);

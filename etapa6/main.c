@@ -14,6 +14,7 @@
 #include "lex.yy.h"
 #include "semantic.h"
 #include "error.h"
+#include "asm.h"
 
 extern AST_NODE *root;
 
@@ -52,10 +53,6 @@ int main(int argc, char *argv[]) {
 
     /* TAC creation */
     TAC *tacs = tacGenerateCode(root);
-
-    // syntax tree not needed anymore
-    astDeleteTree(root);
-
     printf("TACs created.\n");
     /* TAC creation */
 
@@ -63,11 +60,17 @@ int main(int argc, char *argv[]) {
     if(argc >= 3)
         prog = fopen(argv[2], "w");
 
-    tacPrint(prog, tacs);
-    printf("Program written in file \"%s\"\n", argv[2]);
-    fclose(prog);
+    FILE* dot = fopen("out.dot", "w");
+    astPrintDot(dot, root);
+    fclose(dot);
+    printf("Dot file written.\n");
 
-    // free tacs and symbol table
+    asmWriteCode(prog, tacs);
+    fclose(prog);
+    printf("Program written in file \"%s\"\n", argv[2]);
+
+    // free astree, tacs and symbol table
+    astDeleteTree(root);
     tacDeleteList(tacs);
     hashClean();
 

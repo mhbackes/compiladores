@@ -66,6 +66,7 @@ HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber) {
         exit(-1); // abort
     }
 
+    newNode->id = _hashNodeId++;
     newNode->type = type;
     newNode->datatype = datatype;
     newNode->lineNumber = lineNumber;
@@ -116,6 +117,7 @@ void hashPrint(void) {
         node = _symbolTable[i];
         while(node) { 
             printf("Table[%d] -> ", i);
+            printf("ID: %d\t", node->id);
             printf("TYPE: %s\t", _symbolTypeString[node->type]);
             printf("DATATYPE: %s\t", _dataTypeString[node->datatype]);
             printf("TEXT: %s\n", node->text);
@@ -126,8 +128,8 @@ void hashPrint(void) {
 }
 
 void hashPrintDotNode(FILE* file, HASH_NODE *node) {
-        fprintf(file, "\t\"%p\" [label=\"TEXT=\\\"%s\\\"\\n", node,
-                node->text);
+        fprintf(file, "\t\"%p\" [label=\"ID=%d\\nTEXT=\\\"%s\\\"\\n", node,
+                node->id, node->text);
         fprintf(file, "STYPE=%s\\nDTYPE=%s\"", _symbolTypeString[node->type], 
                 _dataTypeString[node->datatype]);
         fprintf(file, "shape=box]\n");

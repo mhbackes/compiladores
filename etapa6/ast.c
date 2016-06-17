@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 #include "ast.h"
 
 const char* _astString[] = {
@@ -357,3 +358,38 @@ int astDataType(int astType) {
     return DTYPE_UNDEF;
 }
 
+int astGetDeclarationValue(AST_NODE *node) {
+    if(!node) return 0;
+    if(node->type != AST_VARDEC) return 0;
+
+    AST_NODE* literal = node->children[1];
+
+    int value = astGetLiteralValue(literal);
+
+    union { int i; float f; } uValue;
+
+    if(node->datatype == DTYPE_REAL)
+        uValue.f = (float) value;
+    else
+        uValue.i = value;
+
+    return uValue.i;
+}
+
+int astGetLiteralValue(AST_NODE *node) {
+    if(!node) return 0;
+    if(node->type != AST_LIT) return 0;
+
+    char *text = node->symbol->text;
+    switch(node->datatype) {
+        case DTYPE_INT:
+            return atoi(text);
+        case DTYPE_CHAR:
+            return text[0];
+        case DTYPE_BOOL:
+            if(strcmp("TRUE", text))
+                return 0;
+            else
+                return 1;
+    }
+}
