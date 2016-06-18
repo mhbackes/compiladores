@@ -9,10 +9,6 @@
 
 #define LITERAL ".LIT"
 
-void asmWriteCode(FILE* file, TAC* tac) {
-    asmDeclareVariables(file);
-}
-
 void asmDeclareVar(FILE *file, HASH_NODE *node);
 void asmDeclareVarLong(FILE *file, HASH_NODE *node);
 void asmDeclareVarByte(FILE *file, HASH_NODE *node);
@@ -25,6 +21,75 @@ void asmDeclareLitStr(FILE *file, HASH_NODE *node);
 void asmDeclareArr(FILE *file, HASH_NODE *node);
 void asmDeclareArrLong(FILE *file, HASH_NODE *node);
 void asmDeclareArrByte(FILE *file, HASH_NODE *node);
+
+void asmBeginFun(FILE *file, TAC *node);
+void asmEndFun(FILE *file, TAC *node);
+
+void asmWriteCode(FILE* file, TAC* tac) {
+    asmDeclareVariables(file);
+    
+    while(tac) {
+        switch(tac->type) {
+            //case TAC_MOVE:
+                //break;
+            case TAC_BEGINFUN:
+                asmBeginFun(file, tac);
+                break;
+            case TAC_ENDFUN:
+                asmEndFun(file, tac);
+                break;
+            //case TAC_IFZ:
+                //break;
+            //case TAC_JUMP:
+                //break;
+            //case TAC_CALL:
+                //break;
+            //case TAC_ARG:
+                //break;
+            //case TAC_RET:
+                //break;
+            //case TAC_PRINT:
+                //break;
+            //case TAC_INPUT:
+                //break;
+            //case TAC_READ:
+                //break;
+            //case TAC_READARR:
+                //break;
+            //case TAC_ATTR:
+                //break;
+            //case TAC_ATTRARR:
+                //break;
+            //case TAC_ADD:
+                //break;
+            //case TAC_MUL:
+                //break;
+            //case TAC_SUB:
+                //break;
+            //case TAC_DIV:
+                //break;
+            //case TAC_NOT:
+                //break;
+            //case TAC_LE:
+                //break;
+            //case TAC_GE:
+                //break;
+            //case TAC_EQ:
+                //break;
+            //case TAC_NE:
+                //break;
+            //case TAC_AND:
+                //break;
+            //case TAC_OR:
+                //break;
+            //case TAC_LESS:
+                //break;
+            //case TAC_GREATER:
+                //break;
+        }
+        tac = tac->next;
+    }
+}
 
 void asmDeclareVariables(FILE* file) {
     int i;
@@ -191,3 +256,19 @@ void asmDeclareArrByte(FILE *file, HASH_NODE *node) {
     }
 }
 
+void asmBeginFun(FILE *file, TAC *node) {
+    char *text = node->res->text;
+    fprintf(file, "/* Begin Function \"%s\" */\n", text);
+    fprintf(file, "\t.global\t %s\n", text);
+    fprintf(file, "%s:\n", text);
+    fprintf(file, "\t.cfi_startproc\n");
+	fprintf(file, "push\t%%rbp\n");
+}
+
+void asmEndFun(FILE *file, TAC *node) {
+    char *text = node->res->text;
+    fprintf(file, "/* End Function \"%s\" */\n", text);
+    fprintf(file, "popq\t%%rbp\n");
+	fprintf(file, "ret\n");
+    fprintf(file, ".cfi_endproc\n");
+}
