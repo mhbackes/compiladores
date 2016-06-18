@@ -2,7 +2,6 @@ int i:14;
 char c:'Q';
 real r:14;
 
-
 int main() {
 	output "Hello, world!\n"
 	output "Hello, int! - ", i, "\n"

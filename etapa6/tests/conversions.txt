@@ -1,0 +1,34 @@
+bool b:0;
+char c:0;
+int i:0;
+real r:0;
+
+
+int main() {
+    c = 'a'
+    output "Char to char: ", c, "\n"
+    c = 98
+    output "Int to char: ", c, "\n"
+    r = 99
+    c = r
+    output "Real to char: ", c, "\n"
+
+    i = 'a'
+    output "Char to int: ", i, "\n"
+    i = 98
+    output "Int to int: ", i, "\n"
+    r = 99
+    i = r
+    output "Real to int: ", i, "\n"
+
+    r = 'a'
+    output "Char to real: ", r, "\n"
+    r = 98
+    output "Int to real: ", r, "\n"
+    r = 99
+    r = r
+    output "Real to real: ", r, "\n"
+
+    
+	return 0
+};

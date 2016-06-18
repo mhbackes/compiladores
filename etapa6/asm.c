@@ -45,6 +45,8 @@ void asmPrintChar(FILE *file, HASH_NODE *node);
 void asmPrintReal(FILE *file, HASH_NODE *node);
 void asmPrintStr(FILE *file, HASH_NODE *node);
 
+void asmAttr(FILE *file, TAC *node);
+
 /*
  * Converts the value of var "node" to int and stores the result in
  * register e"reg"x - e.g. "eax".
@@ -136,8 +138,9 @@ void asmWriteCodeAux(FILE* file, TAC* tac) {
                 //break;
             //case TAC_READARR:
                 //break;
-            //case TAC_ATTR:
-                //break;
+            case TAC_ATTR:
+				asmAttr(file, tmp);
+                break;
             //case TAC_ATTRARR:
                 //break;
             //case TAC_ADD:
@@ -337,7 +340,7 @@ void asmDeclareArrByte(FILE *file, HASH_NODE *node) {
 
 void asmBeginFun(FILE *file, TAC *node) {
     char *name = node->res->name;
-    fprintf(file, "/* Begin Function \"%s\" */\n", name);
+    fprintf(file, "/* TAC_BEGINFUN \"%s\" */\n", name);
     fprintf(file, "\t.global\t %s\n", name);
     fprintf(file, "%s:\n", name);
     fprintf(file, "\t.cfi_startproc\n");
@@ -346,7 +349,7 @@ void asmBeginFun(FILE *file, TAC *node) {
 
 void asmEndFun(FILE *file, TAC *node) {
     char *name = node->res->name;
-    fprintf(file, "/* End Function \"%s\" */\n", name);
+    fprintf(file, "/* TAC_ENDFUN \"%s\" */\n", name);
     fprintf(file, "\tpopq\t%%rbp\n");
 	fprintf(file, "\tret\n");
     fprintf(file, "\t.cfi_endproc\n");
@@ -364,7 +367,7 @@ void asmFormat(FILE *file) {
 
 void asmPrint(FILE *file, TAC *node) {
     HASH_NODE *hnode = node->op1;
-    fprintf(file, "/* TAC_PRINT \"%s\" */\n", hnode->name);
+    fprintf(file, "/* TAC_PRINT \"%s\" */\n", hnode->text);
     switch(hnode->datatype) {
         case DTYPE_INT:
             asmPrintInt(file, hnode);
@@ -412,47 +415,72 @@ void asmPrintStr(FILE *file, HASH_NODE *node) {
 }
 
 void asmConvertToInt(FILE *file, HASH_NODE *node, char reg) {
-	switch(node->type) {
+	switch(node->datatype) {
 	case DTYPE_CHAR:
-		fprintf(file, "\tmovzbl\t%s(%%rip), %%e%cx\n", node->text, reg);
+		fprintf(file, "\tmovzbl\t%s(%%rip), %%e%cx\n", node->name, reg);
 		fprintf(file, "\tmovsbl\t%%%cl, %%e%cx\n", reg, reg);
 		break;
 	case DTYPE_INT:
-		fprintf(file, "\tmovl\t%s(%%rip), %%e%cx\n", node->text, reg);
+		fprintf(file, "\tmovl\t%s(%%rip), %%e%cx\n", node->name, reg);
 		break;
 	case DTYPE_REAL:
-		fprintf(file, "\tmovss\t%s(%%rip), %%xmm2\n", node->text);
+		fprintf(file, "\tmovss\t%s(%%rip), %%xmm2\n", node->name);
 		fprintf(file, "\tcvttss2si\t%%xmm2, %%e%cx\n", reg);
 	}
 }
 
 void asmConvertToChar(FILE *file, HASH_NODE *node, char reg) {
-	switch(node->type) {
+	switch(node->datatype) {
 	case DTYPE_CHAR:
-		fprintf(file, "\tmovzbl\t%s(%%rip), %%e%cx\n", node->text, reg);
+		fprintf(file, "\tmovzbl\t%s(%%rip), %%e%cx\n", node->name, reg);
+        break;
 	case DTYPE_INT:
-		fprintf(file, "\tmovl\t%s(%%rip), %%e%cx\n", node->text, reg);
+		fprintf(file, "\tmovl\t%s(%%rip), %%e%cx\n", node->name, reg);
 		break;
 	case DTYPE_REAL:
-		fprintf(file, "\tmovss\t%s(%%rip), %%xmm2\n", node->text);
+		fprintf(file, "\tmovss\t%s(%%rip), %%xmm2\n", node->name);
 		fprintf(file, "\tcvttss2si\t%%xmm2, %%e%cx\n", reg);
 	}
 }
 
 void asmConvertToReal(FILE *file, HASH_NODE *node, char reg) {
-	switch(node->type) {
+	switch(node->datatype) {
 	case DTYPE_CHAR:
-		fprintf(file, "\tmovzbl\t%s(%%rip), %%ecx\n", node->text);
+		fprintf(file, "\tmovzbl\t%s(%%rip), %%ecx\n", node->name);
 		fprintf(file, "\tmovsbl\t%%cl, %%ecx\n");
 		fprintf(file, "\tpxor\t%%xmm%c, %%xmm%c\n", reg, reg);
 		fprintf(file, "\tcvtsi2ss\t%%ecx, %%xmm%c\n", reg);
 		break;
 	case DTYPE_INT:
-		fprintf(file, "\tmovl\t%s(%%rip), %%ecx\n", node->text);
+		fprintf(file, "\tmovl\t%s(%%rip), %%ecx\n", node->name);
 		fprintf(file, "\tpxor\t%%xmm%c, %%xmm%c\n", reg, reg);
 		fprintf(file, "\tcvtsi2ss\t%%ecx, %%xmm%c\n", reg);
 		break;
 	case DTYPE_REAL:
-		fprintf(file, "\tmovss\t%s(%%rip), %%xmm%c\n", node->text, reg);
+		fprintf(file, "\tmovss\t%s(%%rip), %%xmm%c\n", node->name, reg);
 	}
+}
+
+void asmAttr(FILE *file, TAC *node) {
+    HASH_NODE* dst = node->res;
+    HASH_NODE* src = node->op1;
+    fprintf(file, "/* TAC_ATTR %s %s */\n", dst->text, src->text);
+    switch(dst->datatype) {
+	case DTYPE_CHAR:
+        asmConvertToChar(file, src, 'a');
+        fprintf(file, "\tmov\t\t%%al, %s(%%rip)\n", dst->name);
+        break;
+	case DTYPE_INT:
+        asmConvertToInt(file, src, 'a');
+        fprintf(file, "\tmovl\t%%eax, %s(%%rip)\n", dst->name);
+        break;
+	case DTYPE_REAL:
+        asmConvertToReal(file, src, '0');
+        fprintf(file, "\tmovss\t%%xmm0, %s(%%rip)\n", dst->name);
+        break;
+    case DTYPE_BOOL:
+        fprintf(file, "\tmov\t%s(%%rip), %%al\n", src->name);
+        fprintf(file, "\tmov\t%%al, %s(%%rip)\n", dst->name);
+    }
+
 }
