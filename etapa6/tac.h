@@ -14,7 +14,6 @@
 #define FOREACH_TAC(TAC)\
     TAC(TAC_SYMBOL)     \
     TAC(TAC_LABEL)      \
-    TAC(TAC_MOVE)       \
     TAC(TAC_BEGINFUN)   \
     TAC(TAC_ENDFUN)     \
     TAC(TAC_IFZ)        \
@@ -24,7 +23,6 @@
     TAC(TAC_RET)        \
     TAC(TAC_PRINT)      \
     TAC(TAC_INPUT)      \
-    TAC(TAC_READ)       \
     TAC(TAC_READARR)    \
     TAC(TAC_ATTR)       \
     TAC(TAC_ATTRARR)    \

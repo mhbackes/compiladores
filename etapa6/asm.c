@@ -45,6 +45,36 @@ void asmPrintChar(FILE *file, HASH_NODE *node);
 void asmPrintReal(FILE *file, HASH_NODE *node);
 void asmPrintStr(FILE *file, HASH_NODE *node);
 
+/*
+ * Converts the value of var "node" to int and stores the result in
+ * register e"reg"x - e.g. "eax".
+ *
+ * Param "reg" - must be 'a' or 'b'.
+ *
+ * Side-effects: register 'xmm2' is changed.
+ */
+void asmConvertToInt(FILE *file, HASH_NODE *node, char reg);
+
+/*
+ * Converts the value of var "node" to char and stores the result in
+ * register "reg"l - e.g. "al".
+ *
+ * Param "reg" - must be 'a' or 'b'.
+ *
+ * Side-effects: register 'xmm2' is changed.
+ */
+void asmConvertToChar(FILE *file, HASH_NODE *node, char reg);
+
+/*
+ * Converts the value of var "node" to char and stores the result in
+ * register xmm"reg" - e.g. "xmm0".
+ *
+ * Param "reg" - must be '0' or '1'.
+ *
+ * Side-effects: register 'ecx' is changed.
+ */
+void asmConvertToReal(FILE *file, HASH_NODE *node, char reg);
+
 /* ===>OP ARGS ASSEMBLING */
 char *asmSourceVar(HASH_NODE *s) {
     return NULL;
@@ -379,4 +409,50 @@ void asmPrintStr(FILE *file, HASH_NODE *node) {
     fprintf(file, "\tmovl\t$" FMT_STR ", %%edi\n"); 
     fprintf(file, "\tmovl\t$0, %%eax\n"); 
     fprintf(file, "\tcall\tprintf\n"); 
+}
+
+void asmConvertToInt(FILE *file, HASH_NODE *node, char reg) {
+	switch(node->type) {
+	case DTYPE_CHAR:
+		fprintf(file, "\tmovzbl\t%s(%%rip), %%e%cx\n", node->text, reg);
+		fprintf(file, "\tmovsbl\t%%%cl, %%e%cx\n", reg, reg);
+		break;
+	case DTYPE_INT:
+		fprintf(file, "\tmovl\t%s(%%rip), %%e%cx\n", node->text, reg);
+		break;
+	case DTYPE_REAL:
+		fprintf(file, "\tmovss\t%s(%%rip), %%xmm2\n", node->text);
+		fprintf(file, "\tcvttss2si\t%%xmm2, %%e%cx\n", reg);
+	}
+}
+
+void asmConvertToChar(FILE *file, HASH_NODE *node, char reg) {
+	switch(node->type) {
+	case DTYPE_CHAR:
+		fprintf(file, "\tmovzbl\t%s(%%rip), %%e%cx\n", node->text, reg);
+	case DTYPE_INT:
+		fprintf(file, "\tmovl\t%s(%%rip), %%e%cx\n", node->text, reg);
+		break;
+	case DTYPE_REAL:
+		fprintf(file, "\tmovss\t%s(%%rip), %%xmm2\n", node->text);
+		fprintf(file, "\tcvttss2si\t%%xmm2, %%e%cx\n", reg);
+	}
+}
+
+void asmConvertToReal(FILE *file, HASH_NODE *node, char reg) {
+	switch(node->type) {
+	case DTYPE_CHAR:
+		fprintf(file, "\tmovzbl\t%s(%%rip), %%ecx\n", node->text);
+		fprintf(file, "\tmovsbl\t%%cl, %%ecx\n");
+		fprintf(file, "\tpxor\t%%xmm%c, %%xmm%c\n", reg, reg);
+		fprintf(file, "\tcvtsi2ss\t%%ecx, %%xmm%c\n", reg);
+		break;
+	case DTYPE_INT:
+		fprintf(file, "\tmovl\t%s(%%rip), %%ecx\n", node->text);
+		fprintf(file, "\tpxor\t%%xmm%c, %%xmm%c\n", reg, reg);
+		fprintf(file, "\tcvtsi2ss\t%%ecx, %%xmm%c\n", reg);
+		break;
+	case DTYPE_REAL:
+		fprintf(file, "\tmovss\t%s(%%rip), %%xmm%c\n", node->text, reg);
+	}
 }
