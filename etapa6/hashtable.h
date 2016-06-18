@@ -42,11 +42,11 @@ enum hash_data_type {
 };
 
 typedef struct hash_node_struct {
-    int id;
     int type;
     int datatype;
     int lineNumber;
     char *text;
+    char *name;
     AST_NODE *declaration;
     struct hash_node_struct *next;
 } HASH_NODE;

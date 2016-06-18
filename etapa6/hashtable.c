@@ -13,6 +13,7 @@
 
 #define TEMP_P  ".TEMP"
 #define LABEL_P ".LABEL"
+#define LIT_P ".LIT"
 
 const char* _symbolTypeString[] = {
     FOREACH_SYMBOL_TYPE(GENERATE_HASH_STRING)
@@ -66,13 +67,23 @@ HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber) {
         exit(-1); // abort
     }
 
-    newNode->id = _hashNodeId++;
     newNode->type = type;
     newNode->datatype = datatype;
     newNode->lineNumber = lineNumber;
     newNode->declaration = NULL;
 
     strncpy(newNode->text, str, strlen(str) + 1);
+
+    if(type == SYMBOL_LIT) {
+        // FIXME 12 bytes might not be enough space for the literal name
+        if(!(newNode->name = (char *) malloc(sizeof(char) *  12))) {
+            fprintf(stderr, "Error: out of memory\n");
+            exit(-1); // abort
+        }
+        sprintf(newNode->name, LIT_P "%d", _hashNodeId++);
+
+    } else
+        newNode->name = newNode->text;
 
     address = hashAddress(str);
     newNode->next = _symbolTable[address];
@@ -102,6 +113,8 @@ void hashClean(void) {
         while(node) { 
             tmp = node->next;
             free(node->text);
+            if(node->type == SYMBOL_LIT)
+                free(node->name);
             free(node);
             node = tmp;
         }
@@ -117,7 +130,7 @@ void hashPrint(void) {
         node = _symbolTable[i];
         while(node) { 
             printf("Table[%d] -> ", i);
-            printf("ID: %d\t", node->id);
+            printf("NAME: %s\t", node->name);
             printf("TYPE: %s\t", _symbolTypeString[node->type]);
             printf("DATATYPE: %s\t", _dataTypeString[node->datatype]);
             printf("TEXT: %s\n", node->text);
@@ -128,8 +141,8 @@ void hashPrint(void) {
 }
 
 void hashPrintDotNode(FILE* file, HASH_NODE *node) {
-        fprintf(file, "\t\"%p\" [label=\"ID=%d\\nTEXT=\\\"%s\\\"\\n", node,
-                node->id, node->text);
+        fprintf(file, "\t\"%p\" [label=\"NAME=%s\\nTEXT=\\\"%s\\\"\\n", node,
+                node->name, node->text);
         fprintf(file, "STYPE=%s\\nDTYPE=%s\"", _symbolTypeString[node->type], 
                 _dataTypeString[node->datatype]);
         fprintf(file, "shape=box]\n");

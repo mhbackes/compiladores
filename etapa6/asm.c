@@ -7,7 +7,6 @@
 
 #include "asm.h"
 
-#define LITERAL ".LIT"
 
 #define FMT_INT ".FMT_INT"
 #define FMT_CHAR ".FMT_CHAR"
@@ -76,14 +75,14 @@ void asmWriteCodeAux(FILE* file, TAC* tac) {
 
     fprintf(file, "\t.text\n");
     for(tmp = tac; tmp; tmp = tmp->next) {
-        switch(tac->type) {
+        switch(tmp->type) {
             //case TAC_MOVE:
                 //break;
             case TAC_BEGINFUN:
-                asmBeginFun(file, tac);
+                asmBeginFun(file, tmp);
                 break;
             case TAC_ENDFUN:
-                asmEndFun(file, tac);
+                asmEndFun(file, tmp);
                 break;
             //case TAC_IFZ:
                 //break;
@@ -184,15 +183,15 @@ void asmDeclareVar(FILE *file, HASH_NODE *node) {
 
 void asmDeclareVarLong(FILE *file, HASH_NODE *node) {
     fprintf(file, "\t.align\t4\n");
-    fprintf(file, "\t.size\t%s, 4\n", node->text);
-    fprintf(file, "%s:\n", node->text);
+    fprintf(file, "\t.size\t%s, 4\n", node->name);
+    fprintf(file, "%s:\n", node->name);
     int value = astGetDeclarationValue(node->declaration);
     fprintf(file, "\t.long\t%d\n", value);
 }
 
 void asmDeclareVarByte(FILE *file, HASH_NODE *node) {
-    fprintf(file, "\t.size\t%s, 1\n", node->text);
-    fprintf(file, "%s:\n", node->text);
+    fprintf(file, "\t.size\t%s, 1\n", node->name);
+    fprintf(file, "%s:\n", node->name);
     int value = astGetDeclarationValue(node->declaration);
     fprintf(file, "\t.byte\t%d\n", value);
 }
@@ -219,21 +218,21 @@ void asmDeclareLit(FILE *file, HASH_NODE *node) {
 
 void asmDeclareLitLong(FILE *file, HASH_NODE *node) {
     fprintf(file, "\t.align\t4\n");
-    fprintf(file, "\t.size\t" LITERAL "%d, 4\n", node->id);
-    fprintf(file, LITERAL "%d:\n", node->id);
+    fprintf(file, "\t.size\t%s, 4\n", node->name);
+    fprintf(file, "%s:\n", node->name);
     int value = hashGetValue(node);
     fprintf(file, "\t.long\t%d\n", value);
 }
 
 void asmDeclareLitByte(FILE *file, HASH_NODE *node) {
-    fprintf(file, "\t.size\t" LITERAL "%d, 1\n", node->id);
-    fprintf(file, LITERAL "%d:\n", node->id);
+    fprintf(file, "\t.size\t%s, 1\n", node->name);
+    fprintf(file, "%s:\n", node->name);
     int value = hashGetValue(node);
     fprintf(file, "\t.byte\t%d\n", value);
 }
 
 void asmDeclareLitStr(FILE *file, HASH_NODE *node) {
-    fprintf(file, LITERAL "%d:\n", node->id);
+    fprintf(file, "%s:\n", node->name);
     fprintf(file, "\t.string\t\"%s\"\n", node->text);
 }
 
@@ -261,8 +260,8 @@ void asmDeclareArrLong(FILE *file, HASH_NODE *node) {
 
     int size = astGetLiteralValue(decl->children[1]);
     fprintf(file, "\t.align\t4\n");
-    fprintf(file, "\t.size\t%s, %d\n", node->text, size * 4);
-    fprintf(file, "%s:\n", node->text);
+    fprintf(file, "\t.size\t%s, %d\n", node->name, size * 4);
+    fprintf(file, "%s:\n", node->name);
 
     int i;
     AST_NODE* llit = decl->children[2];
@@ -288,8 +287,8 @@ void asmDeclareArrByte(FILE *file, HASH_NODE *node) {
 
     int size = astGetLiteralValue(decl->children[1]);
     fprintf(file, "\t.align\t4\n");
-    fprintf(file, "\t.size\t%s, %d\n", node->text, size);
-    fprintf(file, "%s:\n", node->text);
+    fprintf(file, "\t.size\t%s, %d\n", node->name, size);
+    fprintf(file, "%s:\n", node->name);
 
     int i;
     AST_NODE* llit = decl->children[2];
@@ -304,17 +303,17 @@ void asmDeclareArrByte(FILE *file, HASH_NODE *node) {
 }
 
 void asmBeginFun(FILE *file, TAC *node) {
-    char *text = node->res->text;
-    fprintf(file, "/* Begin Function \"%s\" */\n", text);
-    fprintf(file, "\t.global\t %s\n", text);
-    fprintf(file, "%s:\n", text);
+    char *name = node->res->name;
+    fprintf(file, "/* Begin Function \"%s\" */\n", name);
+    fprintf(file, "\t.global\t %s\n", name);
+    fprintf(file, "%s:\n", name);
     fprintf(file, "\t.cfi_startproc\n");
 	fprintf(file, "\tpush\t%%rbp\n");
 }
 
 void asmEndFun(FILE *file, TAC *node) {
-    char *text = node->res->text;
-    fprintf(file, "/* End Function \"%s\" */\n", text);
+    char *name = node->res->name;
+    fprintf(file, "/* End Function \"%s\" */\n", name);
     fprintf(file, "\tpopq\t%%rbp\n");
 	fprintf(file, "\tret\n");
     fprintf(file, "\t.cfi_endproc\n");
@@ -335,8 +334,8 @@ void asmFormat(FILE *file) {
 /* not ready yet */
 void asmPrint(FILE *file, TAC *node) {
     HASH_NODE *hnode = node->op1;
-    fprintf(file, "/* TAC_PRINT \"%s\" */\n", hnode->text);
-    fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", hnode->text); 
+    fprintf(file, "/* TAC_PRINT \"%s\" */\n", hnode->name);
+    fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", hnode->name); 
     fprintf(file, "\tmovl\t%%eax, %%esi\n"); 
     fprintf(file, "\tmovl\t$" FMT_INT ", %%edi\n"); 
     fprintf(file, "\tmovl\t$0, %%eax\n"); 
