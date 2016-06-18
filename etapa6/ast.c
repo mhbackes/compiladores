@@ -391,5 +391,8 @@ int astGetLiteralValue(AST_NODE *node) {
                 return 0;
             else
                 return 1;
+        default:
+            fprintf(stderr, "Unknown literal type\n");
     }
+    return 0;
 }

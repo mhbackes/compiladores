@@ -11,8 +11,8 @@
 #include "hashtable.h"
 #include "y.tab.h"
 
-#define TEMP_P  "#TEMP"
-#define LABEL_P "#LABEL"
+#define TEMP_P  ".TEMP"
+#define LABEL_P ".LABEL"
 
 const char* _symbolTypeString[] = {
     FOREACH_SYMBOL_TYPE(GENERATE_HASH_STRING)
@@ -158,4 +158,24 @@ HASH_NODE *makeLabel() {
     HASH_NODE* label = hashInsert(str, SYMBOL_LABEL, DTYPE_UNDEF, 0);
     free(str);
     return label;
+}
+
+int hashGetValue(HASH_NODE *node) {
+    if(!node) return 0;
+    if(node->type != SYMBOL_LIT) return 0;
+    char *text = node->text;
+    switch(node->datatype) {
+        case DTYPE_INT:
+            return atoi(text);
+        case DTYPE_CHAR:
+            return text[0];
+        case DTYPE_BOOL:
+            if(strcmp("TRUE", text))
+                return 0;
+            else
+                return 1;
+        default:
+            fprintf(stderr, "Unknown hash literal type\n");
+    }
+    return 0;
 }

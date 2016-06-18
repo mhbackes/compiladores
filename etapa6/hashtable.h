@@ -62,6 +62,8 @@ void hashClean(void);
 HASH_NODE *makeTemp(int dataType);
 HASH_NODE *makeLabel();
 
+int hashGetValue(HASH_NODE *node);
+
 void hashPrint(void);
 void hashPrintDotNode(FILE* file, HASH_NODE *node);
 
