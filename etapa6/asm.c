@@ -9,9 +9,14 @@
 
 #define LITERAL ".LIT"
 
-void asmWriteCode(FILE* file, TAC* tac) {
-    asmDeclareVariables(file);
-}
+/* PROTOTYPES */
+
+/* ===>GENERAL */
+void asmWriteCodeAux(FILE *file, TAC *tac);
+
+/* ===>DECLARATION */
+
+void asmDeclareVariables(FILE* file);
 
 void asmDeclareVar(FILE *file, HASH_NODE *node);
 void asmDeclareVarLong(FILE *file, HASH_NODE *node);
@@ -25,6 +30,91 @@ void asmDeclareLitStr(FILE *file, HASH_NODE *node);
 void asmDeclareArr(FILE *file, HASH_NODE *node);
 void asmDeclareArrLong(FILE *file, HASH_NODE *node);
 void asmDeclareArrByte(FILE *file, HASH_NODE *node);
+
+/* ===>OP ARGS ASSEMBLING */
+char *asmSourceVar(HASH_NODE *s) {
+    return NULL;
+}
+
+char *asmDestinationVar(HASH_NODE *d) {
+    return NULL;
+}
+
+/* ===>BOOLEAN OPS */
+
+/* ===>ARITHMETIC OPS */
+
+/* ===>I/O OPS */
+
+/* ===>ATTR OPS */
+
+
+/* PUBLIC CODE */
+
+void asmWriteCode(FILE *file, TAC *tac) {
+    asmDeclareVariables(file);
+    asmWriteCodeAux(file, tac);
+}
+
+void asmWriteCodeAux(FILE *file, TAC *tac) {
+    TAC *tmp;
+
+    for(tmp = tac; tmp; tmp = tmp->next) {
+        switch(tmp->type) {
+            case TAC_SYMBOL:
+                break;
+            case TAC_LABEL:
+                break;
+            case TAC_ATTR:
+                break;
+            case TAC_ATTRARR:
+                break;
+            case TAC_BEGINFUN:
+                break;
+            case TAC_ENDFUN:
+                break;
+            case TAC_PRINT:
+                break;
+            case TAC_INPUT:
+                break;
+            case TAC_IFZ:
+                break;
+            case TAC_RET:
+                break;
+            case TAC_NOT:
+                break;
+            case TAC_LE:
+                break;
+            case TAC_GE:
+                break;
+            case TAC_EQ:
+                break;
+            case TAC_NE:
+                break;
+            case TAC_AND:
+                break;
+            case TAC_OR:
+                break;
+            case TAC_LESS:
+                break;
+            case TAC_GREATER:
+                break;
+            case TAC_ADD:
+                break;
+            case TAC_SUB:
+                break;
+            case TAC_MUL:
+                break;
+            case TAC_DIV:
+                break;
+            default: 
+                break;
+
+        }
+    }
+}
+
+/* PRIVATE CODE */
 
 void asmDeclareVariables(FILE* file) {
     int i;
@@ -190,4 +280,3 @@ void asmDeclareArrByte(FILE *file, HASH_NODE *node) {
             fprintf(file, "\t.byte\t0\n");
     }
 }
-
