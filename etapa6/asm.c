@@ -14,6 +14,15 @@
 #define FMT_BOOL ".FMT_BOOL"
 #define FMT_REAL ".FMT_REAL"
 
+/* PROTOTYPES */
+
+/* ===>GENERAL */
+void asmWriteCodeAux(FILE *file, TAC *tac);
+
+/* ===>DECLARATION */
+
+void asmDeclareVariables(FILE* file);
+
 void asmDeclareVar(FILE *file, HASH_NODE *node);
 void asmDeclareVarLong(FILE *file, HASH_NODE *node);
 void asmDeclareVarByte(FILE *file, HASH_NODE *node);
@@ -34,12 +43,39 @@ void asmEndFun(FILE *file, TAC *node);
 
 void asmPrint(FILE *file, TAC *node);
 
-void asmWriteCode(FILE* file, TAC* tac) {
-    asmDeclareVariables(file);
+/* ===>OP ARGS ASSEMBLING */
+char *asmSourceVar(HASH_NODE *s) {
+    return NULL;
+}
 
+char *asmDestinationVar(HASH_NODE *d) {
+    return NULL;
+}
+
+/* ===>BOOLEAN OPS */
+
+/* ===>ARITHMETIC OPS */
+
+/* ===>I/O OPS */
+
+/* ===>ATTR OPS */
+
+
+/* PUBLIC CODE */
+
+void asmWriteCode(FILE *file, TAC *tac) {
+    asmDeclareVariables(file);
     asmFormat(file);
-    
-    while(tac) {
+    asmWriteCodeAux(file, tac);
+}
+
+/* PRIVATE CODE */
+
+void asmWriteCodeAux(FILE* file, TAC* tac) {
+    TAC *tmp;
+
+    fprintf(file, "\t.text\n");
+    for(tmp = tac; tmp; tmp = tmp->next) {
         switch(tac->type) {
             //case TAC_MOVE:
                 //break;
@@ -60,7 +96,7 @@ void asmWriteCode(FILE* file, TAC* tac) {
             //case TAC_RET:
                 //break;
             case TAC_PRINT:
-				asmPrint(file, tac);
+				asmPrint(file, tmp);
                 break;
             //case TAC_INPUT:
                 //break;
@@ -99,7 +135,6 @@ void asmWriteCode(FILE* file, TAC* tac) {
             //case TAC_GREATER:
                 //break;
         }
-        tac = tac->next;
     }
 }
 
