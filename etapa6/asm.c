@@ -9,6 +9,11 @@
 
 #define LITERAL ".LIT"
 
+#define FMT_INT ".FMT_INT"
+#define FMT_CHAR ".FMT_CHAR"
+#define FMT_BOOL ".FMT_BOOL"
+#define FMT_REAL ".FMT_REAL"
+
 void asmDeclareVar(FILE *file, HASH_NODE *node);
 void asmDeclareVarLong(FILE *file, HASH_NODE *node);
 void asmDeclareVarByte(FILE *file, HASH_NODE *node);
@@ -22,11 +27,17 @@ void asmDeclareArr(FILE *file, HASH_NODE *node);
 void asmDeclareArrLong(FILE *file, HASH_NODE *node);
 void asmDeclareArrByte(FILE *file, HASH_NODE *node);
 
+void asmFormat(FILE *file);
+
 void asmBeginFun(FILE *file, TAC *node);
 void asmEndFun(FILE *file, TAC *node);
 
+void asmPrint(FILE *file, TAC *node);
+
 void asmWriteCode(FILE* file, TAC* tac) {
     asmDeclareVariables(file);
+
+    asmFormat(file);
     
     while(tac) {
         switch(tac->type) {
@@ -48,8 +59,9 @@ void asmWriteCode(FILE* file, TAC* tac) {
                 //break;
             //case TAC_RET:
                 //break;
-            //case TAC_PRINT:
-                //break;
+            case TAC_PRINT:
+				asmPrint(file, tac);
+                break;
             //case TAC_INPUT:
                 //break;
             //case TAC_READ:
@@ -262,13 +274,36 @@ void asmBeginFun(FILE *file, TAC *node) {
     fprintf(file, "\t.global\t %s\n", text);
     fprintf(file, "%s:\n", text);
     fprintf(file, "\t.cfi_startproc\n");
-	fprintf(file, "push\t%%rbp\n");
+	fprintf(file, "\tpush\t%%rbp\n");
 }
 
 void asmEndFun(FILE *file, TAC *node) {
     char *text = node->res->text;
     fprintf(file, "/* End Function \"%s\" */\n", text);
-    fprintf(file, "popq\t%%rbp\n");
-	fprintf(file, "ret\n");
-    fprintf(file, ".cfi_endproc\n");
+    fprintf(file, "\tpopq\t%%rbp\n");
+	fprintf(file, "\tret\n");
+    fprintf(file, "\t.cfi_endproc\n");
+}
+
+void asmFormat(FILE *file) {
+    fprintf(file, "/* Formatters for printf */\n");
+    fprintf(file, FMT_INT ":\n");
+    fprintf(file, "\t.string\t\"%%d\"\n");
+    fprintf(file, FMT_CHAR ":\n");
+    fprintf(file, "\t.string\t\"%%c\"\n");
+    fprintf(file, FMT_BOOL ":\n");
+    fprintf(file, "\t.string\t\"%%i\"\n");
+    fprintf(file, FMT_REAL ":\n");
+    fprintf(file, "\t.string\t\"%%f\"\n");
+}
+
+/* not ready yet */
+void asmPrint(FILE *file, TAC *node) {
+    HASH_NODE *hnode = node->op1;
+    fprintf(file, "/* TAC_PRINT \"%s\" */\n", hnode->text);
+    fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", hnode->text); 
+    fprintf(file, "\tmovl\t%%eax, %%esi\n"); 
+    fprintf(file, "\tmovl\t$" FMT_INT ", %%edi\n"); 
+    fprintf(file, "\tmovl\t$0, %%eax\n"); 
+    fprintf(file, "\tcall\tprintf\n"); 
 }
