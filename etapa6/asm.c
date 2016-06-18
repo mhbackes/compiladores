@@ -9,9 +9,8 @@
 
 
 #define FMT_INT ".FMT_INT"
-#define FMT_CHAR ".FMT_CHAR"
-#define FMT_BOOL ".FMT_BOOL"
 #define FMT_REAL ".FMT_REAL"
+#define FMT_STR ".FMT_STR"
 
 /* PROTOTYPES */
 
@@ -41,6 +40,10 @@ void asmBeginFun(FILE *file, TAC *node);
 void asmEndFun(FILE *file, TAC *node);
 
 void asmPrint(FILE *file, TAC *node);
+void asmPrintInt(FILE *file, HASH_NODE *node);
+void asmPrintChar(FILE *file, HASH_NODE *node);
+void asmPrintReal(FILE *file, HASH_NODE *node);
+void asmPrintStr(FILE *file, HASH_NODE *node);
 
 /* ===>OP ARGS ASSEMBLING */
 char *asmSourceVar(HASH_NODE *s) {
@@ -323,21 +326,57 @@ void asmFormat(FILE *file) {
     fprintf(file, "/* Formatters for printf */\n");
     fprintf(file, FMT_INT ":\n");
     fprintf(file, "\t.string\t\"%%d\"\n");
-    fprintf(file, FMT_CHAR ":\n");
-    fprintf(file, "\t.string\t\"%%c\"\n");
-    fprintf(file, FMT_BOOL ":\n");
-    fprintf(file, "\t.string\t\"%%i\"\n");
     fprintf(file, FMT_REAL ":\n");
     fprintf(file, "\t.string\t\"%%f\"\n");
+    fprintf(file, FMT_STR ":\n");
+    fprintf(file, "\t.string\t\"%%s\"\n");
 }
 
-/* not ready yet */
 void asmPrint(FILE *file, TAC *node) {
     HASH_NODE *hnode = node->op1;
     fprintf(file, "/* TAC_PRINT \"%s\" */\n", hnode->name);
-    fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", hnode->name); 
+    switch(hnode->datatype) {
+        case DTYPE_INT:
+            asmPrintInt(file, hnode);
+            break;
+        case DTYPE_CHAR:
+            asmPrintChar(file, hnode);
+            break;
+        case DTYPE_REAL:
+            asmPrintReal(file, hnode);
+            break;
+        case DTYPE_STR:
+            asmPrintStr(file, hnode);
+    }
+}
+
+void asmPrintInt(FILE *file, HASH_NODE *node) {
+    fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", node->name); 
     fprintf(file, "\tmovl\t%%eax, %%esi\n"); 
     fprintf(file, "\tmovl\t$" FMT_INT ", %%edi\n"); 
+    fprintf(file, "\tmovl\t$0, %%eax\n"); 
+    fprintf(file, "\tcall\tprintf\n"); 
+}
+
+void asmPrintChar(FILE *file, HASH_NODE *node) {
+    fprintf(file, "\tmovzbl\t%s(%%rip), %%eax\n", node->name); 
+    fprintf(file, "\tmovsbl\t%%al, %%eax\n"); 
+    fprintf(file, "\tmovl\t%%eax, %%edi\n"); 
+    fprintf(file, "\tcall\tputchar\n"); 
+}
+
+void asmPrintReal(FILE *file, HASH_NODE *node) {
+    fprintf(file, "\tmovss\t%s(%%rip), %%xmm0\n", node->name); 
+    fprintf(file, "\tcvtss2sd\t%%xmm0, %%xmm0\n"); 
+    fprintf(file, "\tmovl\t$" FMT_REAL ", %%edi\n"); 
+    fprintf(file, "\tmovl\t$1, %%eax\n"); 
+    fprintf(file, "\tcall\tprintf\n"); 
+
+}
+
+void asmPrintStr(FILE *file, HASH_NODE *node) {
+    fprintf(file, "\tmovl\t$%s, %%esi\n", node->name); 
+    fprintf(file, "\tmovl\t$" FMT_STR ", %%edi\n"); 
     fprintf(file, "\tmovl\t$0, %%eax\n"); 
     fprintf(file, "\tcall\tprintf\n"); 
 }
