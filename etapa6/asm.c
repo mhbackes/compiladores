@@ -40,6 +40,7 @@ void asmBeginFun(FILE *file, TAC *node);
 void asmEndFun(FILE *file, TAC *node);
 void asmReturn(FILE *file, TAC *node);
 void asmFuncall(FILE *file, TAC *node);
+void asmArg(FILE *file, TAC *node);
 
 void asmPrint(FILE *file, TAC *node);
 void asmPrintInt(FILE *file, HASH_NODE *node);
@@ -48,6 +49,7 @@ void asmPrintReal(FILE *file, HASH_NODE *node);
 void asmPrintStr(FILE *file, HASH_NODE *node);
 
 void asmAttr(FILE *file, TAC *node);
+void asmAttrAux(FILE *file, HASH_NODE *dst, HASH_NODE *src);
 
 /*
  * Converts the value of var "node" to int and stores the result in
@@ -127,11 +129,12 @@ void asmWriteCodeAux(FILE* file, TAC* tac) {
             case TAC_CALL:
                 asmFuncall(file, tmp);
                 break;
+            case TAC_ARG:
+                asmArg(file, tmp);
+                break;
             //case TAC_IFZ:
                 //break;
             //case TAC_JUMP:
-                //break;
-            //case TAC_ARG:
                 //break;
             case TAC_PRINT:
 				asmPrint(file, tmp);
@@ -408,6 +411,13 @@ void asmFuncall(FILE *file, TAC *node) {
     }
 }
 
+void asmArg(FILE *file, TAC *node) {
+    HASH_NODE* dst = node->res;
+    HASH_NODE* src = node->op1;
+    fprintf(file, "/* TAC_ARG %s %s */\n", dst->text, src->text);
+    asmAttrAux(file, dst, src);
+}
+
 void asmFormat(FILE *file) {
     fprintf(file, "/* Formatters for printf */\n");
     fprintf(file, FMT_INT ":\n");
@@ -518,6 +528,10 @@ void asmAttr(FILE *file, TAC *node) {
     HASH_NODE* dst = node->res;
     HASH_NODE* src = node->op1;
     fprintf(file, "/* TAC_ATTR %s %s */\n", dst->text, src->text);
+    asmAttrAux(file, dst, src);
+}
+
+void asmAttrAux(FILE *file, HASH_NODE *dst, HASH_NODE *src) {
     switch(dst->datatype) {
 	case DTYPE_CHAR:
         asmConvertToChar(file, src, 'a');

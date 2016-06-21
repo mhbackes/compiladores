@@ -1,42 +1,48 @@
 int i:0;
 
 int noParam() {
-    output "0";
+    output "0\n";
+    return 1
 };
 
 int oneParam(int a) {
-    output "1";
+    output "1 - ", a, "\n"
+    return a
 };
 
 int twoParam(int b, int c) {
-    output "2";
+    output "2 - ", b, " ", c, "\n"
+    return c
 };
 
 int threeParam(int d, int e, int f) {
-    output "3";
+    output "3 - ", d, " ", e, " ", f, "\n"
+    return f
 };
 
 int main() {
     // simple
+    output "Simple\n"
     i = noParam()
     i = oneParam(1)
     i = twoParam(1, 2)
     i = threeParam(1, 2, 3)
 
     // hardcore
+    output "Hardcore\n"
     i = threeParam(
             twoParam(
-                oneParam(noParam()),
-                oneParam(noParam())
+                oneParam(1),
+                oneParam(2)
                 ),
             twoParam(
-                oneParam(noParam()),
-                oneParam(noParam())
+                oneParam(3),
+                oneParam(4)
                 ),
             twoParam(
-                oneParam(noParam()),
-                oneParam(noParam())
+                oneParam(5),
+                oneParam(6)
                 )
             )
-    return 0
+    return i
 };
