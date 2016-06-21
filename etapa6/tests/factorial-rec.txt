@@ -1,0 +1,22 @@
+int factorial(int n) {
+    return factorialAux(1);
+};
+
+int factorialAux(int acc) {
+    if(n == 0)
+        return acc
+    n = n - 1
+    acc = factorialAux(acc)
+    n = n + 1
+    return acc * n
+};
+
+int x:0;
+
+int main() {
+	output "Input x:\n"
+	input x
+	x = factorial(x)
+	output "x! = ", x, "\n"
+	return x
+};
