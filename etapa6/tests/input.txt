@@ -1,23 +1,20 @@
-int a:0;
 int i:0;
 char c:0;
+real r:0;
 
 int main()
   {
+    input i
+    output "i: ", i, "\n"
+
     input c
     output "c: ", c, "\n"
 
-    input a, i
-    output "a: ", a, "\n"
-    output "i: ", i, "\n"
+    input r
+    output "r: ", r, "\n"
 
-    input a, c, i
-    output "a: ", a, "\n"
-    output "c: ", c, "\n"
-    output "i: ", i, "\n"
-
-    input a, i, c
-    output "a: ", a, "\n"
+    input i, c, r
     output "i: ", i, "\n"
     output "c: ", c, "\n"
+    output "r: ", r, "\n"
   };

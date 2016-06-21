@@ -21,6 +21,8 @@ void checkInput(AST_NODE *node) {
     while(in) {
 	if(in->symbol->type != SYMBOL_SCALAR)
 		semError(SEM_TYPE_EXPECTED_SCALAR, in->lineNumber, NULL);
+	if(in->symbol->datatype == DTYPE_BOOL)
+		semError(SEM_TYPE_INPUT, in->lineNumber, NULL);
 	in = in->children[0];
     }
 }

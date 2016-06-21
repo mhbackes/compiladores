@@ -8,9 +8,14 @@
 #include "asm.h"
 
 
-#define FMT_INT ".FMT_INT"
-#define FMT_REAL ".FMT_REAL"
-#define FMT_STR ".FMT_STR"
+#define FMT_OUT_INT ".FMT_OUT_INT"
+#define FMT_OUT_CHAR ".FMT_OUT_CHAR"
+#define FMT_OUT_REAL ".FMT_OUT_REAL"
+#define FMT_OUT_STR ".FMT_OUT_STR"
+
+#define FMT_IN_INT ".FMT_IN_INT"
+#define FMT_IN_CHAR ".FMT_IN_CHAR"
+#define FMT_IN_REAL ".FMT_IN_REAL"
 
 /* PROTOTYPES */
 
@@ -47,6 +52,8 @@ void asmPrintInt(FILE *file, HASH_NODE *node);
 void asmPrintChar(FILE *file, HASH_NODE *node);
 void asmPrintReal(FILE *file, HASH_NODE *node);
 void asmPrintStr(FILE *file, HASH_NODE *node);
+
+void asmInput(FILE *file, TAC *node);
 
 void asmAttr(FILE *file, TAC *node);
 void asmAttrAux(FILE *file, HASH_NODE *dst, HASH_NODE *src);
@@ -139,8 +146,9 @@ void asmWriteCodeAux(FILE* file, TAC* tac) {
             case TAC_PRINT:
 				asmPrint(file, tmp);
                 break;
-            //case TAC_INPUT:
-                //break;
+            case TAC_INPUT:
+				asmInput(file, tmp);
+                break;
             //case TAC_READ:
                 //break;
             //case TAC_READARR:
@@ -419,13 +427,21 @@ void asmArg(FILE *file, TAC *node) {
 }
 
 void asmFormat(FILE *file) {
-    fprintf(file, "/* Formatters for printf */\n");
-    fprintf(file, FMT_INT ":\n");
+    fprintf(file, "/* Formatters for printf and scanf */\n");
+    fprintf(file, FMT_OUT_INT ":\n");
     fprintf(file, "\t.string\t\"%%d\"\n");
-    fprintf(file, FMT_REAL ":\n");
+    fprintf(file, FMT_OUT_CHAR ":\n");
+    fprintf(file, "\t.string\t\"%%c\"\n");
+    fprintf(file, FMT_OUT_REAL ":\n");
     fprintf(file, "\t.string\t\"%%f\"\n");
-    fprintf(file, FMT_STR ":\n");
+    fprintf(file, FMT_OUT_STR ":\n");
     fprintf(file, "\t.string\t\"%%s\"\n");
+    fprintf(file, FMT_IN_INT ":\n");
+    fprintf(file, "\t.string\t\" %%d\"\n");
+    fprintf(file, FMT_IN_CHAR ":\n");
+    fprintf(file, "\t.string\t\" %%c\"\n");
+    fprintf(file, FMT_IN_REAL ":\n");
+    fprintf(file, "\t.string\t\" %%f\"\n");
 }
 
 void asmPrint(FILE *file, TAC *node) {
@@ -449,7 +465,7 @@ void asmPrint(FILE *file, TAC *node) {
 void asmPrintInt(FILE *file, HASH_NODE *node) {
     fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", node->name); 
     fprintf(file, "\tmovl\t%%eax, %%esi\n"); 
-    fprintf(file, "\tmovl\t$" FMT_INT ", %%edi\n"); 
+    fprintf(file, "\tmovl\t$" FMT_OUT_INT ", %%edi\n"); 
     fprintf(file, "\tmovl\t$0, %%eax\n"); 
     fprintf(file, "\tcall\tprintf\n"); 
 }
@@ -464,7 +480,7 @@ void asmPrintChar(FILE *file, HASH_NODE *node) {
 void asmPrintReal(FILE *file, HASH_NODE *node) {
     fprintf(file, "\tmovss\t%s(%%rip), %%xmm0\n", node->name); 
     fprintf(file, "\tcvtss2sd\t%%xmm0, %%xmm0\n"); 
-    fprintf(file, "\tmovl\t$" FMT_REAL ", %%edi\n"); 
+    fprintf(file, "\tmovl\t$" FMT_OUT_REAL ", %%edi\n"); 
     fprintf(file, "\tmovl\t$1, %%eax\n"); 
     fprintf(file, "\tcall\tprintf\n"); 
 
@@ -472,9 +488,27 @@ void asmPrintReal(FILE *file, HASH_NODE *node) {
 
 void asmPrintStr(FILE *file, HASH_NODE *node) {
     fprintf(file, "\tmovl\t$%s, %%esi\n", node->name); 
-    fprintf(file, "\tmovl\t$" FMT_STR ", %%edi\n"); 
+    fprintf(file, "\tmovl\t$" FMT_OUT_STR ", %%edi\n"); 
     fprintf(file, "\tmovl\t$0, %%eax\n"); 
     fprintf(file, "\tcall\tprintf\n"); 
+}
+
+void asmInput(FILE *file, TAC *node) {
+    HASH_NODE *hnode = node->op1;
+    fprintf(file, "/* TAC_INPUT \"%s\" */\n", hnode->text);
+    fprintf(file, "\tmovl\t$%s, %%esi\n", hnode->name); 
+    switch(hnode->datatype) {
+        case DTYPE_INT:
+            fprintf(file, "\tmovl\t$" FMT_IN_INT ", %%edi\n"); 
+            break;
+        case DTYPE_CHAR:
+            fprintf(file, "\tmovl\t$" FMT_IN_CHAR ", %%edi\n"); 
+            break;
+        case DTYPE_REAL:
+            fprintf(file, "\tmovl\t$" FMT_IN_REAL ", %%edi\n"); 
+    }
+    fprintf(file, "\tmovl\t$0, %%eax\n"); 
+    fprintf(file, "\tcall\tscanf\n"); 
 }
 
 void asmConvertToInt(FILE *file, HASH_NODE *node, char reg) {
@@ -549,5 +583,4 @@ void asmAttrAux(FILE *file, HASH_NODE *dst, HASH_NODE *src) {
         fprintf(file, "\tmov\t%s(%%rip), %%al\n", src->name);
         fprintf(file, "\tmov\t%%al, %s(%%rip)\n", dst->name);
     }
-
 }
