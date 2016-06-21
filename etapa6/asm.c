@@ -38,6 +38,7 @@ void asmFormat(FILE *file);
 
 void asmBeginFun(FILE *file, TAC *node);
 void asmEndFun(FILE *file, TAC *node);
+void asmReturn(FILE *file, TAC *node);
 
 void asmPrint(FILE *file, TAC *node);
 void asmPrintInt(FILE *file, HASH_NODE *node);
@@ -119,6 +120,9 @@ void asmWriteCodeAux(FILE* file, TAC* tac) {
             case TAC_ENDFUN:
                 asmEndFun(file, tmp);
                 break;
+            case TAC_RET:
+                asmReturn(file, tmp);
+                break;
             //case TAC_IFZ:
                 //break;
             //case TAC_JUMP:
@@ -126,8 +130,6 @@ void asmWriteCodeAux(FILE* file, TAC* tac) {
             //case TAC_CALL:
                 //break;
             //case TAC_ARG:
-                //break;
-            //case TAC_RET:
                 //break;
             case TAC_PRINT:
 				asmPrint(file, tmp);
@@ -350,9 +352,33 @@ void asmBeginFun(FILE *file, TAC *node) {
 void asmEndFun(FILE *file, TAC *node) {
     char *name = node->res->name;
     fprintf(file, "/* TAC_ENDFUN \"%s\" */\n", name);
+    fprintf(file, "\tmovl\t$0, %%eax\n");
     fprintf(file, "\tpopq\t%%rbp\n");
 	fprintf(file, "\tret\n");
     fprintf(file, "\t.cfi_endproc\n");
+}
+
+void asmReturn(FILE *file, TAC *node) {
+    HASH_NODE *retValue = node->res;
+    HASH_NODE *funDec = node->op1;
+    fprintf(file, "/* TAC_RET \"%s\" \"%s\" */\n",
+                retValue->text, funDec->text);
+    switch(funDec->datatype) {
+	case DTYPE_CHAR:
+        asmConvertToChar(file, retValue, 'a');
+        break;
+	case DTYPE_INT:
+        asmConvertToInt(file, retValue, 'a');
+        break;
+	case DTYPE_REAL:
+        asmConvertToReal(file, retValue, '0');
+        fprintf(file, "\tmovl\t%%xmm0, %%eax\n");
+        break;
+    case DTYPE_BOOL:
+        fprintf(file, "\tmov\t%s(%%rip), %%al\n", retValue->name);
+    }
+    fprintf(file, "\tpopq\t%%rbp\n");
+    fprintf(file, "\tret\n");
 }
 
 void asmFormat(FILE *file) {

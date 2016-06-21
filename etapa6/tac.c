@@ -49,7 +49,7 @@ TAC *tacInput(TAC **code);
 
 TAC *tacInputArgs(TAC **code, HASH_NODE *id);
 
-TAC *tacReturn(TAC **code);
+TAC *tacReturn(TAC **code, HASH_NODE *funDec);
 
 void tacPrintDotNodes(FILE *file, TAC *tac);
 void tacPrintDotEdges(FILE* file, TAC *node);
@@ -161,11 +161,16 @@ TAC *tacGenerateCode(AST_NODE* root) {
 }
 
 TAC *tacGenerateCodeAux(AST_NODE *node) {
+    static HASH_NODE *currFun;
+
     TAC *code[node->size];    
     int i;
 
     if(node->type == AST_FUNCALL)
         return tacFunCall(node);
+
+    if(node->type == AST_FUNDEC)
+        currFun = node->symbol;
 
     for(i = 0; i < node->size; i++)
         if(!node->children[i])
@@ -196,7 +201,7 @@ TAC *tacGenerateCodeAux(AST_NODE *node) {
         case AST_WHILE:
             return tacWhile(code);
         case AST_RETURN:
-            return tacReturn(code);
+            return tacReturn(code, currFun);
         case AST_NOT:
             return tacUnaryOp(TAC_NOT, node->datatype, code);
         case AST_LE:
@@ -382,9 +387,9 @@ TAC *tacInputArgs(TAC **code, HASH_NODE *id) {
     return tacJoin(tacCreate(TAC_INPUT, NULL, id?id:NULL, NULL), lin);
 }
 
-TAC *tacReturn(TAC **code) {
+TAC *tacReturn(TAC **code, HASH_NODE *funDec) {
     TAC *retExp = code[0];
-    TAC *retTac = tacCreate(TAC_RET, NULL, retExp?retExp->res:NULL, NULL);
+    TAC *retTac = tacCreate(TAC_RET, retExp?retExp->res:NULL, funDec, NULL);
     return tacJoin(retExp, retTac);
 }
 
