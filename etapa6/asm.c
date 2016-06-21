@@ -39,6 +39,7 @@ void asmFormat(FILE *file);
 void asmBeginFun(FILE *file, TAC *node);
 void asmEndFun(FILE *file, TAC *node);
 void asmReturn(FILE *file, TAC *node);
+void asmFuncall(FILE *file, TAC *node);
 
 void asmPrint(FILE *file, TAC *node);
 void asmPrintInt(FILE *file, HASH_NODE *node);
@@ -123,11 +124,12 @@ void asmWriteCodeAux(FILE* file, TAC* tac) {
             case TAC_RET:
                 asmReturn(file, tmp);
                 break;
+            case TAC_CALL:
+                asmFuncall(file, tmp);
+                break;
             //case TAC_IFZ:
                 //break;
             //case TAC_JUMP:
-                //break;
-            //case TAC_CALL:
                 //break;
             //case TAC_ARG:
                 //break;
@@ -372,13 +374,38 @@ void asmReturn(FILE *file, TAC *node) {
         break;
 	case DTYPE_REAL:
         asmConvertToReal(file, retValue, '0');
-        fprintf(file, "\tmovl\t%%xmm0, %%eax\n");
         break;
     case DTYPE_BOOL:
         fprintf(file, "\tmov\t%s(%%rip), %%al\n", retValue->name);
     }
     fprintf(file, "\tpopq\t%%rbp\n");
     fprintf(file, "\tret\n");
+}
+
+void asmFuncall(FILE *file, TAC *node) {
+    HASH_NODE *res = node->res;
+    HASH_NODE *funDec = node->op1;
+    fprintf(file, "/* TAC_CALL \"%s\" \"%s\" */\n", res->text, funDec->text);
+    fprintf(file, "\tcall\t%s\n", funDec->name);
+    switch(res->datatype) {
+	case DTYPE_CHAR:
+        if(funDec->datatype == DTYPE_REAL)
+		    fprintf(file, "\tcvttss2si\t%%eax, %%eax\n");
+        fprintf(file, "\tmov\t\t%%al, %s(%%rip)\n", res->name);
+        break;
+	case DTYPE_INT:
+        if(funDec->datatype == DTYPE_REAL)
+		    fprintf(file, "\tcvttss2si\t%%eax, %%eax\n");
+        fprintf(file, "\tmovl\t%%eax, %s(%%rip)\n", res->name);
+        break;
+	case DTYPE_REAL:
+        if(funDec->datatype != DTYPE_REAL)
+		    fprintf(file, "\tcvtsi2ss\t%%eax, %%xmm0\n");
+        fprintf(file, "\tmovss\t%%xmm0, %s(%%rip)\n", res->name);
+        break;
+    case DTYPE_BOOL:
+        fprintf(file, "\tmov\t%%al, %s(%%rip)\n", res->name);
+    }
 }
 
 void asmFormat(FILE *file) {

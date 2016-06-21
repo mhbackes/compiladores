@@ -1,0 +1,90 @@
+char c:0;
+int i:0;
+real r:0;
+
+char ctc() {
+    return 'a'
+};
+
+int cti() {
+    return 'b'
+};
+
+real ctr() {
+    return 'c'
+};
+
+char itc() {
+    return 16711777
+};
+
+int iti() {
+    return 16711778
+};
+
+real itr() {
+    return 16711779
+};
+
+real s:0;
+char rtc() {
+    s = 16711777
+    return s 
+};
+
+int rti() {
+    s = 16711778
+    return s 
+};
+
+real rtr() {
+    s = 16711779
+    return s 
+};
+
+int main() {
+    c = ctc();
+    i = ctc();
+    r = ctc();
+    output "ctc - ", c, " ", i, " ", r, "\n"
+
+    c = cti();
+    i = cti();
+    r = cti();
+    output "cti - ", c, " ", i, " ", r, "\n"
+
+    c = ctr();
+    i = ctr();
+    r = ctr();
+    output "ctc - ", c, " ", i, " ", r, "\n"
+
+    c = itc();
+    i = itc();
+    r = itc();
+    output "itc - ", c, " ", i, " ", r, "\n"
+
+    c = iti();
+    i = iti();
+    r = iti();
+    output "iti - ", c, " ", i, " ", r, "\n"
+
+    c = itr();
+    i = itr();
+    r = itr();
+    output "itc - ", c, " ", i, " ", r, "\n"
+
+    c = rtc();
+    i = rtc();
+    r = rtc();
+    output "rtc - ", c, " ", i, " ", r, "\n"
+
+    c = rti();
+    i = rti();
+    r = rti();
+    output "rti - ", c, " ", i, " ", r, "\n"
+
+    c = rtr();
+    i = rtr();
+    r = rtr();
+    output "rtc - ", c, " ", i, " ", r, "\n"
+};
