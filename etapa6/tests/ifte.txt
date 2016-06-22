@@ -4,9 +4,9 @@ int main() {
     output "Digite um número: "
     input n
     if(n == 14) {
-        output "Você acertou o número!"
+        output "Você acertou o número!\n"
     } else {
-        output "Errrou!"
+        output "Errrou!\n"
     }
     return 0
 };

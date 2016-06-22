@@ -18,11 +18,12 @@ int main() {
 int a:0;
 int print() {
     a = 0
+    output "[ "
     while(a < size) {
-        output vector[a]
+        output vector[a], " "
         a = a + 1;
     }
-    output "\n"
+    output "]\n"
 };
 
 int i:0;
