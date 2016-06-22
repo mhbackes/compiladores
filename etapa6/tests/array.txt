@@ -1,8 +1,7 @@
-int vector[10];
+int vector[10]:8 2 4 6 3 1 10 9 7 5;
 int j:0;
 
 int main() {
-    j = 9
-    vector[4] = 3
-    output vector[4]
+    
+    output "\n", vector[0], vector[1], vector[2], vector[3],vector[4], vector[5], "\n"
 };
