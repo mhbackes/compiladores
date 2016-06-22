@@ -6,7 +6,7 @@ bool bfa:0; bool btr:1;
 int main() {
     output "LESS THAN\n"
     output "lo < hi\n"
-    output "1" if(clo < chi) output "OK\n" else output "ERROU\n"
+    output "1 " if(clo < chi) output "OK\n" else output "ERROU\n"
     output "2 " if(clo < ihi) output "OK\n" else output "ERROU\n"
     output "3 " if(clo < rhi) output "OK\n" else output "ERROU\n"
     output "4 " if(ilo < chi) output "OK\n" else output "ERROU\n"
