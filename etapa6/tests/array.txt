@@ -2,9 +2,10 @@ int vector[10]:8 2 4 6 3 1 10 9 7 5;
 int j:0;
 
 int main() {
-    
+     
     output "\n", vector[0], vector[1], vector[2], vector[3],vector[4], vector[5], "\n"
-    j = 9
-    vector[4] = 3
-    output vector[4], "\n"
+    output "\n", vector[j+2]
+    output "\n", vector[j+5]
+    vector[j+3] = 192
+    output "\n", vector[3]
 };
