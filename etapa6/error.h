@@ -16,6 +16,6 @@
 #define EXIT_FILE_ERROR         2
 #define EXIT_SYNTAX_ERROR       3
 #define EXIT_SEMANTIC_ERROR     4
-
+#define EXIT_MEM_ERROR          5
 
 #endif

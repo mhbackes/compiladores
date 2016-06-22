@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include "ast.h"
+#include "error.h"
 
 const char* _astString[] = {
     FOREACH_AST(GENERATE_AST_STRING)
@@ -16,7 +17,7 @@ AST_NODE *astCreate(int type, int lineNumber, HASH_NODE *symbol, int size, ...) 
 
     if(!(newNode = (AST_NODE *) malloc(sizeof(AST_NODE)))) {
         fprintf(stderr, "ERROR [AST]: out of memory!\n"); 
-	exit(-1); // abort
+	exit(EXIT_MEM_ERROR); // abort
     }
 
     newNode->type = type;

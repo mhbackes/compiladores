@@ -10,6 +10,7 @@
 #include <string.h>
 #include "hashtable.h"
 #include "y.tab.h"
+#include "error.h"
 
 #define TEMP_P  ".TEMP"
 #define LABEL_P ".LABEL"
@@ -64,7 +65,7 @@ HASH_NODE *hashInsert(char *str, int type, int datatype, int lineNumber) {
     if(!(newNode = (HASH_NODE *) malloc(sizeof(HASH_NODE))) ||
             !(newNode->text = (char *) malloc(sizeof(char) *  (strlen(str) + 1)))) {
         fprintf(stderr, "Error: out of memory\n");
-        exit(-1); // abort
+        exit(EXIT_MEM_ERROR); // abort
     }
 
     newNode->type = type;

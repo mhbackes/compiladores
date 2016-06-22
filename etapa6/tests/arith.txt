@@ -1,0 +1,211 @@
+char cr:0;
+char c:0;
+char cd:69; // CHAR E 
+
+int ir:0;
+int i:0;
+int j:2;
+
+real rr:0;
+real r:0;
+real rd:2; 
+
+int main() {
+    // ADD
+
+    output "ADD TESTS \n\n"
+        // ADD REAL
+
+    rr = 2 + 2
+    output "CONSTANTS: INT 2 + INT 2 to REAL: ", rr, "\n" 
+
+    rr = i - j  
+    rr = i + rr  
+    output "INT ", i, " + REAL ", rr, " TO REAL: ", rr, "\n"
+
+    rr = i + cd  
+    output "INT ", i, " + CHAR ", cd, " TO REAL: ", rr, "\n"
+
+    rr = i + rd  
+    output "INT ", i, " + REAL ", rd, " TO REAL: ", rr, "\n"
+
+    rr = r + rd  
+    output "REAL ", r, " + REAL ", rd, " TO REAL: ", rr, "\n"
+
+        // ADD INT 
+
+    ir = 2 + 2
+    output "CONSTANTS: INT 2 + INT 2 to INT: ", ir, "\n" 
+
+    ir = i + j  
+    output "INT ", i, " + INT ", j, " TO INT: ", ir, "\n"
+
+    ir = i + cd  
+    output "INT ", i, " + CHAR ", cd, " TO INT: ", ir, "\n"
+
+    ir = i + rd  
+    output "INT ", i, " + REAL ", rd, " TO INT: ", ir, "\n"
+
+    ir = r + rd  
+    output "REAL ", r, " + REAL ", rd, " TO INT: ", ir, "\n"
+
+        // ADD CHAR
+    cr = 67 + 1 // D
+    output "CONSTANTS: CHAR 67 + CHAR 1 to CHAR: ", cr, "\n" 
+
+    cr = i + j  
+    output "INT ", i, " + INT ", j, " TO CHAR: ", cr, "\n"
+
+    cr = i + cd  
+    output "INT ", i, " + CHAR ", cd, " TO CHAR: ", cr, "\n"
+
+    cr = i + rd  
+    output "INT ", i, " + REAL ", rd, " TO CHAR: ", cr, "\n"
+
+    cr = r + rd  
+    output "REAL ", r, " + REAL ", rd, " TO CHAR: ", cr, "\n\n"
+
+    // SUB
+
+    output "SUB TESTS \n\n"
+
+        // SUB REAL 
+    rr = i - j  
+    output "INT ", i, " - INT ", j, " TO REAL: ", rr, "\n"
+
+    rr = i - cd  
+    output "INT ", i, " - CHAR ", cd, " TO REAL: ", rr, "\n"
+
+    rr = i - rd  
+    output "INT ", i, " - REAL ", rd, " TO REAL: ", rr, "\n"
+
+    rr = r - rd  
+    output "REAL ", r, " - REAL ", rd, " TO REAL: ", rr, "\n"
+
+        // SUB INT 
+    ir = i - j  
+    output "INT ", i, " - INT ", j, " TO INT: ", ir, "\n"
+
+    ir = i - cd  
+    output "INT ", i, " - CHAR ", cd, " TO INT: ", ir, "\n"
+
+    ir = i - rd  
+    output "INT ", i, " - REAL ", rd, " TO INT: ", ir, "\n"
+
+    ir = r - rd  
+    output "REAL ", r, " - REAL ", rd, " TO INT: ", ir, "\n"
+
+
+        // SUB CHAR
+    cr = i - j  
+    output "INT ", i, " - INT ", j, " TO CHAR: ", cr, "\n"
+
+    cr = i - cd  
+    output "INT ", i, " - CHAR ", cd, " TO CHAR: ", cr, "\n"
+
+    cr = i - rd  
+    output "INT ", i, " - REAL ", rd, " TO CHAR: ", cr, "\n"
+
+    cr = r - rd  
+    output "REAL ", r, " - REAL ", rd, " TO CHAR: ", cr, "\n\n"
+
+
+    // MUL
+
+    output "MUL TESTS\n\n"
+    i = 1;
+    r = 1;
+
+        // MUL REAL 
+    rr = i * j  
+    output "INT ", i, " * INT ", j, " TO REAL: ", rr, "\n"
+
+    rr = i * cd  
+    output "INT ", i, " * CHAR ", cd, " TO REAL: ", rr, "\n"
+
+    rr = i * rd  
+    output "INT ", i, " * REAL ", rd, " TO REAL: ", rr, "\n"
+
+    rr = r * rd  
+    output "REAL ", r, " * REAL ", rd, " TO REAL: ", rr, "\n"
+
+        // MUL INT 
+    ir = i * j  
+    output "INT ", i, " * INT ", j, " TO INT: ", ir, "\n"
+
+    ir = i * cd  
+    output "INT ", i, " * CHAR ", cd, " TO INT: ", ir, "\n"
+
+    ir = i * rd  
+    output "INT ", i, " * REAL ", rd, " TO INT: ", ir, "\n"
+
+    ir = r * rd  
+    output "REAL ", r, " * REAL ", rd, " TO INT: ", ir, "\n"
+
+
+        // MUL CHAR
+    cr = i * j  
+    output "INT ", i, " * INT ", j, " TO CHAR: ", cr, "\n"
+
+    cr = i * cd  
+    output "INT ", i, " * CHAR ", cd, " TO CHAR: ", cr, "\n"
+
+    cr = i * rd  
+    output "INT ", i, " * REAL ", rd, " TO CHAR: ", cr, "\n"
+
+    cr = r * rd  
+    output "REAL ", r, " * REAL ", rd, " TO CHAR: ", cr, "\n\n"
+
+
+    // DIV
+
+    output "DIV TESTS\n\n"
+
+    i = 12
+    j = 6
+    cd = 80
+    r = 3
+    rd = 1
+
+        // DIV REAL 
+    rr = i / j  
+    output "INT ", i, " / INT ", j, " TO REAL: ", rr, "\n"
+
+    rr = i / cd  
+    output "INT ", i, " / CHAR ", cd, " TO REAL: ", rr, "\n"
+
+    rr = i / rd  
+    output "INT ", i, " / REAL ", rd, " TO REAL: ", rr, "\n"
+
+    rr = r / rd  
+    output "REAL ", r, " / REAL ", rd, " TO REAL: ", rr, "\n"
+
+        // DIV INT
+    ir = i / j  
+    output "INT ", i, " / INT ", j, " TO INT: ", ir, "\n"
+
+    ir = i / cd  
+    output "INT ", i, " / CHAR ", cd, " TO INT: ", ir, "\n"
+
+    ir = i / rd  
+    output "INT ", i, " / REAL ", rd, " TO INT: ", ir, "\n"
+
+    ir = r / rd  
+    output "REAL ", r, " / REAL ", rd, " TO INT: ", ir, "\n"
+
+
+        // DIV CHAR
+    cr = i / j  
+    output "INT ", i, " / INT ", j, " TO CHAR: ", cr, "\n"
+
+    cr = i / cd  
+    output "INT ", i, " / CHAR ", cd, " TO CHAR: ", cr, "\n"
+
+    cr = i / rd  
+    output "INT ", i, " / REAL ", rd, " TO CHAR: ", cr, "\n"
+
+    cr = r / rd  
+    output "REAL ", r, " / REAL ", rd, " TO CHAR: ", cr, "\n\n"
+
+	return 0
+};

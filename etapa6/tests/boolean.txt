@@ -1,0 +1,38 @@
+bool bf:0;
+bool bt:1;
+bool br:0;
+
+int main() {
+    
+    // AND
+    output "AND TESTS \n\n"
+
+    br = bf && bf
+    if(br) 
+        output "FALSE AND FALSE\n"
+
+    br = bf && bt
+    if(br)
+        output "FALSE AND TRUE\n"
+
+    br = bt && bt
+    if(br)
+        output "TRUE AND TRUE\n\n"
+
+    // OR 
+    output "OR TESTS \n\n"
+
+    br = bf || bf
+    if(br)
+        output "FALSE OR FALSE\n"
+
+    br = bf || bt
+    if(br)
+        output "FALSE OR TRUE\n"
+
+    br = bt || bt
+    if(br)
+        output "TRUE OR TRUE\n"
+
+    return 0
+};
