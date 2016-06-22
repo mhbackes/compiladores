@@ -8,3 +8,5 @@ real B[5]: 0 0 0 0 0;
 bool C[5]: TRUE TRUE TRUE TRUE TRUE;
 bool D[5]: FALSE FALSE FALSE FALSE FALSE;
 char E[5]: 'A' 'A' 'A' 'A' 'A';
+
+int main();;
