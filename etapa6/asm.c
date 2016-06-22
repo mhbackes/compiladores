@@ -689,22 +689,19 @@ void asmReadArr(FILE *file, TAC *tac) {
             fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", idx->name);
             fprintf(file, "\tcltq\n");
             fprintf(file, "\tmov\t%s(,%%rax,4), %%bl\n", src->name);
-            asmConvertToChar(file, src->datatype, "", 'a', "bl");
-            fprintf(file, "\tmov\t%%al, %s(%%rip)\n", dst->name);
+            fprintf(file, "\tmov\t%%bl, %s(%%rip)\n", dst->name);
             break;
         case DTYPE_INT:
             fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", idx->name);
             fprintf(file, "\tcltq\n");
             fprintf(file, "\tmovl\t%s(,%%rax,4), %%eax\n", src->name);
-            asmConvertToInt(file, src->datatype, "", 'a', "eax");
             fprintf(file, "\tmovl\t%%eax, %s(%%rip)\n", dst->name);
             break;
         case DTYPE_REAL:
             fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", idx->name);
             fprintf(file, "\tcltq\n");
             fprintf(file, "\tmovss\t%s(,%%rax,4), %%xmm0\n", src->name);
-            asmConvertToReal(file, src->datatype, "", '1', "xmm0");
-            fprintf(file, "\tmovss\t%%xmm1, %s(%%rip)\n", dst->name);
+            fprintf(file, "\tmovss\t%%xmm0, %s(%%rip)\n", dst->name);
             break;
         case DTYPE_BOOL:
             fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", idx->name);
@@ -802,7 +799,7 @@ void asmArithmeticBinary(FILE *file, TAC *tac, char *intOp, char *floatOp) {
             fprintf(file, "\tmovss\t%%xmm1, %s(%%rip)\n", dst->name);
             break;
         case DTYPE_BOOL:
-            break;
+           break;
     }
 }
 
@@ -844,28 +841,28 @@ void asmGE(FILE *file, TAC *tac) {
 }
 
 void asmEQ(FILE *file, TAC *tac) {
-    fprintf(file, "/* TAC_LE %s = %s == %s */\n", tac->res->text, 
+    fprintf(file, "/* TAC_EQ %s = %s == %s */\n", tac->res->text, 
             tac->op1->text, tac->op2->text);
     asmBooleanComparison(file, tac, "sete");
 
 }
 
 void asmNE(FILE *file, TAC *tac) {
-    fprintf(file, "/* TAC_LE %s = %s != %s */\n", tac->res->text, 
+    fprintf(file, "/* TAC_NE %s = %s != %s */\n", tac->res->text, 
             tac->op1->text, tac->op2->text);
     asmBooleanComparison(file, tac, "setne");
 
 }
 
 void asmLESS(FILE *file, TAC *tac) {
-    fprintf(file, "/* TAC_LE %s = %s < %s */\n", tac->res->text, 
+    fprintf(file, "/* TAC_LESS %s = %s < %s */\n", tac->res->text, 
             tac->op1->text, tac->op2->text);
     asmBooleanComparison(file, tac, "setb");
 
 }
 
 void asmGREATER(FILE *file, TAC *tac) {
-    fprintf(file, "/* TAC_LE %s = %s > %s */\n", tac->res->text, 
+    fprintf(file, "/* TAC_GREATER %s = %s > %s */\n", tac->res->text, 
             tac->op1->text, tac->op2->text);
     asmBooleanComparison(file, tac, "setnle");
 }
@@ -881,7 +878,7 @@ void asmBooleanComparison(FILE *file, TAC *tac, char *op) {
         case DTYPE_CHAR:
             asmConvertToChar(file, op2->datatype, op2->name, 'a', "rip");
             asmConvertToChar(file, op1->datatype, op1->name, 'b', "rip");
-            fprintf(file, "\tcmp\t%%al, %%bl\n");
+            fprintf(file, "\tcmp\t%%eax, %%ebx\n");
             fprintf(file, "\t%s\t%%al\n", op);    // op -> comparison flag
             fprintf(file, "\tmov\t\t%%al, %s(%%rip)\n", dst->name);
             break;
@@ -895,10 +892,19 @@ void asmBooleanComparison(FILE *file, TAC *tac, char *op) {
         case DTYPE_REAL:
             asmConvertToReal(file, op2->datatype, op2->name, '0', "rip");
             asmConvertToReal(file, op1->datatype, op1->name, '1', "rip");
-            fprintf(file, "\tucomiss\t%%xmm0, %%xmm1\n");
+            fprintf(file, "\tcomiss\t%%xmm0, %%xmm1\n");
             fprintf(file, "\t%s\t%%al\n", op);    // op -> comparison flag
             fprintf(file, "\tmov\t\t%%al, %s(%%rip)\n", dst->name);
             break;
+        case DTYPE_BOOL:
+            fprintf(file, "\tmov\t%s(%%rip), %%eax\n", op2->name);
+            fprintf(file, "\tmov\t%s(%%rip), %%ebx\n", op1->name);
+            fprintf(file, "\tcmp\t%%eax, %%ebx\n");
+            fprintf(file, "\t%s\t%%al\n", op);    // op -> comparison flag
+            fprintf(file, "\tmov\t%%al, %s(%%rip)\n", dst->name);
+            break;
+ 
+             
         case DTYPE_UNDEF:
             break; // furou a embarcaçao
     }
@@ -921,6 +927,11 @@ int comparisonTypeFetch(HASH_NODE *op1, HASH_NODE *op2) {
                 return type1;
         case DTYPE_REAL:
             return DTYPE_REAL;
+        case DTYPE_BOOL:
+            if(type2 == DTYPE_BOOL)
+                return DTYPE_BOOL;
+            else
+                return DTYPE_UNDEF;
     }
     
     return(DTYPE_UNDEF);
