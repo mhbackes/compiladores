@@ -1,0 +1,8 @@
+int vector[10];
+int j:0;
+
+int main() {
+    j = 9
+    vector[4] = 3
+    output vector[4]
+};
