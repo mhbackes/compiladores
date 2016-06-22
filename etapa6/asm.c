@@ -688,7 +688,7 @@ void asmReadArr(FILE *file, TAC *tac) {
         case DTYPE_CHAR:
             fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", idx->name);
             fprintf(file, "\tcltq\n");
-            fprintf(file, "\tmov\t%s(,%%rax,4), %%bl\n", src->name);
+            fprintf(file, "\tmov\t%s(,%%rax,1), %%bl\n", src->name);
             fprintf(file, "\tmov\t%%bl, %s(%%rip)\n", dst->name);
             break;
         case DTYPE_INT:
@@ -706,7 +706,7 @@ void asmReadArr(FILE *file, TAC *tac) {
         case DTYPE_BOOL:
             fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", idx->name);
             fprintf(file, "\tcltq\n");
-            fprintf(file, "\tmov\t%s(,%%rax,4), %%al\n", src->name);
+            fprintf(file, "\tmov\t%s(,%%rax,1), %%al\n", src->name);
             fprintf(file, "\tmov\t%%al, %s(%%rip)\n", dst->name);
     }
 }
@@ -749,7 +749,7 @@ void asmAttrArr(FILE *file, TAC *tac) {
 /* ===>ARITHMETIC OPS */
 
 void asmAdd(FILE *file, TAC *tac) {
-    fprintf(file, "/* TAC_SUB %s = %s - %s */\n", tac->res->text, 
+    fprintf(file, "/* TAC_ADD %s = %s + %s */\n", tac->res->text, 
             tac->op1->text, tac->op2->text);
     asmArithmeticBinary(file, tac, "addl", "addss");
 }
