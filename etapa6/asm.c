@@ -9,9 +9,6 @@
 #include <string.h>
 #include "error.h"
 
-#define LITERAL ".LIT"
-#define SIZEOF_RIP_ACCESS 6 // without \n
-
 #define FMT_OUT_INT ".FMT_OUT_INT"
 #define FMT_OUT_CHAR ".FMT_OUT_CHAR"
 #define FMT_OUT_REAL ".FMT_OUT_REAL"
@@ -210,8 +207,8 @@ void asmWriteCodeAux(FILE* file, TAC* tac) {
             case TAC_DIV:
                 asmDiv(file, tmp);
                 break;
-            case TAC_NOT:
-                break;
+            //case TAC_NOT:
+            //    break;
             case TAC_LE:
                 asmLE(file, tmp);
                 break;
