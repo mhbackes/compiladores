@@ -73,30 +73,36 @@ int getOffset(HASH_NODE *idx);
 /* ===>CONVERSION */
 
 /*
- * Converts the value of var "node" to int and stores the result in
+ * Converts the value of var "node(%sourceReg)" to int and stores the result in
  * register e"reg"x - e.g. "eax".
  *
+ * Param "node" - might be empty (""). In that case, sourceReg value is used
  * Param "reg" - must be 'a' or 'b'.
+ * Param "sourceReg" - at will
  *
  * Side-effects: register 'xmm2' is changed.
  */
 void asmConvertToInt(FILE *file, int datatype, char *node, char reg, char *sourceReg);
 
 /*
- * Converts the value of var "node" to char and stores the result in
+ * Converts the value of var "node(%sourceReg)" to char and stores the result in
  * register "reg"l - e.g. "al".
  *
+ * Param "node" - might be empty (""). In that case, sourceReg value is used
  * Param "reg" - must be 'a' or 'b'.
+ * Param "sourceReg" - at will
  *
  * Side-effects: register 'xmm2' is changed.
  */
 void asmConvertToChar(FILE *file, int datatype, char *node, char reg, char *sourceReg);
 
 /*
- * Converts the value of var "node" to char and stores the result in
- * register xmm"reg" - e.g. "xmm0".
+ * Converts the value of var "node(%sourceReg)" to S. Floating Point and stores 
+ * the result in register xmm"reg" - e.g. "xmm0".
  *
+ * Param "node" - might be empty (""). In that case, sourceReg value is used
  * Param "reg" - must be '0' or '1'.
+ * Param "sourceReg" - at will
  *
  * Side-effects: register 'ecx' is changed.
  */
@@ -567,6 +573,11 @@ void asmInput(FILE *file, TAC *node) {
     fprintf(file, "\tcall\tscanf\n"); 
 }
 
+/* Builds an ASM var access string if node is not blank or an ASM regster 
+ * access string otherwise.
+ * 
+ * The returned string/pointer MUST BE FREED.
+ */
 char *srcStrBuild(char *node, char *sourceReg) {
     char *srcStr = (char *) malloc(sizeof(char) * (strlen(node) + strlen(sourceReg) + 4));
 
@@ -584,8 +595,8 @@ void asmConvertToInt(FILE *file, int datatype, char *node, char reg, char *sourc
 
     switch(datatype) {
         case DTYPE_CHAR:
-            fprintf(file, "\tmovzbl\t%s, %%e%cx\n", srcStr, reg);
-            fprintf(file, "\tmovsbl\t%%%cl, %%e%cx\n", reg, reg);
+            fprintf(file, "\tmovzx\t%s, %%e%cx\n", srcStr, reg);
+            //fprintf(file, "\tmovsbl\t%%%cl, %%e%cx\n", reg, reg);
             break;
         case DTYPE_INT:
             fprintf(file, "\tmovl\t%s, %%e%cx\n", srcStr, reg);
@@ -603,7 +614,7 @@ void asmConvertToChar(FILE *file, int datatype, char *node, char reg, char *sour
 
     switch(datatype) {
         case DTYPE_CHAR:
-            fprintf(file, "\tmovzbl\t%s, %%e%cx\n", srcStr, reg);
+            fprintf(file, "\tmovzx\t%s, %%e%cx\n", srcStr, reg);
             break;
         case DTYPE_INT:
             fprintf(file, "\tmovl\t%s, %%e%cx\n", srcStr, reg);
@@ -621,8 +632,8 @@ void asmConvertToReal(FILE *file, int datatype, char *node, char reg, char *sour
 
     switch(datatype) {
         case DTYPE_CHAR:
-            fprintf(file, "\tmovzbl\t%s, %%ecx\n", srcStr);
-            fprintf(file, "\tmovsbl\t%%cl, %%ecx\n");
+            fprintf(file, "\tmovzx\t%s, %%ecx\n", srcStr);
+            //fprintf(file, "\tmovsbl\t%%cl, %%ecx\n");
             fprintf(file, "\tpxor\t%%xmm%c, %%xmm%c\n", reg, reg);
             fprintf(file, "\tcvtsi2ss\t%%ecx, %%xmm%c\n", reg);
             break;
@@ -677,8 +688,8 @@ void asmReadArr(FILE *file, TAC *tac) {
         case DTYPE_CHAR:
             fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", idx->name);
             fprintf(file, "\tcltq\n");
-            fprintf(file, "\tmovl\t%s(,%%rax,4), %%eax\n", src->name);
-            asmConvertToChar(file, src->datatype, "", 'a', "eax");
+            fprintf(file, "\tmov\t%s(,%%rax,4), %%bl\n", src->name);
+            asmConvertToChar(file, src->datatype, "", 'a', "bl");
             fprintf(file, "\tmov\t%%al, %s(%%rip)\n", dst->name);
             break;
         case DTYPE_INT:
@@ -691,9 +702,9 @@ void asmReadArr(FILE *file, TAC *tac) {
         case DTYPE_REAL:
             fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", idx->name);
             fprintf(file, "\tcltq\n");
-            fprintf(file, "\tmovl\t%s(,%%rax,4), %%eax\n", src->name);
-            asmConvertToReal(file, src->datatype, "", '0', "eax");
-            fprintf(file, "\tmovss\t%%xmm0, %s(%%rip)\n", dst->name);
+            fprintf(file, "\tmovss\t%s(,%%rax,4), %%xmm0\n", src->name);
+            asmConvertToReal(file, src->datatype, "", '1', "xmm0");
+            fprintf(file, "\tmovss\t%%xmm1, %s(%%rip)\n", dst->name);
             break;
         case DTYPE_BOOL:
             fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", idx->name);
@@ -772,9 +783,9 @@ void asmArithmeticBinary(FILE *file, TAC *tac, char *intOp, char *floatOp) {
     switch(dst->datatype) {
         case DTYPE_CHAR:
             asmConvertToChar(file, op2->datatype, op2->name, 'a', "rip");
-            fprintf(file, "\tmovzbl\t\t%%al, %%eax\n");
+            fprintf(file, "\tmovzx\t\t%%al, %%eax\n");
             asmConvertToChar(file, op1->datatype, op1->name, 'b', "rip");
-            fprintf(file, "\tmovzbl\t\t%%bl, %%ebx\n");
+            fprintf(file, "\tmovzx\t\t%%bl, %%ebx\n");
             fprintf(file, "\t%s\t%%eax, %%ebx\n", intOp);
             fprintf(file, "\tmovl\t%%ebx, %s(%%rip)\n", dst->name);
             break;
@@ -812,9 +823,9 @@ void asmIfz(FILE *file, TAC *tac) {
     HASH_NODE *exp = tac->op1;
 
     fprintf(file, "/* TAC_IF (%s) THEN (%s) */\n", exp->name, target->name);
-    fprintf(file, "\tmov\t%s(%%rip), %%al\n", exp->name);
+    fprintf(file, "\tmov\t\t%s(%%rip), %%al\n", exp->name);
     fprintf(file, "\ttest\t%%al, %%al\n");
-    fprintf(file, "\tje\t%s\n", target->name);
+    fprintf(file, "\tje\t\t%s\n", target->name);
 }
 
 /* ===>BOOLEAN OPS */
@@ -828,7 +839,7 @@ void asmLE(FILE *file, TAC *tac) {
 void asmGE(FILE *file, TAC *tac) {
     fprintf(file, "/* TAC_GE %s = %s >= %s */\n", tac->res->text, 
             tac->op1->text, tac->op2->text);
-    asmBooleanComparison(file, tac, "setge");
+    asmBooleanComparison(file, tac, "setnb");
 
 }
 
@@ -849,14 +860,14 @@ void asmNE(FILE *file, TAC *tac) {
 void asmLESS(FILE *file, TAC *tac) {
     fprintf(file, "/* TAC_LE %s = %s < %s */\n", tac->res->text, 
             tac->op1->text, tac->op2->text);
-    asmBooleanComparison(file, tac, "setl");
+    asmBooleanComparison(file, tac, "setb");
 
 }
 
 void asmGREATER(FILE *file, TAC *tac) {
     fprintf(file, "/* TAC_LE %s = %s > %s */\n", tac->res->text, 
             tac->op1->text, tac->op2->text);
-    asmBooleanComparison(file, tac, "setg");
+    asmBooleanComparison(file, tac, "setnle");
 }
 
 // op: the ASM operation that sets the comparison flag
@@ -864,30 +875,29 @@ void asmBooleanComparison(FILE *file, TAC *tac, char *op) {
     HASH_NODE *dst = tac->res;
     HASH_NODE *op1 = tac->op1;
     HASH_NODE *op2 = tac->op2;
+    int datatype = comparisonTypeFetch(op1, op2);
 
-    switch(comparisonTypeFetch(op1, op2)) {
+    switch(datatype) {
         case DTYPE_CHAR:
             asmConvertToChar(file, op2->datatype, op2->name, 'a', "rip");
-            fprintf(file, "\tmovzbl\t\t%%al, %%eax\n");
             asmConvertToChar(file, op1->datatype, op1->name, 'b', "rip");
-            fprintf(file, "\tmovzbl\t\t%%bl, %%ebx\n");
-            fprintf(file, "\tcmpl\t%%eax, %%ebx\n");
+            fprintf(file, "\tcmp\t%%al, %%bl\n");
             fprintf(file, "\t%s\t%%al\n", op);    // op -> comparison flag
-            fprintf(file, "\tmov\t%%al, %s(%%rip)\n", dst->name);
+            fprintf(file, "\tmov\t\t%%al, %s(%%rip)\n", dst->name);
             break;
         case DTYPE_INT:
             asmConvertToInt(file, op2->datatype, op2->name, 'a', "rip");
             asmConvertToInt(file, op1->datatype, op1->name, 'b', "rip");
-            fprintf(file, "\tcmpl\t%%eax, %%ebx\n");
+            fprintf(file, "\tcmp\t%%eax, %%ebx\n");
             fprintf(file, "\t%s\t%%al\n", op);    // op -> comparison flag
-            fprintf(file, "\tmov\t%%al, %s(%%rip)\n", dst->name);
+            fprintf(file, "\tmov\t\t%%al, %s(%%rip)\n", dst->name);
             break;
         case DTYPE_REAL:
             asmConvertToReal(file, op2->datatype, op2->name, '0', "rip");
             asmConvertToReal(file, op1->datatype, op1->name, '1', "rip");
             fprintf(file, "\tucomiss\t%%xmm0, %%xmm1\n");
             fprintf(file, "\t%s\t%%al\n", op);    // op -> comparison flag
-            fprintf(file, "\tmov\t%%al, %s(%%rip)\n", dst->name);
+            fprintf(file, "\tmov\t\t%%al, %s(%%rip)\n", dst->name);
             break;
         case DTYPE_UNDEF:
             break; // furou a embarcaçao
