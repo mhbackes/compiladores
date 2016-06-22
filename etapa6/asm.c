@@ -9,9 +9,6 @@
 #include <string.h>
 #include "error.h"
 
-#define LITERAL ".LIT"
-#define SIZEOF_RIP_ACCESS 6 // without \n
-
 #define FMT_OUT_INT ".FMT_OUT_INT"
 #define FMT_OUT_CHAR ".FMT_OUT_CHAR"
 #define FMT_OUT_REAL ".FMT_OUT_REAL"
@@ -69,6 +66,7 @@ void asmAttrAux(FILE *file, HASH_NODE *dst, HASH_NODE *src);
 
 void asmAttrArr(FILE *file, TAC *tac);
 void asmReadArr(FILE *file, TAC *tac);
+int getOffset(HASH_NODE *idx); 
 
 /* ===>CONVERSION */
 
@@ -210,8 +208,8 @@ void asmWriteCodeAux(FILE* file, TAC* tac) {
             case TAC_DIV:
                 asmDiv(file, tmp);
                 break;
-            case TAC_NOT:
-                break;
+            //case TAC_NOT:
+            //    break;
             case TAC_LE:
                 asmLE(file, tmp);
                 break;
@@ -652,7 +650,6 @@ void asmReadArr(FILE *file, TAC *tac) {
     HASH_NODE *src= tac->op1;
     HASH_NODE *idx= tac->op2;
     int offset = (int) strtol(idx->text, (char **)NULL, 10) * 4;
-
     fprintf(file, "/* TAC_READARR %s[%s] -> %s */\n", src->text, idx->text, 
             dst->text);
 
@@ -679,26 +676,33 @@ void asmAttrArr(FILE *file, TAC *tac) {
     HASH_NODE *dst = tac->res;
     HASH_NODE *idx = tac->op1;
     HASH_NODE *val = tac->op2;
-    int offset = (int) strtol(idx->text, (char **)NULL, 10) * 4;
 
     fprintf(file, "/* TAC_ATTRARR %s[%s] = %s */\n", dst->text, idx->text, val->text);
 
     switch(dst->datatype) {
         case DTYPE_CHAR:
             asmConvertToChar(file, val, 'a', 0);
-            fprintf(file, "\tmov\t%%al, %s+%d(%%rip)\n", dst->name, offset);
+            fprintf(file, "\tmovl\t%s, %%eax\n", idx->name);
+            fprintf(file, "\tcltq\n");
+            fprintf(file, "\tmov\t%%al, %s(,%%rax,4)\n", dst->name);
             break;
         case DTYPE_INT:
-            asmConvertToInt(file, val, 'a', 0);
-            fprintf(file, "\tmovl\t%%eax, %s+%d(%%rip)\n", dst->name, offset);
+            asmConvertToInt(file, val, 'b', 0);
+            fprintf(file, "\tmovl\t%s, %%eax\n", idx->name);
+            fprintf(file, "\tcltq\n");
+            fprintf(file, "\tmovl\t%%ebx, %s(,%%rax,4)\n", dst->name);
             break;
         case DTYPE_REAL:
             asmConvertToReal(file, val, '0', 0);
-            fprintf(file, "\tmovss\t%%xmm0, %s+%d(%%rip)\n", dst->name, offset);
+            fprintf(file, "\tmovl\t%s, %%eax\n", idx->name);
+            fprintf(file, "\tcltq\n");
+            fprintf(file, "\tmovss\t%%xmm0, %s(,%%rax,4)\n", dst->name);
             break;
         case DTYPE_BOOL:
             fprintf(file, "\tmov\t%s(%%rip), %%al\n", val->name);
-            fprintf(file, "\tmov\t%%al, %s+%d(%%rip)\n", dst->name, offset);
+            fprintf(file, "\tmovl\t%s, %%eax\n", idx->name);
+            fprintf(file, "\tcltq\n");
+            fprintf(file, "\tmov\t%%al, %s(,%%rax,4)\n", dst->name);
     }
 }
 

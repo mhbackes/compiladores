@@ -60,7 +60,7 @@ void semCheckDeclaration(AST_NODE *node) {
                 semError(SEM_REDECLARED, node->lineNumber, node->symbol->text);
             node->symbol->type = astSymbolType(node->type);
             node->symbol->datatype = astDataType(node->children[0]->type);
-	    node->symbol->declaration = node;
+	        node->symbol->declaration = node;
             node->datatype = node->symbol->datatype;
             break;
 

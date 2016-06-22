@@ -32,7 +32,40 @@ int main() {
 
     br = bt || bt
     if(br)
-        output "TRUE OR TRUE\n"
+        output "TRUE OR TRUE\n\n"
+
+
+    // BINARY OP TESTS
+    output "LESS    \n\n"
+    if(2 < 3)
+        output "um pais da europa acertou\n"
+
+    if(2 > 3)
+        output "um pais da europa errou\n"
+
+    if(2 > 2)
+        output "um pais da europa errou\n"
+
+    output "LE      \n\n"
+    if(2 <= 3)
+        output "um pais da europa acertou\n"
+
+    if(2 <= 2)
+        output "um pais da europa acertou\n"
+
+    if(2 <= 1)
+        output "um pais da europa errou\n"
+
+    output "GREATER \n\n"
+    
+    output "GE      \n\n"
+
+    output "EQ      \n\n"
+
+    output "NE      \n\n" 
+
+    // NOT/UNARY TESTS
+    output "NOT     \n\n"
 
     return 0
 };
