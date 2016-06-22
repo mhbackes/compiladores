@@ -689,22 +689,19 @@ void asmReadArr(FILE *file, TAC *tac) {
             fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", idx->name);
             fprintf(file, "\tcltq\n");
             fprintf(file, "\tmov\t%s(,%%rax,4), %%bl\n", src->name);
-            asmConvertToChar(file, src->datatype, "", 'a', "bl");
-            fprintf(file, "\tmov\t%%al, %s(%%rip)\n", dst->name);
+            fprintf(file, "\tmov\t%%bl, %s(%%rip)\n", dst->name);
             break;
         case DTYPE_INT:
             fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", idx->name);
             fprintf(file, "\tcltq\n");
             fprintf(file, "\tmovl\t%s(,%%rax,4), %%eax\n", src->name);
-            asmConvertToInt(file, src->datatype, "", 'a', "eax");
             fprintf(file, "\tmovl\t%%eax, %s(%%rip)\n", dst->name);
             break;
         case DTYPE_REAL:
             fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", idx->name);
             fprintf(file, "\tcltq\n");
             fprintf(file, "\tmovss\t%s(,%%rax,4), %%xmm0\n", src->name);
-            asmConvertToReal(file, src->datatype, "", '1', "xmm0");
-            fprintf(file, "\tmovss\t%%xmm1, %s(%%rip)\n", dst->name);
+            fprintf(file, "\tmovss\t%%xmm0, %s(%%rip)\n", dst->name);
             break;
         case DTYPE_BOOL:
             fprintf(file, "\tmovl\t%s(%%rip), %%eax\n", idx->name);
@@ -881,7 +878,7 @@ void asmBooleanComparison(FILE *file, TAC *tac, char *op) {
         case DTYPE_CHAR:
             asmConvertToChar(file, op2->datatype, op2->name, 'a', "rip");
             asmConvertToChar(file, op1->datatype, op1->name, 'b', "rip");
-            fprintf(file, "\tcmp\t%%al, %%bl\n");
+            fprintf(file, "\tcmp\t%%eax, %%ebx\n");
             fprintf(file, "\t%s\t%%al\n", op);    // op -> comparison flag
             fprintf(file, "\tmov\t\t%%al, %s(%%rip)\n", dst->name);
             break;
