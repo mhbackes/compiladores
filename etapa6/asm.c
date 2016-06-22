@@ -786,7 +786,7 @@ void asmBooleanComparison(FILE *file, TAC *tac, char *op) {
         case DTYPE_REAL:
             asmConvertToReal(file, op2, '0');
             asmConvertToReal(file, op1, '1');
-            fprintf(file, "\tcmpss\t%%xmm0, %%xmm1\n");
+            fprintf(file, "\tucomiss\t%%xmm0, %%xmm1\n");
             fprintf(file, "\t%s\t%%al\n", op);    // op -> comparison flag
             fprintf(file, "\tmov\t%%al, %s(%%rip)\n", dst->name);
             break;
