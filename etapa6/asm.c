@@ -830,7 +830,7 @@ void asmIfz(FILE *file, TAC *tac) {
 void asmLE(FILE *file, TAC *tac) {
     fprintf(file, "/* TAC_LE %s = %s <= %s */\n", tac->res->text, 
             tac->op1->text, tac->op2->text);
-    asmBooleanComparison(file, tac, "setle");
+    asmBooleanComparison(file, tac, "setna");
 }
 
 void asmGE(FILE *file, TAC *tac) {
@@ -864,7 +864,7 @@ void asmLESS(FILE *file, TAC *tac) {
 void asmGREATER(FILE *file, TAC *tac) {
     fprintf(file, "/* TAC_GREATER %s = %s > %s */\n", tac->res->text, 
             tac->op1->text, tac->op2->text);
-    asmBooleanComparison(file, tac, "setnle");
+    asmBooleanComparison(file, tac, "setnbe");
 }
 
 // op: the ASM operation that sets the comparison flag
