@@ -16,4 +16,4 @@ if [ $ERROR -ne 0 ]; then
     exit $ERROR
 fi
 
-gcc $ASM -o $OUT
+gcc $ASM -o $OUT -g
