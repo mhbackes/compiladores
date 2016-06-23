@@ -1,6 +1,6 @@
-char clo:0; char chi:255;
- int ilo:0;  int ihi:255;
-real rlo:0; real rhi:255;
+char clo:0; char chi:127;
+ int ilo:0;  int ihi:127;
+real rlo:0; real rhi:127;
 bool bfa:0; bool btr:1;
 
 int main() {
