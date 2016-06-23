@@ -641,7 +641,7 @@ void asmConvertToReal(FILE *file, int datatype, char *node, char reg, char *sour
     switch(datatype) {
         case DTYPE_CHAR:
             fprintf(file, "\tmovzx\t%s, %%ecx\n", srcStr);
-            //fprintf(file, "\tmovsbl\t%%cl, %%ecx\n");
+            fprintf(file, "\tmovsbl\t%%cl, %%ecx\n");
             fprintf(file, "\tpxor\t%%xmm%c, %%xmm%c\n", reg, reg);
             fprintf(file, "\tcvtsi2ss\t%%ecx, %%xmm%c\n", reg);
             break;
