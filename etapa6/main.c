@@ -60,16 +60,6 @@ int main(int argc, char *argv[]) {
     if(argc >= 3)
         prog = fopen(argv[2], "w");
 
-    FILE* astDot = fopen("ast.dot", "w");
-    astPrintDot(astDot, root);
-    fclose(astDot);
-    printf("Astree dot file written.\n");
-
-    FILE* tacDot = fopen("tac.dot", "w");
-    tacPrintDot(tacDot, tacs);
-    fclose(tacDot);
-    printf("Tac dot file written.\n");
-
     asmWriteCode(prog, tacs);
     fclose(prog);
     printf("Program written in file \"%s\"\n", argv[2]);
