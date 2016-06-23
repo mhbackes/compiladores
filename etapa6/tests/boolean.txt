@@ -34,6 +34,10 @@ int main() {
     if(br)
         output "TRUE OR TRUE\n\n"
 
+    if(!bf)
+        output "!BF OK\n"
+    if(!bt)
+        output "!BT NOT OK\n"
 
     // BINARY OP TESTS
     output "LESS    \n\n"

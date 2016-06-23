@@ -133,6 +133,8 @@ void asmAND(FILE *file, TAC *tac);
 
 void asmOR(FILE *file, TAC *tac);
 
+void asmNot(FILE *file, TAC *tac);
+
 void asmBooleanComparison(FILE *file, TAC *tac, char *op, char *floatOp);
 
 int comparisonTypeFetch(HASH_NODE *op1, HASH_NODE *op2);
@@ -221,8 +223,9 @@ void asmWriteCodeAux(FILE* file, TAC* tac) {
             case TAC_DIV:
                 asmDiv(file, tmp);
                 break;
-            //case TAC_NOT:
-            //    break;
+            case TAC_NOT:
+                asmNot(file, tmp);
+                break;
             case TAC_LE:
                 asmLE(file, tmp);
                 break;
@@ -929,7 +932,6 @@ void asmRealComparison(FILE *file, HASH_NODE *dst, HASH_NODE* op1, HASH_NODE *op
     fprintf(file, "\tcomiss\t%%xmm0, %%xmm1\n");
     fprintf(file, "\t%s\t%%al\n", op);    // op -> comparison flag
     fprintf(file, "\tmov\t\t%%al, %s(%%rip)\n", dst->name);
-
 }
 
 int comparisonTypeFetch(HASH_NODE *op1, HASH_NODE *op2) {
@@ -980,4 +982,13 @@ void asmLogicalBinary(FILE *file, TAC *tac, char *op) {
     fprintf(file, "\tmov\t%s(%%rip), %%bl\n", op2->name);
     fprintf(file, "\t%s\t%%al, %%bl\n", op);
     fprintf(file, "\tmov\t%%bl, %s(%%rip)\n", dst->name);
+}
+
+void asmNot(FILE *file, TAC *tac) {
+    HASH_NODE *dst = tac->res;
+    HASH_NODE *op1 = tac->op1;
+    fprintf(file, "\tmovzx\t%s(%%rip), %%eax\n", op1->name);
+    fprintf(file, "\ttestl\t%%eax, %%eax\n");
+    fprintf(file, "\tsete\t%%al\n");
+    fprintf(file, "\tmov\t%%al, %s(%%rip)\n", dst->name);
 }
